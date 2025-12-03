@@ -27,6 +27,8 @@ import {
   cilCloudUpload,
   cilUser,
   cilCopy,
+  cilShareAlt,
+  cilLink,
 } from '@coreui/icons'
 import { useNotes } from '../../hooks/useNotes'
 import { useCustomers } from '../../hooks/useCustomers'
@@ -37,6 +39,7 @@ import TimeTracking from '../../components/notes/TimeTracking'
 import AttachmentList from '../../components/notes/AttachmentList'
 import SortableTaskList from '../../components/notes/SortableTaskList'
 import AuditHistory from '../../components/common/AuditHistory'
+import ShareNoteModal from '../../components/notes/ShareNoteModal'
 import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const priorityColors = {
@@ -60,7 +63,7 @@ const NoteDetail = () => {
   const fileInputRef = useRef(null)
   const { formatDate, formatDateTime } = useLocaleFormat()
 
-  const { fetchNote, updateNote, deleteNote, updateTask, duplicateNote } = useNotes()
+  const { fetchNote, updateNote, deleteNote, updateTask, duplicateNote, shareNote, unshareNote } = useNotes()
   const { customers } = useCustomers()
   const { tags } = useTags()
   const { uploadFile, deleteFile, getFileUrl, fetchAttachments, uploading } = useAttachments()
@@ -71,6 +74,7 @@ const NoteDetail = () => {
   const [error, setError] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
+  const [shareModal, setShareModal] = useState(false)
   const [pasteMessage, setPasteMessage] = useState('')
   const [duplicating, setDuplicating] = useState(false)
 
@@ -252,6 +256,14 @@ const NoteDetail = () => {
           <h2 className="mb-0">{note.title}</h2>
         </div>
         <div className="d-flex gap-2">
+          <CButton
+            color="info"
+            variant="outline"
+            onClick={() => setShareModal(true)}
+          >
+            <CIcon icon={cilShareAlt} className="me-2" />
+            {t('share.button')}
+          </CButton>
           <CButton
             color="secondary"
             variant="outline"
@@ -506,6 +518,16 @@ const NoteDetail = () => {
           </CButton>
         </CModalFooter>
       </CModal>
+
+      {/* Modal pro sdílení */}
+      <ShareNoteModal
+        visible={shareModal}
+        onClose={() => setShareModal(false)}
+        note={note}
+        onShare={shareNote}
+        onUnshare={unshareNote}
+        onNoteUpdate={(updatedNote) => setNote({ ...note, ...updatedNote })}
+      />
     </>
   )
 }

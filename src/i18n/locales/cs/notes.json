@@ -102,5 +102,31 @@
     "italic": "Kurzíva",
     "bulletList": "Odrážkový seznam",
     "orderedList": "Číslovaný seznam"
+  },
+  "share": {
+    "button": "Sdílet",
+    "title": "Sdílení poznámky",
+    "description": "Vytvořte veřejný odkaz pro sdílení této poznámky. Kdokoli s odkazem bude moci zobrazit poznámku (pouze pro čtení).",
+    "createLink": "Vytvořit odkaz pro sdílení",
+    "creating": "Vytvářím odkaz...",
+    "activeTitle": "Poznámka je sdílená",
+    "activeDescription": "Tato poznámka je veřejně dostupná na následujícím odkazu:",
+    "copyLink": "Kopírovat odkaz",
+    "copied": "Odkaz zkopírován!",
+    "stopSharing": "Zrušit sdílení",
+    "stopping": "Rušení sdílení...",
+    "sharedAt": "Sdíleno od",
+    "error": "Chyba při sdílení"
+  },
+  "shared": {
+    "title": "Sdílená poznámka",
+    "notFound": "Poznámka nenalezena",
+    "notFoundDescription": "Tato poznámka neexistuje nebo již není sdílená.",
+    "sharedOn": "Sdíleno",
+    "tasks": "Úkoly",
+    "tags": "Tagy",
+    "backToApp": "Přejít do aplikace",
+    "createdWith": "Vytvořeno pomocí",
+    "tryIt": "Vyzkoušejte zdarma"
   }
 }

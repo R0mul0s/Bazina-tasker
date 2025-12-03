@@ -102,5 +102,31 @@
     "italic": "Italic",
     "bulletList": "Bullet list",
     "orderedList": "Numbered list"
+  },
+  "share": {
+    "button": "Share",
+    "title": "Share note",
+    "description": "Create a public link to share this note. Anyone with the link will be able to view the note (read-only).",
+    "createLink": "Create share link",
+    "creating": "Creating link...",
+    "activeTitle": "Note is shared",
+    "activeDescription": "This note is publicly available at the following link:",
+    "copyLink": "Copy link",
+    "copied": "Link copied!",
+    "stopSharing": "Stop sharing",
+    "stopping": "Stopping sharing...",
+    "sharedAt": "Shared since",
+    "error": "Error sharing note"
+  },
+  "shared": {
+    "title": "Shared note",
+    "notFound": "Note not found",
+    "notFoundDescription": "This note doesn't exist or is no longer shared.",
+    "sharedOn": "Shared on",
+    "tasks": "Tasks",
+    "tags": "Tags",
+    "backToApp": "Go to app",
+    "createdWith": "Created with",
+    "tryIt": "Try it for free"
   }
 }

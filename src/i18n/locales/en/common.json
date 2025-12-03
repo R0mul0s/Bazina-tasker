@@ -31,6 +31,7 @@
     "upload": "Upload",
     "download": "Download",
     "duplicate": "Duplicate",
+    "copy": "Copy",
     "search": "Search",
     "filter": "Filter",
     "clearFilters": "Clear all filters",
@@ -44,7 +45,8 @@
     "deleting": "Deleting...",
     "uploading": "Uploading...",
     "searching": "Searching...",
-    "importing": "Importing..."
+    "importing": "Importing...",
+    "copied": "Copied!"
   },
   "messages": {
     "saved": "Successfully saved",

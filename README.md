@@ -5,7 +5,8 @@ Webová aplikace pro správu zákazníků a poznámek z jednání. Umožňuje ev
 ## Funkce
 
 - **Správa zákazníků** - CRUD operace, vyhledávání, přílohy k zákazníkům, CSV import
-- **Poznámky ze schůzek** - Rich text editor (TipTap), tagy, úkoly s checkboxy, přílohy, duplikování
+- **Poznámky ze schůzek** - Rich text editor (TipTap), tagy, úkoly s checkboxy, přílohy, duplikování, sdílení
+- **Sdílení poznámek** - Veřejný odkaz na poznámku (read-only) pro sdílení s externími uživateli
 - **Evidence času** - Sledování stráveného času na poznámkách s grafy
 - **Pokročilé filtry** - Filtrování poznámek podle více kritérií, výchozí řazení
 - **SmartTable** - Univerzální tabulková komponenta s filtrováním, řazením a stránkováním

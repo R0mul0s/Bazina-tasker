@@ -31,6 +31,7 @@
     "upload": "Nahrát",
     "download": "Stáhnout",
     "duplicate": "Duplikovat",
+    "copy": "Kopírovat",
     "search": "Hledat",
     "filter": "Filtr",
     "clearFilters": "Zrušit všechny filtry",
@@ -44,7 +45,8 @@
     "deleting": "Mažu...",
     "uploading": "Nahrávám...",
     "searching": "Hledám...",
-    "importing": "Importuji..."
+    "importing": "Importuji...",
+    "copied": "Zkopírováno!"
   },
   "messages": {
     "saved": "Úspěšně uloženo",

@@ -53,6 +53,8 @@ CoreUI poskytuje hotové komponenty, které využijeme:
 | SmartTable | Univerzální tabulka s filtrováním, řazením a stránkováním (CoreUI style) |
 | CsvImportModal | Modal pro hromadný import zákazníků z CSV |
 | Logo | SVG logo aplikace s podporou světlého/tmavého motivu |
+| ShareNoteModal | Modal pro sdílení poznámky s veřejným odkazem |
+| SharedNote | Veřejná stránka pro zobrazení sdílené poznámky (read-only) |
 
 ---
 
@@ -111,6 +113,8 @@ CoreUI poskytuje hotové komponenty, které využijeme:
 - status: ENUM ('draft', 'completed', 'requires_action')
 - priority: ENUM ('low', 'medium', 'high')
 - follow_up_date: DATE
+- share_token: UUID (unikátní token pro veřejné sdílení)
+- shared_at: TIMESTAMP (kdy byla poznámka sdílena)
 - created_at: TIMESTAMP
 - updated_at: TIMESTAMP
 ```
@@ -216,7 +220,8 @@ bazina-tasker/
 │   │   │   ├── NoteDetail.jsx
 │   │   │   ├── NoteEditor.jsx     # TipTap editor
 │   │   │   ├── NoteFilters.jsx
-│   │   │   └── NoteTasks.jsx
+│   │   │   ├── NoteTasks.jsx
+│   │   │   └── ShareNoteModal.jsx # Modal pro sdílení poznámky
 │   │   ├── tags/                  # Tagy
 │   │   │   ├── TagList.jsx
 │   │   │   ├── TagBadge.jsx
@@ -246,7 +251,8 @@ bazina-tasker/
 │   │   │   └── CustomerDetail.jsx
 │   │   ├── notes/
 │   │   │   ├── Notes.jsx
-│   │   │   └── NoteDetail.jsx
+│   │   │   ├── NoteDetail.jsx
+│   │   │   └── SharedNote.jsx     # Veřejná stránka pro sdílenou poznámku
 │   │   ├── tags/
 │   │   │   └── Tags.jsx
 │   │   └── settings/
@@ -310,7 +316,8 @@ bazina-tasker/
 │   │   ├── 010_create_customer_attachments.sql
 │   │   ├── 011_add_theme_preference.sql
 │   │   ├── 012_create_audit_log.sql
-│   │   └── 013_audit_attachments_time.sql
+│   │   ├── 013_audit_attachments_time.sql
+│   │   └── 014_add_note_sharing.sql   # Sdílení poznámek
 │   └── seed.sql                  # Testovací data
 ├── public/
 │   └── favicon.ico
@@ -478,6 +485,9 @@ bazina-tasker/
   - [x] deleteNote
   - [x] searchNotes
   - [x] fetchNotesByCustomer
+  - [x] shareNote (vytvoření veřejného odkazu)
+  - [x] unshareNote (zrušení sdílení)
+  - [x] fetchSharedNote (načtení sdílené poznámky)
 
 #### 6.4 Frontend komponenty
 - [x] NotesPage (seznam poznámek)
@@ -656,6 +666,15 @@ bazina-tasker/
 - [x] Kopírování všech dat včetně tagů
 - [x] Automatický prefix "[Kopie]" v názvu
 - [x] Zachování vazby na zákazníka
+
+#### 14.5 Sdílení poznámek
+- [x] ShareNoteModal komponenta
+- [x] Generování unikátního share_token (UUID)
+- [x] Veřejná stránka pro sdílenou poznámku (/shared/:shareToken)
+- [x] Read-only zobrazení poznámky bez přihlášení
+- [x] Možnost zrušení sdílení
+- [x] RLS policy pro anonymní přístup ke sdíleným poznámkám
+- [x] Podpora dark/light mode na veřejné stránce
 
 #### 14.4 Multijazyčnost (i18n)
 - [x] Integrace react-i18next
@@ -870,7 +889,8 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 ### Klíčové funkce aplikace
 - **Správa zákazníků** - CRUD operace, vyhledávání, přílohy, CSV import
-- **Poznámky ze schůzek** - Rich text editor, tagy, úkoly, přílohy, duplikování
+- **Poznámky ze schůzek** - Rich text editor, tagy, úkoly, přílohy, duplikování, sdílení
+- **Sdílení poznámek** - Veřejný odkaz na poznámku (read-only) pro sdílení s externími uživateli
 - **Evidence času** - Sledování stráveného času na poznámkách
 - **Pokročilé filtry** - Filtrování podle více kritérií, výchozí řazení
 - **SmartTable** - Univerzální tabulka s filtrováním, řazením a stránkováním

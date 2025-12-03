@@ -272,6 +272,52 @@ export const useNotes = (customerId = null) => {
     })
   }, [notes])
 
+  // Sdílení poznámky - vytvoření veřejného odkazu
+  const shareNote = useCallback(async (noteId) => {
+    const shareToken = crypto.randomUUID()
+
+    const { data, error: queryError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .update({
+          share_token: shareToken,
+          is_shared: true,
+          shared_at: new Date().toISOString(),
+        })
+        .eq('id', noteId)
+        .select()
+        .single()
+    )
+
+    if (queryError) {
+      return { data: null, error: queryError.message }
+    }
+
+    return { data, error: null }
+  }, [])
+
+  // Zrušení sdílení poznámky
+  const unshareNote = useCallback(async (noteId) => {
+    const { data, error: queryError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .update({
+          share_token: null,
+          is_shared: false,
+          shared_at: null,
+        })
+        .eq('id', noteId)
+        .select()
+        .single()
+    )
+
+    if (queryError) {
+      return { data: null, error: queryError.message }
+    }
+
+    return { data, error: null }
+  }, [])
+
   // Duplikování poznámky
   const duplicateNote = useCallback(async (noteId) => {
     if (!userId) {
@@ -359,7 +405,45 @@ export const useNotes = (customerId = null) => {
     deleteNote,
     updateTask,
     duplicateNote,
+    shareNote,
+    unshareNote,
     getRequiresAction,
     getUpcomingFollowUps,
   }
+}
+
+// Samostatná funkce pro načtení sdílené poznámky (bez autentizace)
+export const fetchSharedNote = async (shareToken) => {
+  const { data, error } = await supabase
+    .from('notes')
+    .select(`
+      id,
+      title,
+      content,
+      meeting_date,
+      meeting_type,
+      status,
+      priority,
+      created_at,
+      shared_at,
+      customer:customers(id, name, company),
+      tags:note_tags(tag:tags(id, name, color)),
+      tasks:note_tasks(id, text, is_completed, order)
+    `)
+    .eq('share_token', shareToken)
+    .eq('is_shared', true)
+    .single()
+
+  if (error) {
+    return { data: null, error: error.message }
+  }
+
+  // Transformace
+  const transformedData = {
+    ...data,
+    tags: data.tags?.map((t) => t.tag) || [],
+    tasks: (data.tasks || []).sort((a, b) => a.order - b.order),
+  }
+
+  return { data: transformedData, error: null }
 }

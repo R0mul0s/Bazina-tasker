@@ -12,6 +12,9 @@ import DefaultLayout from './components/layout/DefaultLayout'
 import Login from './views/auth/Login'
 import Register from './views/auth/Register'
 
+// Public views (lazy loading)
+const SharedNote = lazy(() => import('./views/notes/SharedNote'))
+
 // Context
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
@@ -32,6 +35,7 @@ function App() {
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/shared/:shareToken" element={<SharedNote />} />
 
             {/* Protected routes */}
             <Route path="/*" element={<DefaultLayout />} />
