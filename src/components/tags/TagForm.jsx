@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CModal,
   CModalHeader,
@@ -17,23 +18,13 @@ import {
 
 // Předdefinované barvy pro tagy (odpovídají SCSS třídám)
 const TAG_COLORS = [
-  { name: 'Modrá', value: 'blue', hex: '#3b82f6' },
-  { name: 'Tyrkysová', value: 'cyan', hex: '#06b6d4' },
-  { name: 'Fialová', value: 'violet', hex: '#8b5cf6' },
-  { name: 'Zelená', value: 'green', hex: '#10b981' },
-  { name: 'Šedá', value: 'gray', hex: '#6b7280' },
-  { name: 'Jantarová', value: 'amber', hex: '#f59e0b' },
-  { name: 'Červená', value: 'red', hex: '#ef4444' },
-  { name: 'Modrozelená', value: 'teal', hex: '#14b8a6' },
-  { name: 'Oranžová', value: 'orange', hex: '#f97316' },
-  { name: 'Žlutá', value: 'yellow', hex: '#fbbf24' },
-  { name: 'Růžová', value: 'pink', hex: '#ec4899' },
-  { name: 'Indigo', value: 'indigo', hex: '#6366f1' },
-  { name: 'Limetková', value: 'lime', hex: '#22c55e' },
-  { name: 'Hnědá', value: 'stone', hex: '#78716c' },
+  'blue', 'cyan', 'violet', 'green', 'gray', 'amber', 'red',
+  'teal', 'orange', 'yellow', 'pink', 'indigo', 'lime', 'stone'
 ]
 
 const TagForm = ({ visible, onClose, onSave, tag = null }) => {
+  const { t } = useTranslation('tags')
+  const { t: tCommon } = useTranslation('common')
   const isEditing = !!tag
 
   const [formData, setFormData] = useState({
@@ -73,7 +64,7 @@ const TagForm = ({ visible, onClose, onSave, tag = null }) => {
     setError('')
 
     if (!formData.name.trim()) {
-      setError('Název tagu je povinný')
+      setError(t('form.nameRequired'))
       return
     }
 
@@ -94,7 +85,7 @@ const TagForm = ({ visible, onClose, onSave, tag = null }) => {
     <CModal visible={visible} onClose={onClose}>
       <CModalHeader>
         <CModalTitle>
-          {isEditing ? 'Upravit tag' : 'Nový tag'}
+          {isEditing ? t('form.titleEdit') : t('form.titleNew')}
         </CModalTitle>
       </CModalHeader>
       <CForm onSubmit={handleSubmit}>
@@ -106,30 +97,30 @@ const TagForm = ({ visible, onClose, onSave, tag = null }) => {
           )}
 
           <div className="mb-3">
-            <CFormLabel htmlFor="name">Název tagu *</CFormLabel>
+            <CFormLabel htmlFor="name">{t('form.name')} *</CFormLabel>
             <CFormInput
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="např. Důležité"
+              placeholder={t('form.namePlaceholder')}
               required
             />
           </div>
 
           <div className="mb-3">
-            <CFormLabel>Barva</CFormLabel>
+            <CFormLabel>{t('form.color')}</CFormLabel>
             <CRow className="g-2">
               {TAG_COLORS.map((color) => (
-                <CCol xs="auto" key={color.value}>
+                <CCol xs="auto" key={color}>
                   <button
                     type="button"
-                    className={`tag-badge tag-badge--${color.value} ${
-                      formData.color === color.value ? 'ring-selected' : ''
+                    className={`tag-badge tag-badge--${color} ${
+                      formData.color === color ? 'ring-selected' : ''
                     }`}
-                    onClick={() => handleColorSelect(color.value)}
-                    title={color.name}
+                    onClick={() => handleColorSelect(color)}
+                    title={t(`colors.${color}`)}
                   />
                 </CCol>
               ))}
@@ -137,20 +128,20 @@ const TagForm = ({ visible, onClose, onSave, tag = null }) => {
           </div>
 
           <div className="mb-3">
-            <CFormLabel>Náhled</CFormLabel>
+            <CFormLabel>{t('form.preview')}</CFormLabel>
             <div>
               <span className={`tag-badge tag-badge--lg tag-badge--${formData.color}`}>
-                {formData.name || 'Název tagu'}
+                {formData.name || t('form.tagNamePlaceholder')}
               </span>
             </div>
           </div>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={onClose} disabled={loading}>
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton type="submit" color="primary" disabled={loading}>
-            {loading ? <CSpinner size="sm" /> : isEditing ? 'Uložit změny' : 'Vytvořit'}
+            {loading ? <CSpinner size="sm" /> : isEditing ? t('form.saveChanges') : tCommon('actions.create')}
           </CButton>
         </CModalFooter>
       </CForm>

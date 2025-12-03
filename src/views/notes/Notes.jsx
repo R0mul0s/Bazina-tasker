@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -43,26 +44,14 @@ import { useTags } from '../../hooks/useTags'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import NoteForm from '../../components/notes/NoteForm'
 import SmartTable from '../../components/common/SmartTable'
-import { formatDate, formatDuration } from '../../lib/utils'
+import { formatDuration } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 import { ListCardSkeleton } from '../../components/common/Skeleton'
 
 const priorityColors = {
   low: 'success',
   medium: 'warning',
   high: 'danger',
-}
-
-const priorityLabels = {
-  low: 'Nízká',
-  medium: 'Střední',
-  high: 'Vysoká',
-}
-
-const statusLabels = {
-  draft: 'Koncept',
-  requires_action: 'Vyžaduje akci',
-  completed: 'Dokončeno',
-  archived: 'Archivováno',
 }
 
 const statusColors = {
@@ -73,7 +62,10 @@ const statusColors = {
 }
 
 const Notes = () => {
+  const { t } = useTranslation('notes')
+  const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()
+  const { formatDate } = useLocaleFormat()
   const { notes, loading, createNote, updateNote, deleteNote, duplicateNote, fetchNotes } = useNotes()
   const { customers, loading: customersLoading } = useCustomers()
   const { tags, loading: tagsLoading } = useTags()
@@ -157,10 +149,10 @@ const Notes = () => {
     return filteredNotes.map(note => ({
       ...note,
       customer_name: note.customer?.name || note.customer?.company || '',
-      status_label: statusLabels[note.status] || note.status,
-      priority_label: priorityLabels[note.priority] || note.priority,
+      status_label: tCommon(`noteStatus.${note.status}`),
+      priority_label: tCommon(`priority.${note.priority}`),
     }))
-  }, [filteredNotes])
+  }, [filteredNotes, tCommon])
 
   // Clear advanced filters
   const clearAdvancedFilters = () => {
@@ -177,32 +169,32 @@ const Notes = () => {
   const columns = [
     {
       key: 'title',
-      label: 'Název',
+      label: t('columns.title'),
       _style: { minWidth: '200px' },
     },
     {
       key: 'customer_name',
-      label: 'Zákazník',
+      label: t('columns.customer'),
       _style: { width: '150px' },
     },
     {
       key: 'status_label',
-      label: 'Stav',
+      label: t('columns.status'),
       _style: { width: '120px' },
     },
     {
       key: 'priority_label',
-      label: 'Priorita',
+      label: t('columns.priority'),
       _style: { width: '100px' },
     },
     {
       key: 'created_at',
-      label: 'Vytvořeno',
+      label: t('columns.created'),
       _style: { width: '110px' },
     },
     {
       key: 'actions',
-      label: 'Akce',
+      label: t('columns.actions'),
       _style: { width: '120px' },
       filter: false,
       sorter: false,
@@ -248,12 +240,12 @@ const Notes = () => {
     ),
     status_label: (item) => (
       <CBadge color={statusColors[item.status]} size="sm">
-        {statusLabels[item.status]}
+        {tCommon(`noteStatus.${item.status}`)}
       </CBadge>
     ),
     priority_label: (item) => (
       <CBadge color={priorityColors[item.priority]} size="sm">
-        {priorityLabels[item.priority]}
+        {tCommon(`priority.${item.priority}`)}
       </CBadge>
     ),
     created_at: (item) => (
@@ -267,7 +259,7 @@ const Notes = () => {
           color="light"
           size="sm"
           onClick={(e) => handleDuplicate(item, e)}
-          title="Duplikovat"
+          title={tCommon('actions.duplicate')}
           disabled={duplicating === item.id}
         >
           {duplicating === item.id ? (
@@ -280,7 +272,7 @@ const Notes = () => {
           color="light"
           size="sm"
           onClick={(e) => handleEdit(item, e)}
-          title="Upravit"
+          title={tCommon('actions.edit')}
         >
           <CIcon icon={cilPencil} />
         </CButton>
@@ -292,7 +284,7 @@ const Notes = () => {
             e.stopPropagation()
             setDeleteModal({ show: true, note: item })
           }}
-          title="Smazat"
+          title={tCommon('actions.delete')}
         >
           <CIcon icon={cilTrash} />
         </CButton>
@@ -304,7 +296,7 @@ const Notes = () => {
   const handleBulkStatus = async (status) => {
     const { error, count } = await bulkUpdateStatus(Array.from(selectedNotes), status)
     if (!error) {
-      setBulkMessage({ type: 'success', text: `${count} poznámek aktualizováno` })
+      setBulkMessage({ type: 'success', text: t('bulk.updated', { count }) })
       await fetchNotes()
       setSelectedNotes(new Set())
     } else {
@@ -316,7 +308,7 @@ const Notes = () => {
   const handleBulkPriority = async (priority) => {
     const { error, count } = await bulkUpdatePriority(Array.from(selectedNotes), priority)
     if (!error) {
-      setBulkMessage({ type: 'success', text: `${count} poznámek aktualizováno` })
+      setBulkMessage({ type: 'success', text: t('bulk.updated', { count }) })
       await fetchNotes()
       setSelectedNotes(new Set())
     } else {
@@ -328,7 +320,7 @@ const Notes = () => {
   const handleBulkDelete = async () => {
     const { error, count } = await bulkDelete(Array.from(selectedNotes))
     if (!error) {
-      setBulkMessage({ type: 'success', text: `${count} poznámek smazáno` })
+      setBulkMessage({ type: 'success', text: t('bulk.deleted', { count }) })
       await fetchNotes()
       setSelectedNotes(new Set())
     } else {
@@ -341,7 +333,7 @@ const Notes = () => {
   const handleBulkAddTag = async (tagId) => {
     const { error, count } = await bulkAddTag(Array.from(selectedNotes), tagId)
     if (!error) {
-      setBulkMessage({ type: 'success', text: `Tag přidán k ${count} poznámkám` })
+      setBulkMessage({ type: 'success', text: t('bulk.tagAdded', { count }) })
       await fetchNotes()
       setSelectedNotes(new Set())
     } else {
@@ -386,11 +378,11 @@ const Notes = () => {
     const { data, error } = await duplicateNote(note.id)
     setDuplicating(null)
     if (!error && data) {
-      setBulkMessage({ type: 'success', text: `Poznámka "${note.title}" byla zduplikována` })
+      setBulkMessage({ type: 'success', text: t('detail.duplicated', { title: note.title }) })
       setTimeout(() => setBulkMessage(null), 3000)
       navigate(`/notes/${data.id}`)
     } else {
-      setBulkMessage({ type: 'danger', text: error || 'Chyba při duplikování' })
+      setBulkMessage({ type: 'danger', text: error || t('detail.duplicateError') })
       setTimeout(() => setBulkMessage(null), 3000)
     }
   }
@@ -402,14 +394,14 @@ const Notes = () => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Poznámky</h2>
+        <h2 className="mb-0">{t('title')}</h2>
         <CButton
           color="primary"
           onClick={() => setShowForm(true)}
           disabled={customers.length === 0}
         >
           <CIcon icon={cilPlus} className="me-2" />
-          Nová poznámka
+          {t('newNote')}
         </CButton>
       </div>
 
@@ -427,7 +419,7 @@ const Notes = () => {
         >
           <div className="d-flex align-items-center gap-2">
             <CIcon icon={cilFilter} />
-            <strong>Pokročilé filtry</strong>
+            <strong>{t('filters.advancedFilters')}</strong>
             {hasActiveAdvancedFilters && (
               <CBadge color="primary" shape="rounded-pill">
                 {[
@@ -441,40 +433,40 @@ const Notes = () => {
             )}
           </div>
           <small className="text-secondary">
-            {showAdvancedFilters ? 'Skrýt' : 'Zobrazit'}
+            {showAdvancedFilters ? t('filters.hide') : t('filters.show')}
           </small>
         </CCardHeader>
         <CCollapse visible={showAdvancedFilters}>
           <CCardBody>
             <CRow className="g-3">
               <CCol xs={12} sm={6} md={3}>
-                <label className="form-label small fw-semibold">Stav</label>
+                <label className="form-label small fw-semibold">{t('filters.status')}</label>
                 <CFormSelect
                   size="sm"
                   value={advancedFilters.status}
                   onChange={(e) => setAdvancedFilters(f => ({ ...f, status: e.target.value }))}
                 >
-                  <option value="">Všechny stavy</option>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                  <option value="">{t('filters.allStatuses')}</option>
+                  {['draft', 'requires_action', 'completed', 'archived'].map((status) => (
+                    <option key={status} value={status}>{tCommon(`noteStatus.${status}`)}</option>
                   ))}
                 </CFormSelect>
               </CCol>
               <CCol xs={12} sm={6} md={3}>
-                <label className="form-label small fw-semibold">Tag</label>
+                <label className="form-label small fw-semibold">{t('filters.tag')}</label>
                 <CFormSelect
                   size="sm"
                   value={advancedFilters.tagId}
                   onChange={(e) => setAdvancedFilters(f => ({ ...f, tagId: e.target.value }))}
                 >
-                  <option value="">Všechny tagy</option>
+                  <option value="">{t('filters.allTags')}</option>
                   {tags.map((tag) => (
                     <option key={tag.id} value={tag.id}>{tag.name}</option>
                   ))}
                 </CFormSelect>
               </CCol>
               <CCol xs={6} sm={6} md={2}>
-                <label className="form-label small fw-semibold">Datum od</label>
+                <label className="form-label small fw-semibold">{t('filters.dateFrom')}</label>
                 <CFormInput
                   type="date"
                   size="sm"
@@ -483,7 +475,7 @@ const Notes = () => {
                 />
               </CCol>
               <CCol xs={6} sm={6} md={2}>
-                <label className="form-label small fw-semibold">Datum do</label>
+                <label className="form-label small fw-semibold">{t('filters.dateTo')}</label>
                 <CFormInput
                   type="date"
                   size="sm"
@@ -494,7 +486,7 @@ const Notes = () => {
               <CCol xs={12} sm={6} md={2} className="d-flex flex-column justify-content-end">
                 <CFormCheck
                   id="incompleteTasks"
-                  label="Nedokončené úkoly"
+                  label={t('filters.incompleteTasks')}
                   checked={advancedFilters.hasIncompleteTasks}
                   onChange={(e) => setAdvancedFilters(f => ({ ...f, hasIncompleteTasks: e.target.checked }))}
                 />
@@ -509,10 +501,10 @@ const Notes = () => {
                   onClick={clearAdvancedFilters}
                 >
                   <CIcon icon={cilFilterX} className="me-1" />
-                  Zrušit všechny filtry
+                  {tCommon('actions.clearFilters')}
                 </CButton>
                 <span className="ms-3 text-secondary small">
-                  Zobrazeno {notesWithCustomerName.length} z {notes.length} poznámek
+                  {t('filters.showing', { shown: notesWithCustomerName.length, total: notes.length })}
                 </span>
               </div>
             )}
@@ -526,17 +518,17 @@ const Notes = () => {
           <CCardBody className="py-2">
             <div className="d-flex align-items-center gap-3 flex-wrap">
               <span className="fw-semibold">
-                Vybráno: {selectedNotes.size}
+                {t('bulk.selected', { count: selectedNotes.size })}
               </span>
 
               <CDropdown>
                 <CDropdownToggle color="light" size="sm" disabled={bulkLoading}>
-                  Změnit stav
+                  {t('bulk.changeStatus')}
                 </CDropdownToggle>
                 <CDropdownMenu>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <CDropdownItem key={value} onClick={() => handleBulkStatus(value)}>
-                      <CBadge color={statusColors[value]} className="me-2">{label}</CBadge>
+                  {['draft', 'requires_action', 'completed', 'archived'].map((status) => (
+                    <CDropdownItem key={status} onClick={() => handleBulkStatus(status)}>
+                      <CBadge color={statusColors[status]} className="me-2">{tCommon(`noteStatus.${status}`)}</CBadge>
                     </CDropdownItem>
                   ))}
                 </CDropdownMenu>
@@ -544,12 +536,12 @@ const Notes = () => {
 
               <CDropdown>
                 <CDropdownToggle color="light" size="sm" disabled={bulkLoading}>
-                  Změnit prioritu
+                  {t('bulk.changePriority')}
                 </CDropdownToggle>
                 <CDropdownMenu>
-                  {Object.entries(priorityLabels).map(([value, label]) => (
-                    <CDropdownItem key={value} onClick={() => handleBulkPriority(value)}>
-                      <CBadge color={priorityColors[value]} className="me-2">{label}</CBadge>
+                  {['low', 'medium', 'high'].map((priority) => (
+                    <CDropdownItem key={priority} onClick={() => handleBulkPriority(priority)}>
+                      <CBadge color={priorityColors[priority]} className="me-2">{tCommon(`priority.${priority}`)}</CBadge>
                     </CDropdownItem>
                   ))}
                 </CDropdownMenu>
@@ -558,7 +550,7 @@ const Notes = () => {
               {tags.length > 0 && (
                 <CDropdown>
                   <CDropdownToggle color="light" size="sm" disabled={bulkLoading}>
-                    Přidat tag
+                    {t('bulk.addTag')}
                   </CDropdownToggle>
                   <CDropdownMenu>
                     {tags.map((tag) => (
@@ -580,7 +572,7 @@ const Notes = () => {
                 disabled={bulkLoading}
               >
                 <CIcon icon={cilTrash} className="me-1" />
-                Smazat
+                {t('bulk.delete')}
               </CButton>
 
               <CButton
@@ -590,7 +582,7 @@ const Notes = () => {
                 className="ms-auto"
               >
                 <CIcon icon={cilX} className="me-1" />
-                Zrušit výběr
+                {t('bulk.cancelSelection')}
               </CButton>
             </div>
           </CCardBody>
@@ -604,13 +596,13 @@ const Notes = () => {
               <div className="empty-state__icon">
                 <CIcon icon={cilNotes} size="3xl" />
               </div>
-              <div className="empty-state__title">Žádní zákazníci</div>
+              <div className="empty-state__title">{t('noCustomers')}</div>
               <div className="empty-state__description">
-                Nejprve přidejte zákazníka, abyste mohli vytvářet poznámky.
+                {t('noCustomersDescription')}
               </div>
               <CButton color="primary" onClick={() => navigate('/customers')}>
                 <CIcon icon={cilPlus} className="me-2" />
-                Přidat zákazníka
+                {tCommon('actions.addCustomer')}
               </CButton>
             </div>
           ) : notes.length === 0 ? (
@@ -618,9 +610,9 @@ const Notes = () => {
               <div className="empty-state__icon">
                 <CIcon icon={cilNotes} size="3xl" />
               </div>
-              <div className="empty-state__title">Žádné poznámky</div>
+              <div className="empty-state__title">{t('noNotes')}</div>
               <div className="empty-state__description">
-                Vytvořte první poznámku kliknutím na tlačítko výše.
+                {t('noNotesDescription')}
               </div>
             </div>
           ) : (
@@ -638,10 +630,10 @@ const Notes = () => {
               onSelectedChange={setSelectedNotes}
               scopedSlots={scopedSlots}
               onRowClick={(item) => navigate(`/notes/${item.id}`)}
-              tableFilterLabel="Filtr:"
-              tableFilterPlaceholder="hledaný text..."
-              noItemsLabel="Žádné poznámky nenalezeny"
-              itemsPerPageLabel="Položek na stránku:"
+              tableFilterLabel={tCommon('table.filter')}
+              tableFilterPlaceholder={tCommon('table.filterPlaceholder')}
+              noItemsLabel={t('noNotes')}
+              itemsPerPageLabel={tCommon('table.itemsPerPage')}
               defaultSort={{ key: 'created_at', direction: 'desc' }}
             />
           )}
@@ -664,13 +656,13 @@ const Notes = () => {
         onClose={() => setDeleteModal({ show: false, note: null })}
       >
         <CModalHeader>
-          <CModalTitle>Smazat poznámku</CModalTitle>
+          <CModalTitle>{t('delete.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat poznámku <strong>{deleteModal.note?.title}</strong>?
+          {t('delete.confirm')} <strong>{deleteModal.note?.title}</strong>?
           <br />
           <small className="text-danger">
-            Tato akce smaže i všechny přílohy a úkoly této poznámky.
+            {t('delete.warning')}
           </small>
         </CModalBody>
         <CModalFooter>
@@ -678,10 +670,10 @@ const Notes = () => {
             color="secondary"
             onClick={() => setDeleteModal({ show: false, note: null })}
           >
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleDelete}>
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -692,13 +684,13 @@ const Notes = () => {
         onClose={() => setBulkDeleteModal(false)}
       >
         <CModalHeader>
-          <CModalTitle>Hromadné smazání</CModalTitle>
+          <CModalTitle>{t('bulk.deleteTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat <strong>{selectedNotes.size}</strong> vybraných poznámek?
+          {t('bulk.deleteConfirm', { count: selectedNotes.size })}
           <br />
           <small className="text-danger">
-            Tato akce smaže i všechny přílohy a úkoly těchto poznámek a nelze ji vrátit zpět.
+            {t('bulk.deleteWarning')}
           </small>
         </CModalBody>
         <CModalFooter>
@@ -706,10 +698,10 @@ const Notes = () => {
             color="secondary"
             onClick={() => setBulkDeleteModal(false)}
           >
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleBulkDelete} disabled={bulkLoading}>
-            {bulkLoading ? <CSpinner size="sm" /> : 'Smazat vše'}
+            {bulkLoading ? <CSpinner size="sm" /> : t('bulk.deleteAll')}
           </CButton>
         </CModalFooter>
       </CModal>

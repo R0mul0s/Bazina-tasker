@@ -1,0 +1,40 @@
+{
+  "title": "Tags",
+  "newTag": "New tag",
+  "tagsList": "Tags list",
+  "noTags": "No tags",
+  "noTagsDescription": "You don't have any tags yet. Create tags for better note organization.",
+  "createTag": "Create tag",
+  "form": {
+    "titleNew": "New tag",
+    "titleEdit": "Edit tag",
+    "name": "Tag name",
+    "namePlaceholder": "e.g. Important",
+    "nameRequired": "Tag name is required",
+    "color": "Color",
+    "preview": "Preview",
+    "tagNamePlaceholder": "Tag name",
+    "saveChanges": "Save changes"
+  },
+  "delete": {
+    "title": "Delete tag",
+    "confirm": "Are you sure you want to delete tag",
+    "info": "The tag will be removed from all notes, but the notes will be preserved."
+  },
+  "colors": {
+    "blue": "Blue",
+    "cyan": "Cyan",
+    "violet": "Violet",
+    "green": "Green",
+    "gray": "Gray",
+    "amber": "Amber",
+    "red": "Red",
+    "teal": "Teal",
+    "orange": "Orange",
+    "yellow": "Yellow",
+    "pink": "Pink",
+    "indigo": "Indigo",
+    "lime": "Lime",
+    "stone": "Stone"
+  }
+}

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CButton,
   CCard,
@@ -13,12 +14,17 @@ import {
   CRow,
   CAlert,
   CSpinner,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilLockLocked, cilUser, cilGlobeAlt } from '@coreui/icons'
 import { useAuth } from '../../context/AuthContext'
 
 const Login = () => {
+  const { t, i18n } = useTranslation('auth')
   const navigate = useNavigate()
   const location = useLocation()
   const { user, signIn, signInWithGoogle, loading: authLoading } = useAuth()
@@ -41,6 +47,11 @@ const Login = () => {
       return savedPath
     }
     return '/'
+  }
+
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang)
+    localStorage.setItem('bazina-tasker-language', lang)
   }
 
   // Zobrazit loading během kontroly auth stavu
@@ -67,7 +78,7 @@ const Login = () => {
 
     if (error) {
       setError(error.message === 'Invalid login credentials'
-        ? 'Nesprávný email nebo heslo'
+        ? t('login.invalidCredentials')
         : error.message)
       setIsLoading(false)
     } else {
@@ -92,11 +103,35 @@ const Login = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8} lg={6} xl={5}>
+            {/* Language switcher */}
+            <div className="d-flex justify-content-end mb-3">
+              <CDropdown>
+                <CDropdownToggle color="light" size="sm">
+                  <CIcon icon={cilGlobeAlt} className="me-1" />
+                  {i18n.language === 'cs' ? 'CZ' : 'EN'}
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem
+                    onClick={() => handleLanguageChange('cs')}
+                    active={i18n.language === 'cs'}
+                  >
+                    Čeština
+                  </CDropdownItem>
+                  <CDropdownItem
+                    onClick={() => handleLanguageChange('en')}
+                    active={i18n.language === 'en'}
+                  >
+                    English
+                  </CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            </div>
+
             <CCard className="auth-page__card">
               <CCardBody className="p-4">
                 <div className="auth-page__logo">
-                  <h1>Bazina Tasker</h1>
-                  <p className="text-secondary">Přihlaste se do svého účtu</p>
+                  <h1>{t('login.title')}</h1>
+                  <p className="text-secondary">{t('login.subtitle')}</p>
                 </div>
 
                 {error && (
@@ -112,7 +147,7 @@ const Login = () => {
                     </CInputGroupText>
                     <CFormInput
                       type="email"
-                      placeholder="Email"
+                      placeholder={t('login.email')}
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -126,7 +161,7 @@ const Login = () => {
                     </CInputGroupText>
                     <CFormInput
                       type="password"
-                      placeholder="Heslo"
+                      placeholder={t('login.password')}
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -140,12 +175,12 @@ const Login = () => {
                     className="w-100 mb-3"
                     disabled={isLoading}
                   >
-                    {isLoading ? <CSpinner size="sm" /> : 'Přihlásit se'}
+                    {isLoading ? <CSpinner size="sm" /> : t('login.submit')}
                   </CButton>
                 </CForm>
 
                 <div className="auth-page__divider">
-                  <span>nebo</span>
+                  <span>{t('login.or')}</span>
                 </div>
 
                 <CButton
@@ -171,12 +206,12 @@ const Login = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Přihlásit přes Google
+                  {t('login.withGoogle')}
                 </CButton>
 
                 <div className="text-center">
-                  <span className="text-secondary">Nemáte účet? </span>
-                  <Link to="/register">Zaregistrujte se</Link>
+                  <span className="text-secondary">{t('login.noAccount')} </span>
+                  <Link to="/register">{t('login.register')}</Link>
                 </div>
               </CCardBody>
             </CCard>

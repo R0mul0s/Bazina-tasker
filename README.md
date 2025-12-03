@@ -4,13 +4,16 @@ Webová aplikace pro správu zákazníků a poznámek z jednání. Umožňuje ev
 
 ## Funkce
 
-- **Správa zákazníků** - CRUD operace, vyhledávání, přílohy k zákazníkům
-- **Poznámky ze schůzek** - Rich text editor (TipTap), tagy, úkoly s checkboxy, přílohy
+- **Správa zákazníků** - CRUD operace, vyhledávání, přílohy k zákazníkům, CSV import
+- **Poznámky ze schůzek** - Rich text editor (TipTap), tagy, úkoly s checkboxy, přílohy, duplikování
 - **Evidence času** - Sledování stráveného času na poznámkách s grafy
+- **Pokročilé filtry** - Filtrování poznámek podle více kritérií, výchozí řazení
+- **SmartTable** - Univerzální tabulková komponenta s filtrováním, řazením a stránkováním
 - **Dashboard** - Statistiky, grafy aktivit, nadcházející follow-upy
 - **Audit log** - Kompletní historie změn všech záznamů
 - **Autentizace** - Email/heslo a Google SSO
 - **Dark mode** - Přepínání světlého a tmavého motivu
+- **Multijazyčnost** - Podpora češtiny a angličtiny (i18n)
 
 ## Tech Stack
 
@@ -20,6 +23,7 @@ Webová aplikace pro správu zákazníků a poznámek z jednání. Umožňuje ev
 | UI Kit | CoreUI React |
 | Styling | SCSS (Bootstrap based) |
 | Rich Text | TipTap |
+| i18n | react-i18next |
 | Backend | Supabase (BaaS) |
 | Databáze | PostgreSQL |
 | Autentizace | Supabase Auth |
@@ -113,9 +117,10 @@ bazina-tasker/
 │   │   ├── tags/           # Tagy
 │   │   ├── attachments/    # Přílohy
 │   │   ├── dashboard/      # Dashboard grafy
-│   │   └── common/         # Sdílené komponenty
+│   │   └── common/         # Sdílené komponenty (SmartTable, AuditHistory, Logo)
 │   ├── views/              # Stránky
 │   ├── hooks/              # Custom React hooks
+│   ├── i18n/               # Překlady (cs, en)
 │   ├── lib/                # Utility funkce
 │   ├── context/            # React context
 │   └── scss/               # SCSS styly

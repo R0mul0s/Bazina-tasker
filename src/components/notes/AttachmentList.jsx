@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CButton,
   CSpinner,
@@ -34,6 +35,7 @@ const AttachmentList = ({
   onDelete,
   getFileUrl,
 }) => {
+  const { t } = useTranslation('common')
   const [imageUrls, setImageUrls] = useState({})
   const [loadingUrls, setLoadingUrls] = useState({})
   const [lightboxImage, setLightboxImage] = useState(null)
@@ -132,7 +134,7 @@ const AttachmentList = ({
                   color="light"
                   size="sm"
                   onClick={() => onDownload(attachment)}
-                  title="Stáhnout"
+                  title={t('actions.download')}
                 >
                   <CIcon icon={cilCloudDownload} size="sm" />
                 </CButton>
@@ -141,7 +143,7 @@ const AttachmentList = ({
                   size="sm"
                   className="text-danger"
                   onClick={() => onDelete(attachment)}
-                  title="Smazat"
+                  title={t('actions.delete')}
                 >
                   <CIcon icon={cilTrash} size="sm" />
                 </CButton>

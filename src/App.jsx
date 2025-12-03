@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import { CSpinner } from '@coreui/react'
 
+// i18n
+import './i18n'
+
 // Layout
 import DefaultLayout from './components/layout/DefaultLayout'
 

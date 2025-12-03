@@ -1,0 +1,41 @@
+{
+  "brand": "Bazina Tasker",
+  "brandShort": "BT",
+  "menu": {
+    "dashboard": "Dashboard",
+    "management": "Správa",
+    "customers": "Zákazníci",
+    "notes": "Poznámky",
+    "tags": "Tagy",
+    "calendar": "Kalendář",
+    "other": "Ostatní",
+    "settings": "Nastavení"
+  },
+  "header": {
+    "profile": "Profil",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se",
+    "lightMode": "Přepnout na světlý režim",
+    "darkMode": "Přepnout na tmavý režim"
+  },
+  "routes": {
+    "home": "Domů",
+    "dashboard": "Dashboard",
+    "customers": "Zákazníci",
+    "customerDetail": "Detail zákazníka",
+    "notes": "Poznámky",
+    "newNote": "Nová poznámka",
+    "noteDetail": "Detail poznámky",
+    "tags": "Tagy",
+    "calendar": "Kalendář",
+    "settings": "Nastavení"
+  },
+  "search": {
+    "placeholder": "Hledat... (Ctrl+K)",
+    "searching": "Hledám...",
+    "customers": "Zákazníci",
+    "notes": "Poznámky",
+    "tags": "Tagy",
+    "noResults": "Žádné výsledky pro \"{{query}}\""
+  }
+}

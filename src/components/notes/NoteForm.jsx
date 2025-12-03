@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -32,30 +33,20 @@ import {
 } from '@coreui/icons'
 
 // Typy schůzek (musí odpovídat DB enum: in_person, phone, video, email)
-const MEETING_TYPES = [
-  { value: 'phone', label: 'Telefonát' },
-  { value: 'video', label: 'Video hovor' },
-  { value: 'in_person', label: 'Osobní schůzka' },
-  { value: 'email', label: 'Email' },
-]
+const MEETING_TYPES = ['phone', 'video', 'in_person', 'email']
 
 // Stavy poznámky
-const NOTE_STATUSES = [
-  { value: 'draft', label: 'Koncept' },
-  { value: 'requires_action', label: 'Vyžaduje akci' },
-  { value: 'completed', label: 'Dokončeno' },
-  { value: 'archived', label: 'Archivováno' },
-]
+const NOTE_STATUSES = ['draft', 'requires_action', 'completed', 'archived']
 
 // Priority
 const PRIORITIES = [
-  { value: 'low', label: 'Nízká', color: 'success' },
-  { value: 'medium', label: 'Střední', color: 'warning' },
-  { value: 'high', label: 'Vysoká', color: 'danger' },
+  { value: 'low', color: 'success' },
+  { value: 'medium', color: 'warning' },
+  { value: 'high', color: 'danger' },
 ]
 
 // TipTap Toolbar
-const MenuBar = ({ editor }) => {
+const MenuBar = ({ editor, t }) => {
   if (!editor) {
     return null
   }
@@ -66,7 +57,7 @@ const MenuBar = ({ editor }) => {
         color={editor.isActive('bold') ? 'primary' : 'light'}
         size="sm"
         onClick={() => editor.chain().focus().toggleBold().run()}
-        title="Tučné"
+        title={t('editor.bold')}
       >
         <CIcon icon={cilBold} />
       </CButton>
@@ -74,7 +65,7 @@ const MenuBar = ({ editor }) => {
         color={editor.isActive('italic') ? 'primary' : 'light'}
         size="sm"
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        title="Kurzíva"
+        title={t('editor.italic')}
       >
         <CIcon icon={cilItalic} />
       </CButton>
@@ -82,7 +73,7 @@ const MenuBar = ({ editor }) => {
         color={editor.isActive('bulletList') ? 'primary' : 'light'}
         size="sm"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        title="Odrážkový seznam"
+        title={t('editor.bulletList')}
       >
         <CIcon icon={cilList} />
       </CButton>
@@ -90,7 +81,7 @@ const MenuBar = ({ editor }) => {
         color={editor.isActive('orderedList') ? 'primary' : 'light'}
         size="sm"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        title="Číslovaný seznam"
+        title={t('editor.orderedList')}
       >
         <CIcon icon={cilListNumbered} />
       </CButton>
@@ -107,6 +98,8 @@ const NoteForm = ({
   tags = [],
   preselectedCustomerId = null,
 }) => {
+  const { t } = useTranslation('notes')
+  const { t: tCommon } = useTranslation('common')
   const isEditing = !!note
 
   const [formData, setFormData] = useState({
@@ -210,12 +203,12 @@ const NoteForm = ({
     setError('')
 
     if (!formData.title.trim()) {
-      setError('Název poznámky je povinný')
+      setError(t('form.titleRequired'))
       return
     }
 
     if (!formData.customer_id) {
-      setError('Vyberte zákazníka')
+      setError(t('form.customerRequired'))
       return
     }
 
@@ -248,7 +241,7 @@ const NoteForm = ({
   return (
     <CModal visible={visible} onClose={onClose} size="xl">
       <CModalHeader>
-        <CModalTitle>{isEditing ? 'Upravit poznámku' : 'Nová poznámka'}</CModalTitle>
+        <CModalTitle>{isEditing ? t('form.titleEdit') : t('form.titleNew')}</CModalTitle>
       </CModalHeader>
       <CForm onSubmit={handleSubmit}>
         <CModalBody>
@@ -260,19 +253,19 @@ const NoteForm = ({
 
           <CRow className="mb-3">
             <CCol md={8}>
-              <CFormLabel htmlFor="title">Název poznámky *</CFormLabel>
+              <CFormLabel htmlFor="title">{t('form.noteTitle')} *</CFormLabel>
               <CFormInput
                 type="text"
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Shrnutí schůzky..."
+                placeholder={t('form.noteTitlePlaceholder')}
                 required
               />
             </CCol>
             <CCol md={4}>
-              <CFormLabel htmlFor="customer_id">Zákazník *</CFormLabel>
+              <CFormLabel htmlFor="customer_id">{t('form.customer')} *</CFormLabel>
               <CFormSelect
                 id="customer_id"
                 name="customer_id"
@@ -280,7 +273,7 @@ const NoteForm = ({
                 onChange={handleChange}
                 required
               >
-                <option value="">Vyberte zákazníka</option>
+                <option value="">{t('form.selectCustomer')}</option>
                 {customers.map((customer) => (
                   <option key={customer.id} value={customer.id}>
                     {customer.name}
@@ -293,7 +286,7 @@ const NoteForm = ({
 
           <CRow className="mb-3">
             <CCol md={3}>
-              <CFormLabel htmlFor="meeting_type">Typ schůzky</CFormLabel>
+              <CFormLabel htmlFor="meeting_type">{t('form.meetingType')}</CFormLabel>
               <CFormSelect
                 id="meeting_type"
                 name="meeting_type"
@@ -301,14 +294,14 @@ const NoteForm = ({
                 onChange={handleChange}
               >
                 {MEETING_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
+                  <option key={type} value={type}>
+                    {tCommon(`meetingType.${type}`)}
                   </option>
                 ))}
               </CFormSelect>
             </CCol>
             <CCol md={3}>
-              <CFormLabel htmlFor="meeting_date">Datum schůzky</CFormLabel>
+              <CFormLabel htmlFor="meeting_date">{t('form.meetingDate')}</CFormLabel>
               <CFormInput
                 type="date"
                 id="meeting_date"
@@ -318,7 +311,7 @@ const NoteForm = ({
               />
             </CCol>
             <CCol md={3}>
-              <CFormLabel htmlFor="priority">Priorita</CFormLabel>
+              <CFormLabel htmlFor="priority">{t('form.priority')}</CFormLabel>
               <CFormSelect
                 id="priority"
                 name="priority"
@@ -327,22 +320,22 @@ const NoteForm = ({
               >
                 {PRIORITIES.map((p) => (
                   <option key={p.value} value={p.value}>
-                    {p.label}
+                    {tCommon(`priority.${p.value}`)}
                   </option>
                 ))}
               </CFormSelect>
             </CCol>
             <CCol md={3}>
-              <CFormLabel htmlFor="status">Stav</CFormLabel>
+              <CFormLabel htmlFor="status">{t('form.status')}</CFormLabel>
               <CFormSelect
                 id="status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
               >
-                {NOTE_STATUSES.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
+                {NOTE_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {tCommon(`noteStatus.${status}`)}
                   </option>
                 ))}
               </CFormSelect>
@@ -351,7 +344,7 @@ const NoteForm = ({
 
           <CRow className="mb-3">
             <CCol md={4}>
-              <CFormLabel htmlFor="follow_up_date">Follow-up datum</CFormLabel>
+              <CFormLabel htmlFor="follow_up_date">{t('form.followUpDate')}</CFormLabel>
               <CFormInput
                 type="date"
                 id="follow_up_date"
@@ -361,10 +354,10 @@ const NoteForm = ({
               />
             </CCol>
             <CCol md={8}>
-              <CFormLabel>Tagy</CFormLabel>
+              <CFormLabel>{t('form.tags')}</CFormLabel>
               <div className="d-flex flex-wrap gap-2">
                 {tags.length === 0 ? (
-                  <small className="text-secondary">Žádné tagy k dispozici</small>
+                  <small className="text-secondary">{t('form.noTags')}</small>
                 ) : (
                   tags.map((tag) => (
                     <span
@@ -382,18 +375,18 @@ const NoteForm = ({
           </CRow>
 
           <div className="mb-3">
-            <CFormLabel>Obsah poznámky</CFormLabel>
+            <CFormLabel>{t('form.content')}</CFormLabel>
             <div className="border rounded">
-              <MenuBar editor={editor} />
+              <MenuBar editor={editor} t={t} />
               <EditorContent editor={editor} />
             </div>
           </div>
 
           <div className="mb-3">
-            <CFormLabel>Úkoly</CFormLabel>
+            <CFormLabel>{t('form.tasks')}</CFormLabel>
             <CInputGroup className="mb-2">
               <CFormInput
-                placeholder="Přidat úkol..."
+                placeholder={t('form.addTask')}
                 value={newTaskText}
                 onChange={(e) => setNewTaskText(e.target.value)}
                 onKeyDown={(e) => {
@@ -437,10 +430,10 @@ const NoteForm = ({
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={onClose} disabled={loading}>
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton type="submit" color="primary" disabled={loading}>
-            {loading ? <CSpinner size="sm" /> : isEditing ? 'Uložit změny' : 'Vytvořit'}
+            {loading ? <CSpinner size="sm" /> : isEditing ? t('form.saveChanges') : tCommon('actions.create')}
           </CButton>
         </CModalFooter>
       </CForm>

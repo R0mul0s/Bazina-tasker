@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { safeQuery } from '../lib/supabaseQuery'
 
@@ -13,6 +14,7 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
+  const { i18n } = useTranslation()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -29,10 +31,14 @@ export const AuthProvider = ({ children }) => {
 
     if (!error && data && isMountedRef.current) {
       setProfile(data)
+      // Nastavit jazyk z profilu
+      if (data.language && data.language !== i18n.language) {
+        i18n.changeLanguage(data.language)
+      }
       return data
     }
     return null
-  }, [])
+  }, [i18n])
 
   useEffect(() => {
     isMountedRef.current = true
@@ -121,6 +127,7 @@ export const AuthProvider = ({ children }) => {
       options: {
         data: {
           full_name: fullName,
+          language: i18n.language, // Uložit aktuální jazyk při registraci
         },
       },
     })
@@ -178,6 +185,21 @@ export const AuthProvider = ({ children }) => {
     return { data, error }
   }
 
+  // Změna jazyka
+  const updateLanguage = async (language) => {
+    // Změnit jazyk v i18n
+    i18n.changeLanguage(language)
+    // Uložit do localStorage pro persistenci
+    localStorage.setItem('bazina-tasker-language', language)
+
+    // Uložit do profilu pokud je uživatel přihlášen
+    if (user) {
+      const { data, error } = await updateProfile({ language })
+      return { data, error }
+    }
+    return { data: null, error: null }
+  }
+
   const value = {
     user,
     profile,
@@ -189,6 +211,7 @@ export const AuthProvider = ({ children }) => {
     fetchProfile,
     updateProfile,
     updatePassword,
+    updateLanguage,
   }
 
   return (

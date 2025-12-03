@@ -1,0 +1,40 @@
+{
+  "title": "Tagy",
+  "newTag": "Nový tag",
+  "tagsList": "Seznam tagů",
+  "noTags": "Žádné tagy",
+  "noTagsDescription": "Zatím nemáte žádné tagy. Vytvořte tagy pro lepší organizaci poznámek.",
+  "createTag": "Vytvořit tag",
+  "form": {
+    "titleNew": "Nový tag",
+    "titleEdit": "Upravit tag",
+    "name": "Název tagu",
+    "namePlaceholder": "např. Důležité",
+    "nameRequired": "Název tagu je povinný",
+    "color": "Barva",
+    "preview": "Náhled",
+    "tagNamePlaceholder": "Název tagu",
+    "saveChanges": "Uložit změny"
+  },
+  "delete": {
+    "title": "Smazat tag",
+    "confirm": "Opravdu chcete smazat tag",
+    "info": "Tag bude odebrán ze všech poznámek, ale poznámky zůstanou zachovány."
+  },
+  "colors": {
+    "blue": "Modrá",
+    "cyan": "Tyrkysová",
+    "violet": "Fialová",
+    "green": "Zelená",
+    "gray": "Šedá",
+    "amber": "Jantarová",
+    "red": "Červená",
+    "teal": "Modrozelená",
+    "orange": "Oranžová",
+    "yellow": "Žlutá",
+    "pink": "Růžová",
+    "indigo": "Indigo",
+    "lime": "Limetková",
+    "stone": "Hnědá"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "userMenu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "search": {
+    "placeholder": "Search... (Ctrl+K)",
+    "searching": "Searching...",
+    "customers": "Customers",
+    "notes": "Notes",
+    "tags": "Tags",
+    "noResults": "No results for \"{{query}}\""
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "addCustomer": "Add customer",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "backToList": "Back to list",
+    "upload": "Upload",
+    "download": "Download",
+    "duplicate": "Duplicate",
+    "search": "Search",
+    "filter": "Filter",
+    "clearFilters": "Clear all filters",
+    "show": "Show",
+    "hide": "Hide",
+    "loadMore": "Load more"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "uploading": "Uploading...",
+    "searching": "Searching...",
+    "importing": "Importing..."
+  },
+  "messages": {
+    "saved": "Successfully saved",
+    "deleted": "Successfully deleted",
+    "error": "An error occurred",
+    "noItems": "No items",
+    "noResults": "No results for \"{{query}}\"",
+    "confirmDelete": "Are you sure you want to delete?",
+    "unsavedChanges": "You have unsaved changes"
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "invalidEmail": "Invalid email",
+    "passwordsNoMatch": "Passwords do not match"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "noteStatus": {
+    "draft": "Draft",
+    "requires_action": "Requires action",
+    "completed": "Completed",
+    "archived": "Archived"
+  },
+  "meetingType": {
+    "phone": "Phone call",
+    "video": "Video call",
+    "in_person": "In-person meeting",
+    "email": "Email"
+  },
+  "table": {
+    "filter": "Filter:",
+    "filterPlaceholder": "search text...",
+    "noItems": "No items found",
+    "itemsPerPage": "Items per page:",
+    "showing": "Showing {{count}} of {{total}}"
+  },
+  "time": {
+    "justNow": "just now",
+    "formats": "Formats: 30 (minutes), 1h, 1.5h, 1h 30m"
+  },
+  "boolean": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "audit": {
+    "title": "Change history",
+    "noHistory": "No change history",
+    "loading": "Loading...",
+    "loadMore": "Load more ({{remaining}} remaining)",
+    "field": "Field",
+    "oldValue": "Old value",
+    "newValue": "New value",
+    "fieldsChanged": "{{count}} field",
+    "fieldsChanged_plural": "{{count}} fields",
+    "actions": {
+      "INSERT": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted",
+      "attachment_added": "Attachment uploaded",
+      "attachment_removed": "Attachment deleted",
+      "task_added": "Task added",
+      "task_removed": "Task removed",
+      "time_entry_added": "Time added",
+      "time_entry_removed": "Time removed"
+    },
+    "messages": {
+      "recordCreated": "Record created",
+      "recordDeleted": "Record deleted",
+      "attachmentUploaded": "Attachment uploaded",
+      "attachmentDeleted": "Attachment deleted",
+      "taskAdded": "Task added",
+      "taskRemoved": "Task removed",
+      "timeEntryAdded": "Time entry added",
+      "timeEntryRemoved": "Time entry removed",
+      "unknownAction": "Unknown action"
+    },
+    "labels": {
+      "title": "Title",
+      "name": "Name",
+      "file": "File",
+      "task": "Task",
+      "duration": "Duration",
+      "description": "Description"
+    }
+  }
+}

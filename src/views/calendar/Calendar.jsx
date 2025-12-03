@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -20,7 +21,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilCalendar, cilNotes, cilUser } from '@coreui/icons'
 import { useNotes } from '../../hooks/useNotes'
-import { formatDate, formatDateTime } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const priorityColors = {
   low: '#10b981',
@@ -35,15 +36,13 @@ const meetingTypeColors = {
   other: '#6b7280',
 }
 
-const meetingTypeLabels = {
-  meeting: 'Schůzka',
-  phone: 'Telefon',
-  email: 'Email',
-  other: 'Ostatní',
-}
+const MEETING_TYPES = ['meeting', 'phone', 'email', 'other']
 
 const Calendar = () => {
+  const { t, i18n } = useTranslation('calendar')
+  const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()
+  const { formatDate } = useLocaleFormat()
   const { notes, loading } = useNotes()
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -90,7 +89,6 @@ const Calendar = () => {
   }, [notes])
 
   const handleEventClick = (clickInfo) => {
-    const note = clickInfo.event.extendedProps.note
     setSelectedEvent({
       ...clickInfo.event.extendedProps,
       title: clickInfo.event.title,
@@ -124,7 +122,7 @@ const Calendar = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>
           <CIcon icon={cilCalendar} className="me-2" />
-          Kalendář
+          {t('title')}
         </h2>
       </div>
 
@@ -138,19 +136,19 @@ const Calendar = () => {
               center: 'title',
               right: 'dayGridMonth,timeGridWeek',
             }}
-            locale="cs"
+            locale={i18n.language}
             firstDay={1}
             events={events}
             eventClick={handleEventClick}
             dateClick={handleDateClick}
             height="auto"
             buttonText={{
-              today: 'Dnes',
-              month: 'Měsíc',
-              week: 'Týden',
+              today: t('buttons.today'),
+              month: t('buttons.month'),
+              week: t('buttons.week'),
             }}
             dayMaxEvents={3}
-            moreLinkText={(n) => `+${n} dalších`}
+            moreLinkText={(n) => t('moreEvents', { count: n })}
           />
         </CCardBody>
       </CCard>
@@ -158,29 +156,29 @@ const Calendar = () => {
       {/* Legenda */}
       <CCard className="mb-4">
         <CCardHeader>
-          <strong>Legenda</strong>
+          <strong>{t('legend.title')}</strong>
         </CCardHeader>
         <CCardBody>
           <div className="d-flex flex-wrap gap-4">
             <div>
-              <strong className="d-block mb-2">Typ schůzky:</strong>
+              <strong className="d-block mb-2">{t('legend.meetingType')}</strong>
               <div className="d-flex flex-wrap gap-2">
-                {Object.entries(meetingTypeLabels).map(([type, label]) => (
+                {MEETING_TYPES.map((type) => (
                   <CBadge
                     key={type}
                     style={{ backgroundColor: meetingTypeColors[type] }}
                   >
-                    {label}
+                    {t(`legend.${type}`)}
                   </CBadge>
                 ))}
               </div>
             </div>
             <div>
-              <strong className="d-block mb-2">Follow-up priorita:</strong>
+              <strong className="d-block mb-2">{t('legend.followUpPriority')}</strong>
               <div className="d-flex flex-wrap gap-2">
-                <CBadge style={{ backgroundColor: priorityColors.low }}>📌 Nízká</CBadge>
-                <CBadge style={{ backgroundColor: priorityColors.medium }}>📌 Střední</CBadge>
-                <CBadge style={{ backgroundColor: priorityColors.high }}>📌 Vysoká</CBadge>
+                <CBadge style={{ backgroundColor: priorityColors.low }}>📌 {tCommon('priority.low')}</CBadge>
+                <CBadge style={{ backgroundColor: priorityColors.medium }}>📌 {tCommon('priority.medium')}</CBadge>
+                <CBadge style={{ backgroundColor: priorityColors.high }}>📌 {tCommon('priority.high')}</CBadge>
               </div>
             </div>
           </div>
@@ -191,7 +189,7 @@ const Calendar = () => {
       <CModal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <CModalHeader>
           <CModalTitle>
-            {selectedEvent?.type === 'followup' ? 'Follow-up' : 'Schůzka'}
+            {selectedEvent?.type === 'followup' ? t('modal.followUp') : t('modal.meeting')}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -201,14 +199,14 @@ const Calendar = () => {
 
               <div className="mb-2">
                 <CIcon icon={cilCalendar} className="me-2 text-secondary" />
-                <strong>Datum:</strong>{' '}
+                <strong>{t('modal.date')}</strong>{' '}
                 {selectedEvent.start && formatDate(selectedEvent.start)}
               </div>
 
               {selectedEvent.note?.customer && (
                 <div className="mb-2">
                   <CIcon icon={cilUser} className="me-2 text-secondary" />
-                  <strong>Zákazník:</strong>{' '}
+                  <strong>{t('modal.customer')}</strong>{' '}
                   {selectedEvent.note.customer.name || selectedEvent.note.customer.company}
                 </div>
               )}
@@ -216,22 +214,18 @@ const Calendar = () => {
               {selectedEvent.type === 'meeting' && selectedEvent.note?.meeting_type && (
                 <div className="mb-2">
                   <CIcon icon={cilNotes} className="me-2 text-secondary" />
-                  <strong>Typ:</strong>{' '}
-                  {meetingTypeLabels[selectedEvent.note.meeting_type]}
+                  <strong>{t('modal.type')}</strong>{' '}
+                  {tCommon(`meetingType.${selectedEvent.note.meeting_type}`)}
                 </div>
               )}
 
               {selectedEvent.note?.priority && (
                 <div className="mb-2">
-                  <strong>Priorita:</strong>{' '}
+                  <strong>{t('modal.priority')}</strong>{' '}
                   <CBadge
                     style={{ backgroundColor: priorityColors[selectedEvent.note.priority] }}
                   >
-                    {selectedEvent.note.priority === 'low'
-                      ? 'Nízká'
-                      : selectedEvent.note.priority === 'medium'
-                        ? 'Střední'
-                        : 'Vysoká'}
+                    {tCommon(`priority.${selectedEvent.note.priority}`)}
                   </CBadge>
                 </div>
               )}
@@ -240,10 +234,10 @@ const Calendar = () => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setModalVisible(false)}>
-            Zavřít
+            {tCommon('actions.close')}
           </CButton>
           <CButton color="primary" onClick={goToNote}>
-            Zobrazit poznámku
+            {t('modal.viewNote')}
           </CButton>
         </CModalFooter>
       </CModal>

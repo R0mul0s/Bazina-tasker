@@ -21,25 +21,25 @@ const Calendar = lazy(() => import('./views/calendar/Calendar'))
 const Settings = lazy(() => import('./views/settings/Settings'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Dashboard', element: Dashboard },
+  { path: '/', exact: true, nameKey: 'routes.dashboard', element: Dashboard },
 
   // Customers
-  { path: '/customers', name: 'Zákazníci', element: Customers },
-  { path: '/customers/:id', name: 'Detail zákazníka', element: CustomerDetail },
+  { path: '/customers', nameKey: 'routes.customers', element: Customers },
+  { path: '/customers/:id', nameKey: 'routes.customerDetail', element: CustomerDetail },
 
   // Notes
-  { path: '/notes', name: 'Poznámky', element: Notes },
-  { path: '/notes/new', name: 'Nová poznámka', element: NoteDetail },
-  { path: '/notes/:id', name: 'Detail poznámky', element: NoteDetail },
+  { path: '/notes', nameKey: 'routes.notes', element: Notes },
+  { path: '/notes/new', nameKey: 'routes.newNote', element: NoteDetail },
+  { path: '/notes/:id', nameKey: 'routes.noteDetail', element: NoteDetail },
 
   // Tags
-  { path: '/tags', name: 'Tagy', element: Tags },
+  { path: '/tags', nameKey: 'routes.tags', element: Tags },
 
   // Calendar
-  { path: '/calendar', name: 'Kalendář', element: Calendar },
+  { path: '/calendar', nameKey: 'routes.calendar', element: Calendar },
 
   // Settings
-  { path: '/settings', name: 'Nastavení', element: Settings },
+  { path: '/settings', nameKey: 'routes.settings', element: Settings },
 ]
 
 export default routes

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -19,8 +20,9 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilHistory, cilPlus, cilPencil, cilTrash, cilCloudUpload, cilTask, cilClock, cilReload } from '@coreui/icons'
-import { useAuditLog, tableNameLabels, actionLabels, fieldLabels } from '../../hooks/useAuditLog'
-import { formatDateTime, formatDuration } from '../../lib/utils'
+import { useAuditLog, fieldLabels } from '../../hooks/useAuditLog'
+import { formatDuration } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const actionIcons = {
   INSERT: cilPlus,
@@ -47,6 +49,8 @@ const actionColors = {
 }
 
 const AuditHistory = ({ tableName, recordId }) => {
+  const { t } = useTranslation('common')
+  const { formatDateTime } = useLocaleFormat()
   const { logs, loading, loadingMore, hasMore, totalCount, fetchLogsForRecord, loadMore, formatChanges } = useAuditLog()
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -65,7 +69,7 @@ const AuditHistory = ({ tableName, recordId }) => {
       <CCard className="mb-4">
         <CCardHeader>
           <CIcon icon={cilHistory} className="me-2" />
-          <strong>Historie změn</strong>
+          <strong>{t('audit.title')}</strong>
         </CCardHeader>
         <CCardBody className="text-center py-4">
           <CSpinner size="sm" />
@@ -78,7 +82,7 @@ const AuditHistory = ({ tableName, recordId }) => {
     <CCard className="mb-4">
       <CCardHeader>
         <CIcon icon={cilHistory} className="me-2" />
-        <strong>Historie změn</strong>
+        <strong>{t('audit.title')}</strong>
         {totalCount > 0 && (
           <CBadge color="secondary" className="ms-2">
             {logs.length} / {totalCount}
@@ -88,7 +92,7 @@ const AuditHistory = ({ tableName, recordId }) => {
       <CCardBody>
         {logs.length === 0 ? (
           <div className="text-center text-secondary py-3">
-            Žádná historie změn
+            {t('audit.noHistory')}
           </div>
         ) : (
           <>
@@ -99,14 +103,14 @@ const AuditHistory = ({ tableName, recordId }) => {
                   <div className="d-flex align-items-center gap-2 w-100 me-3">
                     <CBadge color={actionColors[log.action]}>
                       <CIcon icon={actionIcons[log.action]} size="sm" className="me-1" />
-                      {actionLabels[log.action]}
+                      {t(`audit.actions.${log.action}`)}
                     </CBadge>
                     <span className="text-secondary small">
                       {formatDateTime(log.created_at)}
                     </span>
                     {log.changed_fields && log.changed_fields.length > 0 && (
                       <span className="text-secondary small ms-auto">
-                        {log.changed_fields.length} {log.changed_fields.length === 1 ? 'pole' : 'polí'}
+                        {t('audit.fieldsChanged', { count: log.changed_fields.length })}
                       </span>
                     )}
                   </div>
@@ -116,9 +120,9 @@ const AuditHistory = ({ tableName, recordId }) => {
                     <CTable small bordered className="mb-0">
                       <CTableHead>
                         <CTableRow>
-                          <CTableHeaderCell style={{ width: '30%' }}>Pole</CTableHeaderCell>
-                          <CTableHeaderCell style={{ width: '35%' }}>Původní hodnota</CTableHeaderCell>
-                          <CTableHeaderCell style={{ width: '35%' }}>Nová hodnota</CTableHeaderCell>
+                          <CTableHeaderCell style={{ width: '30%' }}>{t('audit.field')}</CTableHeaderCell>
+                          <CTableHeaderCell style={{ width: '35%' }}>{t('audit.oldValue')}</CTableHeaderCell>
+                          <CTableHeaderCell style={{ width: '35%' }}>{t('audit.newValue')}</CTableHeaderCell>
                         </CTableRow>
                       </CTableHead>
                       <CTableBody>
@@ -139,99 +143,99 @@ const AuditHistory = ({ tableName, recordId }) => {
                     </CTable>
                   ) : log.action === 'INSERT' ? (
                     <div className="text-success">
-                      <strong>Záznam vytvořen</strong>
+                      <strong>{t('audit.messages.recordCreated')}</strong>
                       {log.new_values?.title && (
                         <div className="mt-2">
-                          Název: {log.new_values.title}
+                          {t('audit.labels.title')}: {log.new_values.title}
                         </div>
                       )}
                       {log.new_values?.name && (
                         <div className="mt-2">
-                          Jméno: {log.new_values.name}
+                          {t('audit.labels.name')}: {log.new_values.name}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'DELETE' ? (
                     <div className="text-danger">
-                      <strong>Záznam smazán</strong>
+                      <strong>{t('audit.messages.recordDeleted')}</strong>
                       {log.old_values?.title && (
                         <div className="mt-2">
-                          Název: {log.old_values.title}
+                          {t('audit.labels.title')}: {log.old_values.title}
                         </div>
                       )}
                       {log.old_values?.name && (
                         <div className="mt-2">
-                          Jméno: {log.old_values.name}
+                          {t('audit.labels.name')}: {log.old_values.name}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'attachment_added' ? (
                     <div className="text-success">
-                      <strong>Příloha nahrána</strong>
+                      <strong>{t('audit.messages.attachmentUploaded')}</strong>
                       {log.new_values?.file_name && (
                         <div className="mt-2">
-                          Soubor: {log.new_values.file_name}
+                          {t('audit.labels.file')}: {log.new_values.file_name}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'attachment_removed' ? (
                     <div className="text-danger">
-                      <strong>Příloha smazána</strong>
+                      <strong>{t('audit.messages.attachmentDeleted')}</strong>
                       {log.old_values?.file_name && (
                         <div className="mt-2">
-                          Soubor: {log.old_values.file_name}
+                          {t('audit.labels.file')}: {log.old_values.file_name}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'task_added' ? (
                     <div className="text-success">
-                      <strong>Úkol přidán</strong>
+                      <strong>{t('audit.messages.taskAdded')}</strong>
                       {log.new_values?.task_text && (
                         <div className="mt-2">
-                          Úkol: {log.new_values.task_text}
+                          {t('audit.labels.task')}: {log.new_values.task_text}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'task_removed' ? (
                     <div className="text-danger">
-                      <strong>Úkol odebrán</strong>
+                      <strong>{t('audit.messages.taskRemoved')}</strong>
                       {log.old_values?.task_text && (
                         <div className="mt-2">
-                          Úkol: {log.old_values.task_text}
+                          {t('audit.labels.task')}: {log.old_values.task_text}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'time_entry_added' ? (
                     <div className="text-success">
-                      <strong>Časový záznam přidán</strong>
+                      <strong>{t('audit.messages.timeEntryAdded')}</strong>
                       {log.new_values?.duration_minutes && (
                         <div className="mt-2">
-                          Délka: {formatDuration(log.new_values.duration_minutes)}
+                          {t('audit.labels.duration')}: {formatDuration(log.new_values.duration_minutes)}
                         </div>
                       )}
                       {log.new_values?.description && (
                         <div>
-                          Popis: {log.new_values.description}
+                          {t('audit.labels.description')}: {log.new_values.description}
                         </div>
                       )}
                     </div>
                   ) : log.action === 'time_entry_removed' ? (
                     <div className="text-danger">
-                      <strong>Časový záznam odebrán</strong>
+                      <strong>{t('audit.messages.timeEntryRemoved')}</strong>
                       {log.old_values?.duration_minutes && (
                         <div className="mt-2">
-                          Délka: {formatDuration(log.old_values.duration_minutes)}
+                          {t('audit.labels.duration')}: {formatDuration(log.old_values.duration_minutes)}
                         </div>
                       )}
                       {log.old_values?.description && (
                         <div>
-                          Popis: {log.old_values.description}
+                          {t('audit.labels.description')}: {log.old_values.description}
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className="text-secondary">
-                      Neznámá akce
+                      {t('audit.messages.unknownAction')}
                     </div>
                   )}
                 </CAccordionBody>
@@ -250,12 +254,12 @@ const AuditHistory = ({ tableName, recordId }) => {
                 {loadingMore ? (
                   <>
                     <CSpinner size="sm" className="me-2" />
-                    Načítám...
+                    {t('audit.loading')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilReload} className="me-2" />
-                    Načíst další ({totalCount - logs.length} zbývá)
+                    {t('audit.loadMore', { remaining: totalCount - logs.length })}
                   </>
                 )}
               </CButton>

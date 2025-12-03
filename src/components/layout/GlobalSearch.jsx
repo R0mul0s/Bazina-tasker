@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CFormInput,
   CInputGroup,
@@ -15,6 +16,7 @@ import { cilSearch, cilUser, cilNotes, cilTags, cilX } from '@coreui/icons'
 import { useGlobalSearch } from '../../hooks/useGlobalSearch'
 
 const GlobalSearch = () => {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { loading, results, search, clearResults, hasResults } = useGlobalSearch()
   const [query, setQuery] = useState('')
@@ -120,7 +122,7 @@ const GlobalSearch = () => {
         <CFormInput
           ref={inputRef}
           type="text"
-          placeholder="Hledat... (Ctrl+K)"
+          placeholder={t('search.placeholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => hasResults && setIsOpen(true)}
@@ -141,7 +143,7 @@ const GlobalSearch = () => {
           {loading && !hasResults && (
             <div className="text-center py-3">
               <CSpinner size="sm" color="primary" />
-              <span className="ms-2">Hledám...</span>
+              <span className="ms-2">{t('search.searching')}</span>
             </div>
           )}
 
@@ -150,7 +152,7 @@ const GlobalSearch = () => {
             <>
               <div className="global-search__header">
                 <CIcon icon={cilUser} className="me-2" />
-                Zákazníci
+                {t('search.customers')}
               </div>
               {results.customers.map((customer) => (
                 <div
@@ -173,7 +175,7 @@ const GlobalSearch = () => {
             <>
               <div className="global-search__header">
                 <CIcon icon={cilNotes} className="me-2" />
-                Poznámky
+                {t('search.notes')}
               </div>
               {results.notes.map((note) => (
                 <div
@@ -196,7 +198,7 @@ const GlobalSearch = () => {
             <>
               <div className="global-search__header">
                 <CIcon icon={cilTags} className="me-2" />
-                Tagy
+                {t('search.tags')}
               </div>
               {results.tags.map((tag) => (
                 <div
@@ -214,7 +216,7 @@ const GlobalSearch = () => {
 
           {!loading && !hasResults && query.length >= 2 && (
             <div className="text-center text-secondary py-3">
-              Žádné výsledky pro "{query}"
+              {t('search.noResults', { query })}
             </div>
           )}
         </div>

@@ -1,0 +1,67 @@
+{
+  "title": "Historie změn",
+  "noHistory": "Žádná historie změn",
+  "loadMore": "Načíst další ({{remaining}} zbývá)",
+  "loading": "Načítám...",
+  "fields": "{{count}} polí",
+  "actions": {
+    "INSERT": "Vytvořeno",
+    "UPDATE": "Upraveno",
+    "DELETE": "Smazáno",
+    "attachment_added": "Příloha přidána",
+    "attachment_removed": "Příloha odebrána",
+    "task_added": "Úkol přidán",
+    "task_removed": "Úkol odebrán",
+    "time_entry_added": "Čas přidán",
+    "time_entry_removed": "Čas odebrán"
+  },
+  "table": {
+    "field": "Pole",
+    "oldValue": "Původní hodnota",
+    "newValue": "Nová hodnota"
+  },
+  "messages": {
+    "recordCreated": "Záznam vytvořen",
+    "recordDeleted": "Záznam smazán",
+    "attachmentUploaded": "Příloha nahrána",
+    "attachmentDeleted": "Příloha smazána",
+    "taskAdded": "Úkol přidán",
+    "taskRemoved": "Úkol odebrán",
+    "timeEntryAdded": "Časový záznam přidán",
+    "timeEntryRemoved": "Časový záznam odebrán",
+    "unknownAction": "Neznámá akce"
+  },
+  "labels": {
+    "title": "Název",
+    "name": "Jméno",
+    "file": "Soubor",
+    "task": "Úkol",
+    "duration": "Délka",
+    "description": "Popis"
+  },
+  "tables": {
+    "notes": "Poznámka",
+    "customers": "Zákazník",
+    "tags": "Tag",
+    "note_tasks": "Úkol"
+  },
+  "fieldLabels": {
+    "title": "Název",
+    "content": "Obsah",
+    "status": "Stav",
+    "priority": "Priorita",
+    "meeting_type": "Typ schůzky",
+    "meeting_date": "Datum schůzky",
+    "follow_up_date": "Follow-up",
+    "name": "Jméno",
+    "company": "Firma",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adresa",
+    "notes": "Poznámky",
+    "text": "Text",
+    "is_completed": "Dokončeno",
+    "order": "Pořadí",
+    "color": "Barva"
+  }
+}

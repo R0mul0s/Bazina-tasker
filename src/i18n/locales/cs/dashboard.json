@@ -1,0 +1,38 @@
+{
+  "welcome": "Vítejte{{name}}!",
+  "stats": {
+    "customers": "Zákazníci",
+    "notes": "Poznámky",
+    "upcomingFollowUps": "Nadcházející follow-upy",
+    "requiresAction": "Vyžaduje akci"
+  },
+  "recentNotes": {
+    "title": "Nedávné poznámky",
+    "new": "Nová",
+    "empty": "Žádné poznámky",
+    "addCustomerFirst": "Nejprve přidejte zákazníka.",
+    "createFirst": "Vytvořte první poznámku.",
+    "addCustomer": "Přidat zákazníka"
+  },
+  "followUps": {
+    "title": "Nadcházející follow-upy",
+    "empty": "Žádné follow-upy",
+    "noPlanned": "Nemáte naplánované žádné follow-upy na příštích 14 dní."
+  },
+  "requiresAction": {
+    "title": "Vyžaduje akci ({{count}})"
+  },
+  "statistics": "Statistiky",
+  "charts": {
+    "notesPerWeek": "Poznámky za týden",
+    "notesPerWeekSubtitle": "(posledních 8 týdnů)",
+    "timePerCustomer": "Čas strávený s zákazníky",
+    "timePerCustomerSubtitle": "(top 5, v hodinách)",
+    "noTimeRecords": "Zatím žádné záznamy o stráveném čase",
+    "notesByType": "Poznámky podle typu",
+    "noNotes": "Zatím žádné poznámky",
+    "activityByDay": "Aktivita podle dne",
+    "notes": "Poznámky",
+    "hours": "Hodiny"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -14,9 +15,12 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilPlus, cilTrash, cilClock } from '@coreui/icons'
 import { useTimeEntries } from '../../hooks/useTimeEntries'
-import { formatDate } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const TimeTracking = ({ noteId }) => {
+  const { t } = useTranslation('notes')
+  const { t: tCommon } = useTranslation('common')
+  const { formatDate } = useLocaleFormat()
   const {
     loading,
     fetchTimeEntries,
@@ -49,7 +53,7 @@ const TimeTracking = ({ noteId }) => {
 
     const minutes = parseTimeInput(timeInput)
     if (minutes <= 0) {
-      setError('Zadejte platný čas (např. 30, 1h, 1h 30m)')
+      setError(t('time.invalidTime'))
       return
     }
 
@@ -89,7 +93,7 @@ const TimeTracking = ({ noteId }) => {
       <CCardHeader className="d-flex justify-content-between align-items-center">
         <strong>
           <CIcon icon={cilClock} className="me-2" />
-          Strávený čas
+          {t('time.title')}
         </strong>
         <span className="badge bg-primary fs-6">{formatDuration(totalMinutes)}</span>
       </CCardHeader>
@@ -104,14 +108,14 @@ const TimeTracking = ({ noteId }) => {
         <div className="mb-3">
           <div className="d-flex gap-2 mb-2">
             <CFormInput
-              placeholder="Čas (např. 30, 1h, 1h 30m)"
+              placeholder={t('time.timePlaceholder')}
               value={timeInput}
               onChange={(e) => setTimeInput(e.target.value)}
               onKeyDown={handleKeyDown}
               style={{ maxWidth: '180px' }}
             />
             <CFormInput
-              placeholder="Popis činnosti (volitelné)"
+              placeholder={t('time.descriptionPlaceholder')}
               value={descInput}
               onChange={(e) => setDescInput(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -126,7 +130,7 @@ const TimeTracking = ({ noteId }) => {
             </CButton>
           </div>
           <small className="text-secondary">
-            Formáty: 30 (minuty), 1h, 1.5h, 1h 30m
+            {tCommon('time.formats')}
           </small>
         </div>
 
@@ -137,7 +141,7 @@ const TimeTracking = ({ noteId }) => {
           </div>
         ) : entries.length === 0 ? (
           <div className="text-center text-secondary py-3">
-            Zatím žádný zaznamenaný čas
+            {t('time.noRecords')}
           </div>
         ) : (
           <CListGroup flush>
@@ -160,7 +164,7 @@ const TimeTracking = ({ noteId }) => {
                   size="sm"
                   className="text-danger"
                   onClick={() => handleDelete(entry.id)}
-                  title="Smazat"
+                  title={tCommon('actions.delete')}
                 >
                   <CIcon icon={cilTrash} size="sm" />
                 </CButton>

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -16,7 +17,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useCustomers } from '../../hooks/useCustomers'
 import { useNotes } from '../../hooks/useNotes'
 import { useDashboardStats } from '../../hooks/useDashboardStats'
-import { formatDate, formatRelativeTime } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 import {
   NotesPerWeekChart,
   TimePerCustomerChart,
@@ -50,18 +51,15 @@ const priorityColors = {
   high: 'danger',
 }
 
-const priorityLabels = {
-  low: 'Nízká',
-  medium: 'Střední',
-  high: 'Vysoká',
-}
-
 const Dashboard = () => {
+  const { t } = useTranslation('dashboard')
+  const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()
   const { profile } = useAuth()
   const { customers, loading: customersLoading } = useCustomers()
   const { notes, loading: notesLoading, getRequiresAction, getUpcomingFollowUps } = useNotes()
   const { stats: chartStats, loading: statsLoading } = useDashboardStats()
+  const { formatDate, formatRelativeTime } = useLocaleFormat()
 
   const loading = customersLoading || notesLoading
 
@@ -85,13 +83,13 @@ const Dashboard = () => {
   return (
     <>
       <h2 className="mb-4">
-        Vítejte{profile?.full_name ? `, ${profile.full_name}` : ''}!
+        {t('welcome', { name: profile?.full_name ? `, ${profile.full_name}` : '' })}
       </h2>
 
       <CRow>
         <CCol sm={6} xl={3}>
           <StatCard
-            title="Zákazníci"
+            title={t('stats.customers')}
             value={stats.customers}
             icon={cilPeople}
             color="primary"
@@ -100,7 +98,7 @@ const Dashboard = () => {
         </CCol>
         <CCol sm={6} xl={3}>
           <StatCard
-            title="Poznámky"
+            title={t('stats.notes')}
             value={stats.notes}
             icon={cilNotes}
             color="info"
@@ -109,7 +107,7 @@ const Dashboard = () => {
         </CCol>
         <CCol sm={6} xl={3}>
           <StatCard
-            title="Nadcházející follow-upy"
+            title={t('stats.upcomingFollowUps')}
             value={stats.followUps}
             icon={cilCalendar}
             color="warning"
@@ -117,7 +115,7 @@ const Dashboard = () => {
         </CCol>
         <CCol sm={6} xl={3}>
           <StatCard
-            title="Vyžaduje akci"
+            title={t('stats.requiresAction')}
             value={stats.requiresAction}
             icon={cilWarning}
             color="danger"
@@ -129,7 +127,7 @@ const Dashboard = () => {
         <CCol lg={6}>
           <CCard className="mb-4">
             <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Nedávné poznámky</strong>
+              <strong>{t('recentNotes.title')}</strong>
               {customers.length > 0 && (
                 <CButton
                   color="primary"
@@ -137,7 +135,7 @@ const Dashboard = () => {
                   onClick={() => navigate('/notes')}
                 >
                   <CIcon icon={cilPlus} className="me-1" />
-                  Nová
+                  {t('recentNotes.new')}
                 </CButton>
               )}
             </CCardHeader>
@@ -147,16 +145,16 @@ const Dashboard = () => {
                   <div className="empty-state__icon">
                     <CIcon icon={cilNotes} size="3xl" />
                   </div>
-                  <div className="empty-state__title">Žádné poznámky</div>
+                  <div className="empty-state__title">{t('recentNotes.empty')}</div>
                   <div className="empty-state__description">
                     {customers.length === 0
-                      ? 'Nejprve přidejte zákazníka.'
-                      : 'Vytvořte první poznámku.'}
+                      ? t('recentNotes.addCustomerFirst')
+                      : t('recentNotes.createFirst')}
                   </div>
                   {customers.length === 0 && (
                     <CButton color="primary" onClick={() => navigate('/customers')}>
                       <CIcon icon={cilPlus} className="me-2" />
-                      Přidat zákazníka
+                      {t('recentNotes.addCustomer')}
                     </CButton>
                   )}
                 </div>
@@ -177,7 +175,7 @@ const Dashboard = () => {
                         </small>
                       </div>
                       <CBadge color={priorityColors[note.priority]}>
-                        {priorityLabels[note.priority]}
+                        {tCommon(`priority.${note.priority}`)}
                       </CBadge>
                     </CListGroupItem>
                   ))}
@@ -190,7 +188,7 @@ const Dashboard = () => {
         <CCol lg={6}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Nadcházející follow-upy</strong>
+              <strong>{t('followUps.title')}</strong>
             </CCardHeader>
             <CCardBody>
               {upcomingFollowUps.length === 0 ? (
@@ -198,9 +196,9 @@ const Dashboard = () => {
                   <div className="empty-state__icon">
                     <CIcon icon={cilCalendar} size="3xl" />
                   </div>
-                  <div className="empty-state__title">Žádné follow-upy</div>
+                  <div className="empty-state__title">{t('followUps.empty')}</div>
                   <div className="empty-state__description">
-                    Nemáte naplánované žádné follow-upy na příštích 14 dní.
+                    {t('followUps.noPlanned')}
                   </div>
                 </div>
               ) : (
@@ -235,7 +233,7 @@ const Dashboard = () => {
             <CCard className="mb-4 border-danger">
               <CCardHeader className="bg-danger text-white">
                 <CIcon icon={cilWarning} className="me-2" />
-                <strong>Vyžaduje akci ({requiresActionNotes.length})</strong>
+                <strong>{t('requiresAction.title', { count: requiresActionNotes.length })}</strong>
               </CCardHeader>
               <CCardBody>
                 <CListGroup flush>
@@ -254,7 +252,7 @@ const Dashboard = () => {
                         </small>
                       </div>
                       <CBadge color={priorityColors[note.priority]}>
-                        {priorityLabels[note.priority]}
+                        {tCommon(`priority.${note.priority}`)}
                       </CBadge>
                     </CListGroupItem>
                   ))}
@@ -266,7 +264,7 @@ const Dashboard = () => {
       )}
 
       {/* Grafy statistik */}
-      <h4 className="mb-3 mt-4">Statistiky</h4>
+      <h4 className="mb-3 mt-4">{t('statistics')}</h4>
       {statsLoading ? (
         <CRow>
           <CCol lg={8}>

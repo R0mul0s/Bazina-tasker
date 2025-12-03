@@ -1,0 +1,27 @@
+{
+  "title": "Kalendář",
+  "buttons": {
+    "today": "Dnes",
+    "month": "Měsíc",
+    "week": "Týden"
+  },
+  "legend": {
+    "title": "Legenda",
+    "meetingType": "Typ schůzky:",
+    "followUpPriority": "Follow-up priorita:",
+    "meeting": "Schůzka",
+    "phone": "Telefon",
+    "email": "Email",
+    "other": "Ostatní"
+  },
+  "modal": {
+    "followUp": "Follow-up",
+    "meeting": "Schůzka",
+    "date": "Datum:",
+    "customer": "Zákazník:",
+    "type": "Typ:",
+    "priority": "Priorita:",
+    "viewNote": "Zobrazit poznámku"
+  },
+  "moreEvents": "+{{count}} dalších"
+}

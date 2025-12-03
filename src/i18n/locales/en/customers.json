@@ -1,0 +1,83 @@
+{
+  "title": "Customers",
+  "newCustomer": "New customer",
+  "importCsv": "Import CSV",
+  "addCustomer": "Add customer",
+  "noCustomersFound": "No customers found",
+  "empty": {
+    "title": "No customers",
+    "description": "Add your first customer by clicking the button above."
+  },
+  "table": {
+    "name": "Name",
+    "company": "Company",
+    "contact": "Contact",
+    "actions": "Actions"
+  },
+  "form": {
+    "titleNew": "New customer",
+    "titleEdit": "Edit customer",
+    "name": "Contact person name",
+    "namePlaceholder": "John Doe",
+    "company": "Company",
+    "companyPlaceholder": "Company Inc.",
+    "email": "Email",
+    "emailPlaceholder": "john.doe@company.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 234 567 890",
+    "address": "Address",
+    "addressPlaceholder": "123 Main St, City, 12345",
+    "notes": "Notes",
+    "notesPlaceholder": "General notes about the customer...",
+    "nameRequired": "Name is required",
+    "saveChanges": "Save changes"
+  },
+  "detail": {
+    "contactInfo": "Contact information",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "noContactInfo": "No contact information",
+    "documents": "Documents",
+    "meetingNotes": "Meeting notes",
+    "newNote": "New note",
+    "noNotes": "No notes",
+    "noNotesDescription": "You don't have any notes for this customer yet.",
+    "createNote": "Create note",
+    "customerNotFound": "Customer not found.",
+    "notes": "Notes"
+  },
+  "delete": {
+    "title": "Delete customer",
+    "confirm": "Are you sure you want to delete customer {{name}}?",
+    "warning": "This will also delete all notes and attachments for this customer."
+  },
+  "import": {
+    "title": "Import customers from CSV",
+    "selectFile": "Click to select CSV file",
+    "supportedColumns": "Supported columns: Name, Company, Email, Phone, Address, Notes",
+    "columnMapping": "Column mapping",
+    "csvColumn": "CSV column",
+    "targetField": "Target field",
+    "sampleData": "Sample data",
+    "skip": "-- Skip --",
+    "preview": "Preview (first 5 records)",
+    "import": "Import {{count}} records",
+    "importing": "Importing customers...",
+    "importComplete": "Import complete",
+    "imported": "Imported: {{count}} customers",
+    "failed": "Failed: {{count}}",
+    "records": "records",
+    "requiredName": "You must map at least the \"Name\" column.",
+    "noValidRecords": "No valid records to import.",
+    "csvError": "CSV must contain a header and at least one data row.",
+    "fileReadError": "Error reading file"
+  },
+  "attachments": {
+    "uploadHint": "Click to upload or paste an image (Ctrl+V)",
+    "documentsHint": "Contracts, documents, images...",
+    "uploadingImage": "Uploading image...",
+    "imageUploaded": "Image uploaded!",
+    "uploadError": "Upload error:"
+  }
+}

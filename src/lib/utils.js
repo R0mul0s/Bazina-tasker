@@ -1,5 +1,17 @@
 import { format, formatDistanceToNow } from 'date-fns'
-import { cs } from 'date-fns/locale'
+import { cs, enUS } from 'date-fns/locale'
+
+// Mapování jazyků na locale
+const locales = {
+  cs: cs,
+  en: enUS,
+}
+
+// Získání aktuálního locale z localStorage nebo výchozí cs
+const getCurrentLocale = () => {
+  const lang = localStorage.getItem('i18nextLng') || 'cs'
+  return locales[lang] || cs
+}
 
 /**
  * Formátování data
@@ -9,7 +21,7 @@ import { cs } from 'date-fns/locale'
  */
 export const formatDate = (date, formatStr = 'd. M. yyyy') => {
   if (!date) return ''
-  return format(new Date(date), formatStr, { locale: cs })
+  return format(new Date(date), formatStr, { locale: getCurrentLocale() })
 }
 
 /**
@@ -19,17 +31,17 @@ export const formatDate = (date, formatStr = 'd. M. yyyy') => {
  */
 export const formatDateTime = (date) => {
   if (!date) return ''
-  return format(new Date(date), 'd. M. yyyy HH:mm', { locale: cs })
+  return format(new Date(date), 'd. M. yyyy HH:mm', { locale: getCurrentLocale() })
 }
 
 /**
- * Relativní čas (např. "před 2 hodinami")
+ * Relativní čas (např. "před 2 hodinami" / "2 hours ago")
  * @param {Date|string} date
  * @returns {string}
  */
 export const formatRelativeTime = (date) => {
   if (!date) return ''
-  return formatDistanceToNow(new Date(date), { addSuffix: true, locale: cs })
+  return formatDistanceToNow(new Date(date), { addSuffix: true, locale: getCurrentLocale() })
 }
 
 /**

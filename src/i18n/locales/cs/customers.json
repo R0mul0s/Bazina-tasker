@@ -1,0 +1,83 @@
+{
+  "title": "Zákazníci",
+  "newCustomer": "Nový zákazník",
+  "importCsv": "Import CSV",
+  "addCustomer": "Přidat zákazníka",
+  "noCustomersFound": "Žádní zákazníci nenalezeni",
+  "empty": {
+    "title": "Žádní zákazníci",
+    "description": "Přidejte prvního zákazníka kliknutím na tlačítko výše."
+  },
+  "table": {
+    "name": "Jméno",
+    "company": "Firma",
+    "contact": "Kontakt",
+    "actions": "Akce"
+  },
+  "form": {
+    "titleNew": "Nový zákazník",
+    "titleEdit": "Upravit zákazníka",
+    "name": "Jméno kontaktní osoby",
+    "namePlaceholder": "Jan Novák",
+    "company": "Firma",
+    "companyPlaceholder": "Firma s.r.o.",
+    "email": "Email",
+    "emailPlaceholder": "jan.novak@firma.cz",
+    "phone": "Telefon",
+    "phonePlaceholder": "+420 123 456 789",
+    "address": "Adresa",
+    "addressPlaceholder": "Ulice 123, Praha 1, 110 00",
+    "notes": "Poznámky",
+    "notesPlaceholder": "Obecné poznámky k zákazníkovi...",
+    "nameRequired": "Jméno je povinné",
+    "saveChanges": "Uložit změny"
+  },
+  "detail": {
+    "contactInfo": "Kontaktní informace",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adresa",
+    "noContactInfo": "Žádné kontaktní údaje",
+    "documents": "Dokumenty",
+    "meetingNotes": "Poznámky ze schůzek",
+    "newNote": "Nová poznámka",
+    "noNotes": "Žádné poznámky",
+    "noNotesDescription": "Zatím nemáte žádné poznámky pro tohoto zákazníka.",
+    "createNote": "Vytvořit poznámku",
+    "customerNotFound": "Zákazník nebyl nalezen.",
+    "notes": "Poznámky"
+  },
+  "delete": {
+    "title": "Smazat zákazníka",
+    "confirm": "Opravdu chcete smazat zákazníka {{name}}?",
+    "warning": "Tato akce smaže i všechny poznámky a přílohy tohoto zákazníka."
+  },
+  "import": {
+    "title": "Import zákazníků z CSV",
+    "selectFile": "Klikněte pro výběr CSV souboru",
+    "supportedColumns": "Podporované sloupce: Jméno, Firma, Email, Telefon, Adresa, Poznámky",
+    "columnMapping": "Mapování sloupců",
+    "csvColumn": "Sloupec v CSV",
+    "targetField": "Cílové pole",
+    "sampleData": "Ukázka dat",
+    "skip": "-- Přeskočit --",
+    "preview": "Náhled dat (prvních 5 záznamů)",
+    "import": "Importovat {{count}} záznamů",
+    "importing": "Importuji zákazníky...",
+    "importComplete": "Import dokončen",
+    "imported": "Importováno: {{count}} zákazníků",
+    "failed": "Selhalo: {{count}}",
+    "records": "záznamů",
+    "requiredName": "Je nutné namapovat alespoň sloupec \"Jméno\".",
+    "noValidRecords": "Žádné platné záznamy k importu.",
+    "csvError": "CSV musí obsahovat hlavičku a alespoň jeden řádek dat.",
+    "fileReadError": "Chyba při čtení souboru"
+  },
+  "attachments": {
+    "uploadHint": "Klikněte pro nahrání nebo vložte obrázek (Ctrl+V)",
+    "documentsHint": "Smlouvy, dokumenty, obrázky...",
+    "uploadingImage": "Nahrávání obrázku...",
+    "imageUploaded": "Obrázek nahrán!",
+    "uploadError": "Chyba při nahrávání:"
+  }
+}

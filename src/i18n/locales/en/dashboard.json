@@ -1,0 +1,38 @@
+{
+  "welcome": "Welcome{{name}}!",
+  "stats": {
+    "customers": "Customers",
+    "notes": "Notes",
+    "upcomingFollowUps": "Upcoming follow-ups",
+    "requiresAction": "Requires action"
+  },
+  "recentNotes": {
+    "title": "Recent notes",
+    "new": "New",
+    "empty": "No notes",
+    "addCustomerFirst": "Add a customer first.",
+    "createFirst": "Create your first note.",
+    "addCustomer": "Add customer"
+  },
+  "followUps": {
+    "title": "Upcoming follow-ups",
+    "empty": "No follow-ups",
+    "noPlanned": "You have no follow-ups scheduled for the next 14 days."
+  },
+  "requiresAction": {
+    "title": "Requires action ({{count}})"
+  },
+  "statistics": "Statistics",
+  "charts": {
+    "notesPerWeek": "Notes per week",
+    "notesPerWeekSubtitle": "(last 8 weeks)",
+    "timePerCustomer": "Time spent with customers",
+    "timePerCustomerSubtitle": "(top 5, in hours)",
+    "noTimeRecords": "No time records yet",
+    "notesByType": "Notes by type",
+    "noNotes": "No notes yet",
+    "activityByDay": "Activity by day",
+    "notes": "Notes",
+    "hours": "Hours"
+  }
+}

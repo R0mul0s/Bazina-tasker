@@ -1,0 +1,42 @@
+{
+  "title": "Nastavení",
+  "profile": {
+    "title": "Profil",
+    "email": "Email",
+    "emailHint": "Email nelze změnit.",
+    "fullName": "Celé jméno",
+    "fullNamePlaceholder": "Zadejte své jméno",
+    "saveChanges": "Uložit změny",
+    "saving": "Ukládám...",
+    "saved": "Profil byl úspěšně uložen.",
+    "error": "Chyba při ukládání:"
+  },
+  "appearance": {
+    "title": "Vzhled aplikace",
+    "colorMode": "Barevný režim",
+    "light": "Světlý",
+    "dark": "Tmavý",
+    "hint": "Zvolte preferovaný barevný režim aplikace. Nastavení se automaticky ukládá."
+  },
+  "language": {
+    "title": "Jazyk",
+    "label": "Jazyk aplikace",
+    "hint": "Vyberte preferovaný jazyk rozhraní.",
+    "cs": "Čeština",
+    "en": "English"
+  },
+  "password": {
+    "title": "Změna hesla",
+    "newPassword": "Nové heslo",
+    "newPasswordPlaceholder": "Zadejte nové heslo",
+    "confirmPassword": "Potvrdit nové heslo",
+    "confirmPasswordPlaceholder": "Potvrďte nové heslo",
+    "minLength": "Minimálně 6 znaků.",
+    "change": "Změnit heslo",
+    "changing": "Měním heslo...",
+    "success": "Heslo bylo úspěšně změněno.",
+    "error": "Chyba:",
+    "tooShort": "Nové heslo musí mít alespoň 6 znaků.",
+    "noMatch": "Hesla se neshodují."
+  }
+}

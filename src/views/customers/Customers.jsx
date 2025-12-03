@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -32,6 +33,8 @@ import SmartTable from '../../components/common/SmartTable'
 import { TableSkeleton } from '../../components/common/Skeleton'
 
 const Customers = () => {
+  const { t } = useTranslation('customers')
+  const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()
   const { customers, loading, createCustomer, updateCustomer, deleteCustomer, bulkCreateCustomers } = useCustomers()
 
@@ -44,24 +47,24 @@ const Customers = () => {
   const columns = [
     {
       key: 'name',
-      label: 'Jméno',
+      label: t('table.name'),
       _style: { width: '25%' },
     },
     {
       key: 'company',
-      label: 'Firma',
+      label: t('table.company'),
       _style: { width: '25%' },
     },
     {
       key: 'contact',
-      label: 'Kontakt',
+      label: t('table.contact'),
       _style: { width: '35%' },
       filter: false,
       sorter: false,
     },
     {
       key: 'actions',
-      label: 'Akce',
+      label: t('table.actions'),
       _style: { width: '80px' },
       filter: false,
       sorter: false,
@@ -98,14 +101,14 @@ const Customers = () => {
           <CDropdownMenu>
             <CDropdownItem onClick={() => handleEdit(item)}>
               <CIcon icon={cilPencil} className="me-2" />
-              Upravit
+              {tCommon('actions.edit')}
             </CDropdownItem>
             <CDropdownItem
               className="text-danger"
               onClick={() => setDeleteModal({ show: true, customer: item })}
             >
               <CIcon icon={cilTrash} className="me-2" />
-              Smazat
+              {tCommon('actions.delete')}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -145,15 +148,15 @@ const Customers = () => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Zákazníci</h2>
+        <h2 className="mb-0">{t('title')}</h2>
         <div className="d-flex gap-2">
           <CButton color="secondary" variant="outline" onClick={() => setShowImport(true)}>
             <CIcon icon={cilCloudUpload} className="me-2" />
-            Import CSV
+            {t('importCsv')}
           </CButton>
           <CButton color="primary" onClick={() => setShowForm(true)}>
             <CIcon icon={cilPlus} className="me-2" />
-            Nový zákazník
+            {t('newCustomer')}
           </CButton>
         </div>
       </div>
@@ -165,13 +168,13 @@ const Customers = () => {
               <div className="empty-state__icon">
                 <CIcon icon={cilPeople} size="3xl" />
               </div>
-              <div className="empty-state__title">Žádní zákazníci</div>
+              <div className="empty-state__title">{t('empty.title')}</div>
               <div className="empty-state__description">
-                Přidejte prvního zákazníka kliknutím na tlačítko výše.
+                {t('empty.description')}
               </div>
               <CButton color="primary" onClick={() => setShowForm(true)}>
                 <CIcon icon={cilPlus} className="me-2" />
-                Přidat zákazníka
+                {t('addCustomer')}
               </CButton>
             </div>
           ) : (
@@ -186,10 +189,10 @@ const Customers = () => {
               itemsPerPageOptions={[5, 10, 20, 50]}
               scopedSlots={scopedSlots}
               onRowClick={(item) => navigate(`/customers/${item.id}`)}
-              tableFilterLabel="Filtr:"
-              tableFilterPlaceholder="hledaný text..."
-              noItemsLabel="Žádní zákazníci nenalezeni"
-              itemsPerPageLabel="Položek na stránku:"
+              tableFilterLabel={tCommon('table.filter')}
+              tableFilterPlaceholder={tCommon('table.filterPlaceholder')}
+              noItemsLabel={t('noCustomersFound')}
+              itemsPerPageLabel={tCommon('table.itemsPerPage')}
             />
           )}
         </CCardBody>
@@ -209,13 +212,13 @@ const Customers = () => {
         onClose={() => setDeleteModal({ show: false, customer: null })}
       >
         <CModalHeader>
-          <CModalTitle>Smazat zákazníka</CModalTitle>
+          <CModalTitle>{t('delete.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat zákazníka <strong>{deleteModal.customer?.name}</strong>?
+          {t('delete.confirm', { name: deleteModal.customer?.name })}
           <br />
           <small className="text-danger">
-            Tato akce smaže i všechny poznámky a přílohy tohoto zákazníka.
+            {t('delete.warning')}
           </small>
         </CModalBody>
         <CModalFooter>
@@ -223,10 +226,10 @@ const Customers = () => {
             color="secondary"
             onClick={() => setDeleteModal({ show: false, customer: null })}
           >
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleDelete}>
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </CModalFooter>
       </CModal>

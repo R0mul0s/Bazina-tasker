@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -36,25 +37,12 @@ import TimeTracking from '../../components/notes/TimeTracking'
 import AttachmentList from '../../components/notes/AttachmentList'
 import SortableTaskList from '../../components/notes/SortableTaskList'
 import AuditHistory from '../../components/common/AuditHistory'
-import { formatDate, formatDateTime } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const priorityColors = {
   low: 'success',
   medium: 'warning',
   high: 'danger',
-}
-
-const priorityLabels = {
-  low: 'Nízká',
-  medium: 'Střední',
-  high: 'Vysoká',
-}
-
-const statusLabels = {
-  draft: 'Koncept',
-  requires_action: 'Vyžaduje akci',
-  completed: 'Dokončeno',
-  archived: 'Archivováno',
 }
 
 const statusColors = {
@@ -64,17 +52,13 @@ const statusColors = {
   archived: 'dark',
 }
 
-const meetingTypeLabels = {
-  phone: 'Telefonát',
-  video: 'Video hovor',
-  in_person: 'Osobní schůzka',
-  email: 'Email',
-}
-
 const NoteDetail = () => {
+  const { t } = useTranslation('notes')
+  const { t: tCommon } = useTranslation('common')
   const { id } = useParams()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+  const { formatDate, formatDateTime } = useLocaleFormat()
 
   const { fetchNote, updateNote, deleteNote, updateTask, duplicateNote } = useNotes()
   const { customers } = useCustomers()
@@ -92,13 +76,13 @@ const NoteDetail = () => {
 
   // Funkce pro upload obrázku z clipboardu
   const handlePasteUpload = async (file) => {
-    setPasteMessage('Nahrávání obrázku...')
+    setPasteMessage(t('detail.uploadingImage'))
     const { data, error: uploadError } = await uploadFile(id, file)
     if (!uploadError && data) {
       setAttachments((prev) => [data, ...prev])
-      setPasteMessage('Obrázek nahrán!')
+      setPasteMessage(t('detail.imageUploaded'))
     } else {
-      setPasteMessage('Chyba při nahrávání: ' + (uploadError || 'Neznámá chyba'))
+      setPasteMessage(t('detail.uploadError') + (uploadError || tCommon('messages.error')))
     }
     // Skrýt zprávu po 3 sekundách
     setTimeout(() => setPasteMessage(''), 3000)
@@ -250,9 +234,9 @@ const NoteDetail = () => {
   if (error || !note) {
     return (
       <CAlert color="danger">
-        {error || 'Poznámka nebyla nalezena.'}
+        {error || t('detail.noteNotFound')}
         <CButton color="link" onClick={() => navigate('/notes')}>
-          Zpět na seznam
+          {tCommon('actions.backToList')}
         </CButton>
       </CAlert>
     )
@@ -279,15 +263,15 @@ const NoteDetail = () => {
             ) : (
               <CIcon icon={cilCopy} className="me-2" />
             )}
-            Duplikovat
+            {tCommon('actions.duplicate')}
           </CButton>
           <CButton color="primary" onClick={() => setShowForm(true)}>
             <CIcon icon={cilPencil} className="me-2" />
-            Upravit
+            {tCommon('actions.edit')}
           </CButton>
           <CButton color="danger" variant="outline" onClick={() => setDeleteModal(true)}>
             <CIcon icon={cilTrash} className="me-2" />
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </div>
       </div>
@@ -297,13 +281,13 @@ const NoteDetail = () => {
           {/* Hlavní obsah */}
           <CCard className="mb-4">
             <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Obsah poznámky</strong>
+              <strong>{t('detail.noteContent')}</strong>
               <div className="d-flex gap-2">
                 <CBadge color={statusColors[note.status]}>
-                  {statusLabels[note.status]}
+                  {tCommon(`noteStatus.${note.status}`)}
                 </CBadge>
                 <CBadge color={priorityColors[note.priority]}>
-                  {priorityLabels[note.priority]}
+                  {tCommon(`priority.${note.priority}`)}
                 </CBadge>
               </div>
             </CCardHeader>
@@ -314,7 +298,7 @@ const NoteDetail = () => {
                   dangerouslySetInnerHTML={{ __html: note.content }}
                 />
               ) : (
-                <p className="text-secondary">Bez obsahu</p>
+                <p className="text-secondary">{t('detail.noContent')}</p>
               )}
             </CCardBody>
           </CCard>
@@ -324,10 +308,10 @@ const NoteDetail = () => {
             <CCard className="mb-4">
               <CCardHeader>
                 <strong>
-                  Úkoly ({note.tasks.filter((t) => t.is_completed).length}/{note.tasks.length})
+                  {t('detail.tasks')} ({t('detail.tasksCount', { completed: note.tasks.filter((t) => t.is_completed).length, total: note.tasks.length })})
                 </strong>
                 <small className="text-secondary ms-2">
-                  (přetažením změníte pořadí)
+                  {t('detail.tasksReorderHint')}
                 </small>
               </CCardHeader>
               <CCardBody>
@@ -345,7 +329,7 @@ const NoteDetail = () => {
           {/* Přílohy */}
           <CCard className="mb-4">
             <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Přílohy ({attachments.length})</strong>
+              <strong>{t('detail.attachments')} ({attachments.length})</strong>
               <CButton
                 color="primary"
                 size="sm"
@@ -357,7 +341,7 @@ const NoteDetail = () => {
                 ) : (
                   <>
                     <CIcon icon={cilCloudUpload} className="me-1" />
-                    Nahrát
+                    {tCommon('actions.upload')}
                   </>
                 )}
               </CButton>
@@ -374,7 +358,7 @@ const NoteDetail = () => {
               {/* Zpráva o vkládání ze schránky */}
               {pasteMessage && (
                 <CAlert
-                  color={pasteMessage.includes('Chyba') ? 'danger' : 'info'}
+                  color={pasteMessage.includes(t('detail.uploadError')) ? 'danger' : 'info'}
                   className="mb-3"
                 >
                   {pasteMessage}
@@ -390,7 +374,7 @@ const NoteDetail = () => {
                     <CIcon icon={cilCloudUpload} size="xl" />
                   </div>
                   <div className="attachment-dropzone__text">
-                    Klikněte pro nahrání nebo vložte obrázek (Ctrl+V)
+                    {t('detail.uploadHint')}
                   </div>
                 </div>
               ) : (
@@ -409,11 +393,11 @@ const NoteDetail = () => {
           {/* Info karta */}
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Informace</strong>
+              <strong>{t('detail.info')}</strong>
             </CCardHeader>
             <CCardBody>
               <div className="mb-3">
-                <small className="text-secondary d-block">Zákazník</small>
+                <small className="text-secondary d-block">{t('detail.customer')}</small>
                 <div
                   className="d-flex align-items-center gap-2 cursor-pointer"
                   onClick={() => navigate(`/customers/${note.customer_id}`)}
@@ -424,13 +408,13 @@ const NoteDetail = () => {
               </div>
 
               <div className="mb-3">
-                <small className="text-secondary d-block">Typ schůzky</small>
-                <div>{meetingTypeLabels[note.meeting_type]}</div>
+                <small className="text-secondary d-block">{t('detail.meetingType')}</small>
+                <div>{tCommon(`meetingType.${note.meeting_type}`)}</div>
               </div>
 
               {note.meeting_date && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Datum schůzky</small>
+                  <small className="text-secondary d-block">{t('detail.meetingDate')}</small>
                   <div className="d-flex align-items-center gap-2">
                     <CIcon icon={cilCalendar} />
                     {formatDate(note.meeting_date)}
@@ -440,7 +424,7 @@ const NoteDetail = () => {
 
               {note.follow_up_date && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Follow-up</small>
+                  <small className="text-secondary d-block">{t('detail.followUp')}</small>
                   <div className="d-flex align-items-center gap-2">
                     <CIcon icon={cilCalendar} />
                     <CBadge color="warning">{formatDate(note.follow_up_date)}</CBadge>
@@ -449,13 +433,13 @@ const NoteDetail = () => {
               )}
 
               <div className="mb-3">
-                <small className="text-secondary d-block">Vytvořeno</small>
+                <small className="text-secondary d-block">{t('detail.created')}</small>
                 <div>{formatDateTime(note.created_at)}</div>
               </div>
 
               {note.updated_at !== note.created_at && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Upraveno</small>
+                  <small className="text-secondary d-block">{t('detail.updated')}</small>
                   <div>{formatDateTime(note.updated_at)}</div>
                 </div>
               )}
@@ -466,7 +450,7 @@ const NoteDetail = () => {
           {note.tags && note.tags.length > 0 && (
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>Tagy</strong>
+                <strong>{t('form.tags')}</strong>
               </CCardHeader>
               <CCardBody>
                 <div className="d-flex flex-wrap gap-2">
@@ -504,21 +488,21 @@ const NoteDetail = () => {
       {/* Potvrzení smazání */}
       <CModal visible={deleteModal} onClose={() => setDeleteModal(false)}>
         <CModalHeader>
-          <CModalTitle>Smazat poznámku</CModalTitle>
+          <CModalTitle>{t('delete.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat poznámku <strong>{note.title}</strong>?
+          {t('delete.confirm')} <strong>{note.title}</strong>?
           <br />
           <small className="text-danger">
-            Tato akce smaže i všechny přílohy a úkoly této poznámky.
+            {t('delete.warning')}
           </small>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setDeleteModal(false)}>
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleDelete}>
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </CModalFooter>
       </CModal>

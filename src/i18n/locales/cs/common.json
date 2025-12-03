@@ -1,0 +1,137 @@
+{
+  "userMenu": {
+    "profile": "Profil",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  },
+  "theme": {
+    "switchToLight": "Přepnout na světlý režim",
+    "switchToDark": "Přepnout na tmavý režim"
+  },
+  "search": {
+    "placeholder": "Hledat... (Ctrl+K)",
+    "searching": "Hledám...",
+    "customers": "Zákazníci",
+    "notes": "Poznámky",
+    "tags": "Tagy",
+    "noResults": "Žádné výsledky pro \"{{query}}\""
+  },
+  "actions": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "create": "Vytvořit",
+    "add": "Přidat",
+    "addCustomer": "Přidat zákazníka",
+    "close": "Zavřít",
+    "confirm": "Potvrdit",
+    "back": "Zpět",
+    "backToList": "Zpět na seznam",
+    "upload": "Nahrát",
+    "download": "Stáhnout",
+    "duplicate": "Duplikovat",
+    "search": "Hledat",
+    "filter": "Filtr",
+    "clearFilters": "Zrušit všechny filtry",
+    "show": "Zobrazit",
+    "hide": "Skrýt",
+    "loadMore": "Načíst další"
+  },
+  "status": {
+    "loading": "Načítám...",
+    "saving": "Ukládám...",
+    "deleting": "Mažu...",
+    "uploading": "Nahrávám...",
+    "searching": "Hledám...",
+    "importing": "Importuji..."
+  },
+  "messages": {
+    "saved": "Úspěšně uloženo",
+    "deleted": "Úspěšně smazáno",
+    "error": "Došlo k chybě",
+    "noItems": "Žádné položky",
+    "noResults": "Žádné výsledky pro \"{{query}}\"",
+    "confirmDelete": "Opravdu chcete smazat?",
+    "unsavedChanges": "Máte neuložené změny"
+  },
+  "validation": {
+    "required": "{{field}} je povinné",
+    "minLength": "{{field}} musí mít alespoň {{min}} znaků",
+    "invalidEmail": "Neplatný email",
+    "passwordsNoMatch": "Hesla se neshodují"
+  },
+  "priority": {
+    "low": "Nízká",
+    "medium": "Střední",
+    "high": "Vysoká"
+  },
+  "noteStatus": {
+    "draft": "Koncept",
+    "requires_action": "Vyžaduje akci",
+    "completed": "Dokončeno",
+    "archived": "Archivováno"
+  },
+  "meetingType": {
+    "phone": "Telefonát",
+    "video": "Video hovor",
+    "in_person": "Osobní schůzka",
+    "email": "Email"
+  },
+  "table": {
+    "filter": "Filtr:",
+    "filterPlaceholder": "hledaný text...",
+    "noItems": "Žádné položky nenalezeny",
+    "itemsPerPage": "Položek na stránku:",
+    "showing": "Zobrazeno {{count}} z {{total}}"
+  },
+  "time": {
+    "justNow": "právě teď",
+    "formats": "Formáty: 30 (minuty), 1h, 1.5h, 1h 30m"
+  },
+  "boolean": {
+    "yes": "Ano",
+    "no": "Ne"
+  },
+  "audit": {
+    "title": "Historie změn",
+    "noHistory": "Žádná historie změn",
+    "loading": "Načítám...",
+    "loadMore": "Načíst další ({{remaining}} zbývá)",
+    "field": "Pole",
+    "oldValue": "Původní hodnota",
+    "newValue": "Nová hodnota",
+    "fieldsChanged": "{{count}} pole",
+    "fieldsChanged_plural": "{{count}} polí",
+    "actions": {
+      "INSERT": "Vytvořeno",
+      "UPDATE": "Upraveno",
+      "DELETE": "Smazáno",
+      "attachment_added": "Příloha nahrána",
+      "attachment_removed": "Příloha smazána",
+      "task_added": "Úkol přidán",
+      "task_removed": "Úkol odebrán",
+      "time_entry_added": "Čas přidán",
+      "time_entry_removed": "Čas odebrán"
+    },
+    "messages": {
+      "recordCreated": "Záznam vytvořen",
+      "recordDeleted": "Záznam smazán",
+      "attachmentUploaded": "Příloha nahrána",
+      "attachmentDeleted": "Příloha smazána",
+      "taskAdded": "Úkol přidán",
+      "taskRemoved": "Úkol odebrán",
+      "timeEntryAdded": "Časový záznam přidán",
+      "timeEntryRemoved": "Časový záznam odebrán",
+      "unknownAction": "Neznámá akce"
+    },
+    "labels": {
+      "title": "Název",
+      "name": "Jméno",
+      "file": "Soubor",
+      "task": "Úkol",
+      "duration": "Délka",
+      "description": "Popis"
+    }
+  }
+}

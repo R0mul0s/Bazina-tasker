@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CSidebar,
   CSidebarBrand,
@@ -7,14 +8,17 @@ import {
   CSidebarHeader,
 } from '@coreui/react'
 import { AppSidebarNav } from './AppSidebarNav'
+import Logo, { LogoMini } from '../common/Logo'
 
-import navigation from '../../_nav'
+import getNavigation from '../../_nav'
 
 // Breakpoint pro mobile (lg = 992px)
 const MOBILE_BREAKPOINT = 992
 
 const AppSidebar = ({ sidebarShow, setSidebarShow, unfoldable, setUnfoldable }) => {
+  const { t } = useTranslation('navigation')
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT)
+  const navigation = getNavigation(t)
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,11 +40,12 @@ const AppSidebar = ({ sidebarShow, setSidebarShow, unfoldable, setUnfoldable }) 
       overlaid={isMobile}
     >
       <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/" className="d-flex align-items-center">
+        <CSidebarBrand to="/" className="d-flex align-items-center gap-2">
+          <Logo size={36} className="sidebar-brand-full" />
+          <LogoMini size={32} className="sidebar-brand-narrow" />
           <span className="sidebar-brand-full fs-5 fw-semibold">
-            Bazina Tasker
+            {t('brand')}
           </span>
-          <span className="sidebar-brand-narrow fs-5 fw-semibold">BT</span>
         </CSidebarBrand>
       </CSidebarHeader>
       <AppSidebarNav items={navigation} />

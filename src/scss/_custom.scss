@@ -113,6 +113,16 @@
 $sidebar-width: 256px;
 $sidebar-narrow-width: 64px;
 
+// Sidebar brand - bez podtržení
+.sidebar-brand {
+  text-decoration: none !important;
+
+  &:hover,
+  &:focus {
+    text-decoration: none !important;
+  }
+}
+
 .app-wrapper {
   min-height: 100vh;
 }

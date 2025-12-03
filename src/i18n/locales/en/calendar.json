@@ -1,0 +1,27 @@
+{
+  "title": "Calendar",
+  "buttons": {
+    "today": "Today",
+    "month": "Month",
+    "week": "Week"
+  },
+  "legend": {
+    "title": "Legend",
+    "meetingType": "Meeting type:",
+    "followUpPriority": "Follow-up priority:",
+    "meeting": "Meeting",
+    "phone": "Phone",
+    "email": "Email",
+    "other": "Other"
+  },
+  "modal": {
+    "followUp": "Follow-up",
+    "meeting": "Meeting",
+    "date": "Date:",
+    "customer": "Customer:",
+    "type": "Type:",
+    "priority": "Priority:",
+    "viewNote": "View note"
+  },
+  "moreEvents": "+{{count}} more"
+}

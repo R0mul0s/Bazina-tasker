@@ -1,11 +1,13 @@
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 import routes from '../../routes'
 
 const AppBreadcrumb = () => {
+  const { t } = useTranslation('navigation')
   const location = useLocation()
 
-  const getRouteName = (pathname, routes) => {
+  const getRouteNameKey = (pathname, routes) => {
     const currentRoute = routes.find((route) => {
       // Přesná shoda
       if (route.path === pathname) return true
@@ -18,7 +20,7 @@ const AppBreadcrumb = () => {
         return part === pathParts[i]
       })
     })
-    return currentRoute?.name
+    return currentRoute?.nameKey
   }
 
   const getBreadcrumbs = (location) => {
@@ -27,12 +29,12 @@ const AppBreadcrumb = () => {
 
     pathParts.reduce((prev, curr, index) => {
       const currentPathname = `${prev}/${curr}`
-      const routeName = getRouteName(currentPathname, routes)
+      const nameKey = getRouteNameKey(currentPathname, routes)
 
-      if (routeName) {
+      if (nameKey) {
         breadcrumbs.push({
           pathname: currentPathname,
-          name: routeName,
+          nameKey: nameKey,
           active: index === pathParts.length - 1,
         })
       }
@@ -47,7 +49,7 @@ const AppBreadcrumb = () => {
 
   return (
     <CBreadcrumb className="my-0">
-      <CBreadcrumbItem href="/">Domů</CBreadcrumbItem>
+      <CBreadcrumbItem href="/">{t('routes.home')}</CBreadcrumbItem>
       {breadcrumbs.map((breadcrumb, index) => (
         <CBreadcrumbItem
           {...(breadcrumb.active
@@ -55,7 +57,7 @@ const AppBreadcrumb = () => {
             : { href: breadcrumb.pathname })}
           key={index}
         >
-          {breadcrumb.name}
+          {t(breadcrumb.nameKey)}
         </CBreadcrumbItem>
       ))}
     </CBreadcrumb>

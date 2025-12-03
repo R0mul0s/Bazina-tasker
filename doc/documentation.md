@@ -17,6 +17,7 @@
 | Styling | CoreUI + SCSS | Responzivní design (Bootstrap based) |
 | Ikony | CoreUI Icons | Ikonový set |
 | Rich Text | TipTap | Editor poznámek |
+| i18n | react-i18next | Multijazyčnost (CS/EN) |
 | Backend | Supabase | BaaS platforma |
 | Databáze | PostgreSQL (Supabase) | Ukládání dat |
 | Autentizace | Supabase Auth | Email + Google SSO |
@@ -44,6 +45,14 @@ CoreUI poskytuje hotové komponenty, které využijeme:
 | CPagination | Stránkování |
 | CBreadcrumb | Drobečková navigace |
 | CAlert | Upozornění |
+
+### Vlastní komponenty
+
+| Komponenta | Popis |
+|------------|-------|
+| SmartTable | Univerzální tabulka s filtrováním, řazením a stránkováním (CoreUI style) |
+| CsvImportModal | Modal pro hromadný import zákazníků z CSV |
+| Logo | SVG logo aplikace s podporou světlého/tmavého motivu |
 
 ---
 
@@ -198,7 +207,8 @@ bazina-tasker/
 │   │   │   ├── CustomerCard.jsx
 │   │   │   ├── CustomerForm.jsx
 │   │   │   ├── CustomerDetail.jsx
-│   │   │   └── CustomerSearch.jsx
+│   │   │   ├── CustomerSearch.jsx
+│   │   │   └── CsvImportModal.jsx # Import zákazníků z CSV
 │   │   ├── notes/                 # Poznámky
 │   │   │   ├── NoteList.jsx
 │   │   │   ├── NoteCard.jsx
@@ -220,7 +230,9 @@ bazina-tasker/
 │   │   ├── dashboard/             # Dashboard komponenty
 │   │   │   └── DashboardCharts.jsx
 │   │   ├── common/                # Sdílené komponenty
-│   │   │   └── AuditHistory.jsx
+│   │   │   ├── AuditHistory.jsx
+│   │   │   ├── SmartTable.jsx     # Tabulka s filtrováním, řazením, stránkováním
+│   │   │   └── Logo.jsx           # SVG logo
 │   │   └── time/                  # Časové záznamy
 │   │       └── TimeEntryModal.jsx
 │   ├── views/                     # Stránky (CoreUI konvence)
@@ -248,7 +260,24 @@ bazina-tasker/
 │   │   ├── useTimeEntries.js
 │   │   ├── useAuditLog.js
 │   │   ├── useDashboardStats.js
-│   │   └── useDebounce.js
+│   │   ├── useDebounce.js
+│   │   └── useLocaleFormat.js     # Formátování dat podle locale
+│   ├── i18n/                      # Internacionalizace
+│   │   ├── index.js               # Konfigurace i18next
+│   │   └── locales/               # Překlady
+│   │       ├── cs/                # Čeština
+│   │       │   ├── common.json
+│   │       │   ├── auth.json
+│   │       │   ├── navigation.json
+│   │       │   ├── customers.json
+│   │       │   ├── notes.json
+│   │       │   ├── tags.json
+│   │       │   ├── calendar.json
+│   │       │   ├── settings.json
+│   │       │   ├── dashboard.json
+│   │       │   └── audit.json
+│   │       └── en/                # Angličtina
+│   │           └── ... (stejná struktura)
 │   ├── lib/
 │   │   ├── supabase.js           # Supabase client
 │   │   └── utils.js              # Helper funkce
@@ -599,15 +628,55 @@ bazina-tasker/
 
 ---
 
-### FÁZE 14: Testování a optimalizace ✅
+### FÁZE 14: Pokročilé funkce ✅
+**Cíl:** Rozšířené možnosti správy dat
+
+#### 14.1 SmartTable komponenta
+- [x] Univerzální tabulková komponenta (CoreUI style)
+- [x] Filtrování ve sloupcích
+- [x] Globální textový filtr
+- [x] Řazení podle sloupců (asc/desc)
+- [x] Stránkování s nastavitelným počtem položek
+- [x] Výchozí řazení (defaultSort)
+- [x] Výběr řádků (selectable)
+- [x] Custom renderování buněk (scopedSlots)
+
+#### 14.2 CSV Import zákazníků
+- [x] CsvImportModal komponenta
+- [x] Drag & drop nahrávání CSV souborů
+- [x] Automatické mapování sloupců (CS/EN varianty názvů)
+- [x] Ruční úprava mapování sloupců
+- [x] Náhled dat před importem
+- [x] Podpora UTF-8 a quoted values
+- [x] Statistika importu (úspěšné/neúspěšné)
+- [x] Demo CSV soubor
+
+#### 14.3 Duplikování poznámek
+- [x] Tlačítko pro duplikování poznámky
+- [x] Kopírování všech dat včetně tagů
+- [x] Automatický prefix "[Kopie]" v názvu
+- [x] Zachování vazby na zákazníka
+
+#### 14.4 Multijazyčnost (i18n)
+- [x] Integrace react-i18next
+- [x] Automatická detekce jazyka prohlížeče
+- [x] Podpora češtiny (výchozí) a angličtiny
+- [x] Přepínač jazyka v nastavení
+- [x] Lokalizace všech textů v aplikaci
+- [x] Formátování dat podle locale (useLocaleFormat hook)
+- [x] Namespace struktura překladů
+
+---
+
+### FÁZE 15: Testování a optimalizace ✅
 **Cíl:** Stabilní a rychlá aplikace
 
-#### 14.1 Testování
+#### 15.1 Testování
 - [x] Manuální testování všech funkcí
 - [x] Testování na různých prohlížečích
 - [x] Testování na mobilních zařízeních
 
-#### 14.2 Optimalizace
+#### 15.2 Optimalizace
 - [x] Lazy loading stránek
 - [x] Optimalizace obrázků a assetů
 - [x] Caching strategií
@@ -615,17 +684,17 @@ bazina-tasker/
 
 ---
 
-### FÁZE 15: Deployment ✅
+### FÁZE 16: Deployment ✅
 **Cíl:** Produkční nasazení
 
 **Produkční URL:** https://bazina-tasker.rhsoft.cz/
 
-#### 15.1 Příprava
+#### 16.1 Příprava
 - [x] Environment variables pro produkci
 - [x] Build optimalizace
 - [ ] Error tracking (Sentry - volitelné)
 
-#### 15.2 Deployment
+#### 16.2 Deployment
 - [x] Nasazení na Vercel
 - [x] Konfigurace vlastní domény (bazina-tasker.rhsoft.cz)
 - [x] SSL certifikát (automaticky)
@@ -661,6 +730,10 @@ VITE_SUPABASE_ANON_KEY=xxxxx
 
     "@tiptap/react": "^2.x",
     "@tiptap/starter-kit": "^2.x",
+
+    "i18next": "^23.x",
+    "react-i18next": "^14.x",
+    "i18next-browser-languagedetector": "^7.x",
 
     "date-fns": "^3.x",
     "classnames": "^2.x"
@@ -775,7 +848,7 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 **Produkční URL:** https://bazina-tasker.rhsoft.cz/
 
-### Dokončené fáze (15/15) ✅
+### Dokončené fáze (16/16) ✅
 | Fáze | Název | Stav |
 |------|-------|------|
 | 1 | Inicializace projektu | ✅ Dokončeno |
@@ -791,15 +864,19 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 | 11 | Responzivita a UX | ✅ Dokončeno |
 | 12 | Evidence času | ✅ Dokončeno |
 | 13 | Audit log | ✅ Dokončeno |
-| 14 | Testování a optimalizace | ✅ Dokončeno |
-| 15 | Deployment | ✅ Dokončeno |
+| 14 | Pokročilé funkce | ✅ Dokončeno |
+| 15 | Testování a optimalizace | ✅ Dokončeno |
+| 16 | Deployment | ✅ Dokončeno |
 
 ### Klíčové funkce aplikace
-- **Správa zákazníků** - CRUD operace, vyhledávání, přílohy
-- **Poznámky ze schůzek** - Rich text editor, tagy, úkoly, přílohy
+- **Správa zákazníků** - CRUD operace, vyhledávání, přílohy, CSV import
+- **Poznámky ze schůzek** - Rich text editor, tagy, úkoly, přílohy, duplikování
 - **Evidence času** - Sledování stráveného času na poznámkách
+- **Pokročilé filtry** - Filtrování podle více kritérií, výchozí řazení
+- **SmartTable** - Univerzální tabulka s filtrováním, řazením a stránkováním
 - **Dashboard** - Statistiky, grafy, nadcházející úkoly
 - **Audit log** - Historie všech změn
 - **Autentizace** - Email/heslo, Google SSO
 - **Dark mode** - Přepínání motivu
+- **Multijazyčnost** - Podpora češtiny a angličtiny (i18n)
 - **Optimalizace** - Lazy loading, skeleton loading, caching, bundle splitting

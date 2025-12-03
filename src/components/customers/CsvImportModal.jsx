@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CModal,
   CModalHeader,
@@ -18,40 +19,6 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCloudUpload, cilFile, cilCheckCircle, cilXCircle } from '@coreui/icons'
-
-// Parsování CSV
-const parseCSV = (text) => {
-  const lines = text.split(/\r?\n/).filter((line) => line.trim())
-  if (lines.length < 2) {
-    return { headers: [], rows: [], error: 'CSV musí obsahovat hlavičku a alespoň jeden řádek dat.' }
-  }
-
-  // Parsování s podporou quoted values
-  const parseLine = (line) => {
-    const result = []
-    let current = ''
-    let inQuotes = false
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i]
-      if (char === '"') {
-        inQuotes = !inQuotes
-      } else if ((char === ',' || char === ';') && !inQuotes) {
-        result.push(current.trim())
-        current = ''
-      } else {
-        current += char
-      }
-    }
-    result.push(current.trim())
-    return result
-  }
-
-  const headers = parseLine(lines[0])
-  const rows = lines.slice(1).map((line) => parseLine(line))
-
-  return { headers, rows, error: null }
-}
 
 // Mapování sloupců CSV na databázové sloupce
 const COLUMN_MAPPING = {
@@ -105,6 +72,8 @@ const normalizeHeader = (header) => {
 }
 
 const CsvImportModal = ({ visible, onClose, onImport }) => {
+  const { t } = useTranslation('customers')
+  const { t: tCommon } = useTranslation('common')
   const fileInputRef = useRef(null)
   const [file, setFile] = useState(null)
   const [parsedData, setParsedData] = useState(null)
@@ -112,6 +81,40 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
   const [importing, setImporting] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+
+  // Parsování CSV
+  const parseCSV = (text) => {
+    const lines = text.split(/\r?\n/).filter((line) => line.trim())
+    if (lines.length < 2) {
+      return { headers: [], rows: [], error: t('import.csvError') }
+    }
+
+    // Parsování s podporou quoted values
+    const parseLine = (line) => {
+      const result = []
+      let current = ''
+      let inQuotes = false
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        if (char === '"') {
+          inQuotes = !inQuotes
+        } else if ((char === ',' || char === ';') && !inQuotes) {
+          result.push(current.trim())
+          current = ''
+        } else {
+          current += char
+        }
+      }
+      result.push(current.trim())
+      return result
+    }
+
+    const headers = parseLine(lines[0])
+    const rows = lines.slice(1).map((line) => parseLine(line))
+
+    return { headers, rows, error: null }
+  }
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -123,7 +126,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
 
     const reader = new FileReader()
     reader.onerror = () => {
-      setError('Chyba při čtení souboru')
+      setError(t('import.fileReadError'))
     }
     reader.onload = (event) => {
       const text = event.target.result
@@ -157,7 +160,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
     const hasName = Object.values(columnMap).includes('name')
 
     if (!hasName) {
-      setError('Je nutné namapovat alespoň sloupec "Jméno".')
+      setError(t('import.requiredName'))
       return
     }
 
@@ -181,7 +184,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
       .filter((c) => c.name) // Filtrovat pouze záznamy s jménem
 
     if (customersData.length === 0) {
-      setError('Žádné platné záznamy k importu.')
+      setError(t('import.noValidRecords'))
       setImporting(false)
       return
     }
@@ -201,18 +204,18 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
   }
 
   const dbFields = [
-    { key: 'name', label: 'Jméno *' },
-    { key: 'company', label: 'Firma' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Telefon' },
-    { key: 'address', label: 'Adresa' },
-    { key: 'notes', label: 'Poznámky' },
+    { key: 'name', label: `${t('form.name')} *` },
+    { key: 'company', label: t('form.company') },
+    { key: 'email', label: t('form.email') },
+    { key: 'phone', label: t('form.phone') },
+    { key: 'address', label: t('form.address') },
+    { key: 'notes', label: t('form.notes') },
   ]
 
   return (
     <CModal visible={visible} onClose={handleClose} size="lg" backdrop="static">
       <CModalHeader>
-        <CModalTitle>Import zákazníků z CSV</CModalTitle>
+        <CModalTitle>{t('import.title')}</CModalTitle>
       </CModalHeader>
       <CModalBody>
         {/* Výsledek importu */}
@@ -221,10 +224,10 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
             <div className="d-flex align-items-center gap-2">
               <CIcon icon={result.imported > 0 ? cilCheckCircle : cilXCircle} size="lg" />
               <div>
-                <strong>Import dokončen</strong>
+                <strong>{t('import.importComplete')}</strong>
                 <div>
-                  Importováno: {result.imported} zákazníků
-                  {result.failed > 0 && <span className="text-danger"> | Selhalo: {result.failed}</span>}
+                  {t('import.imported', { count: result.imported })}
+                  {result.failed > 0 && <span className="text-danger"> | {t('import.failed', { count: result.failed })}</span>}
                 </div>
               </div>
             </div>
@@ -254,10 +257,10 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
             />
             <CIcon icon={cilCloudUpload} size="3xl" className="text-secondary mb-3" />
             <div className="mb-2">
-              <strong>Klikněte pro výběr CSV souboru</strong>
+              <strong>{t('import.selectFile')}</strong>
             </div>
             <small className="text-secondary">
-              Podporované sloupce: Jméno, Firma, Email, Telefon, Adresa, Poznámky
+              {t('import.supportedColumns')}
             </small>
           </div>
         )}
@@ -267,20 +270,20 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
           <div className="d-flex align-items-center gap-2 mb-3 p-2 bg-light rounded">
             <CIcon icon={cilFile} />
             <span>{file.name}</span>
-            <small className="text-secondary">({parsedData?.rows.length || 0} záznamů)</small>
+            <small className="text-secondary">({parsedData?.rows.length || 0} {t('import.records')})</small>
           </div>
         )}
 
         {/* Column mapping */}
         {parsedData && !result && (
           <>
-            <h6 className="mb-3">Mapování sloupců</h6>
+            <h6 className="mb-3">{t('import.columnMapping')}</h6>
             <CTable small bordered>
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell>Sloupec v CSV</CTableHeaderCell>
-                  <CTableHeaderCell>Cílové pole</CTableHeaderCell>
-                  <CTableHeaderCell>Ukázka dat</CTableHeaderCell>
+                  <CTableHeaderCell>{t('import.csvColumn')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('import.targetField')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('import.sampleData')}</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -304,7 +307,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
                           })
                         }}
                       >
-                        <option value="">-- Přeskočit --</option>
+                        <option value="">{t('import.skip')}</option>
                         {dbFields.map((field) => (
                           <option key={field.key} value={field.key}>
                             {field.label}
@@ -321,7 +324,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
             </CTable>
 
             {/* Preview */}
-            <h6 className="mb-2 mt-4">Náhled dat (prvních 5 záznamů)</h6>
+            <h6 className="mb-2 mt-4">{t('import.preview')}</h6>
             <CTable small bordered responsive>
               <CTableHead>
                 <CTableRow>
@@ -358,25 +361,25 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
         {importing && (
           <div className="text-center py-4">
             <CSpinner className="mb-3" />
-            <div>Importuji zákazníky...</div>
+            <div>{t('import.importing')}</div>
           </div>
         )}
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={handleClose}>
-          {result ? 'Zavřít' : 'Zrušit'}
+          {result ? tCommon('actions.close') : tCommon('actions.cancel')}
         </CButton>
         {parsedData && !result && (
           <CButton color="primary" onClick={handleImport} disabled={importing}>
             {importing ? (
               <>
                 <CSpinner size="sm" className="me-2" />
-                Importuji...
+                {tCommon('status.importing')}
               </>
             ) : (
               <>
                 <CIcon icon={cilCloudUpload} className="me-2" />
-                Importovat {parsedData.rows.length} záznamů
+                {t('import.import', { count: parsedData.rows.length })}
               </>
             )}
           </CButton>

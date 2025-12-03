@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -20,6 +21,8 @@ import { useTags } from '../../hooks/useTags'
 import TagForm from '../../components/tags/TagForm'
 
 const Tags = () => {
+  const { t } = useTranslation('tags')
+  const { t: tCommon } = useTranslation('common')
   const { tags, loading, createTag, updateTag, deleteTag } = useTags()
 
   const [showForm, setShowForm] = useState(false)
@@ -62,16 +65,16 @@ const Tags = () => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Tagy</h2>
+        <h2 className="mb-0">{t('title')}</h2>
         <CButton color="primary" onClick={() => setShowForm(true)}>
           <CIcon icon={cilPlus} className="me-2" />
-          Nový tag
+          {t('newTag')}
         </CButton>
       </div>
 
       <CCard>
         <CCardHeader>
-          <strong>Seznam tagů ({tags.length})</strong>
+          <strong>{t('tagsList')} ({tags.length})</strong>
         </CCardHeader>
         <CCardBody>
           {tags.length === 0 ? (
@@ -79,13 +82,13 @@ const Tags = () => {
               <div className="empty-state__icon">
                 <CIcon icon={cilTags} size="3xl" />
               </div>
-              <div className="empty-state__title">Žádné tagy</div>
+              <div className="empty-state__title">{t('noTags')}</div>
               <div className="empty-state__description">
-                Zatím nemáte žádné tagy. Vytvořte tagy pro lepší organizaci poznámek.
+                {t('noTagsDescription')}
               </div>
               <CButton color="primary" onClick={() => setShowForm(true)}>
                 <CIcon icon={cilPlus} className="me-2" />
-                Vytvořit tag
+                {t('createTag')}
               </CButton>
             </div>
           ) : (
@@ -101,7 +104,7 @@ const Tags = () => {
                         color="light"
                         size="sm"
                         onClick={() => handleEdit(tag)}
-                        title="Upravit"
+                        title={tCommon('actions.edit')}
                       >
                         <CIcon icon={cilPencil} />
                       </CButton>
@@ -110,7 +113,7 @@ const Tags = () => {
                         size="sm"
                         className="text-danger"
                         onClick={() => setDeleteModal({ show: true, tag })}
-                        title="Smazat"
+                        title={tCommon('actions.delete')}
                       >
                         <CIcon icon={cilTrash} />
                       </CButton>
@@ -137,17 +140,17 @@ const Tags = () => {
         onClose={() => setDeleteModal({ show: false, tag: null })}
       >
         <CModalHeader>
-          <CModalTitle>Smazat tag</CModalTitle>
+          <CModalTitle>{t('delete.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat tag{' '}
+          {t('delete.confirm')}{' '}
           <span className={`tag-badge tag-badge--${deleteModal.tag?.color || 'gray'}`}>
             {deleteModal.tag?.name}
           </span>
           ?
           <br />
           <small className="text-secondary">
-            Tag bude odebrán ze všech poznámek, ale poznámky zůstanou zachovány.
+            {t('delete.info')}
           </small>
         </CModalBody>
         <CModalFooter>
@@ -155,10 +158,10 @@ const Tags = () => {
             color="secondary"
             onClick={() => setDeleteModal({ show: false, tag: null })}
           >
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleDelete}>
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </CModalFooter>
       </CModal>

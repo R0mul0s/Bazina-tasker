@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CButton,
   CCard,
@@ -13,13 +14,17 @@ import {
   CRow,
   CAlert,
   CSpinner,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilLockLocked, cilUser, cilGlobeAlt } from '@coreui/icons'
 import { useAuth } from '../../context/AuthContext'
 
 const Register = () => {
-  const navigate = useNavigate()
+  const { t, i18n } = useTranslation('auth')
   const { user, signUp, signInWithGoogle, loading } = useAuth()
 
   const [fullName, setFullName] = useState('')
@@ -29,6 +34,11 @@ const Register = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang)
+    localStorage.setItem('bazina-tasker-language', lang)
+  }
 
   // Pokud je uživatel přihlášen, redirect na dashboard
   if (user && !loading) {
@@ -42,12 +52,12 @@ const Register = () => {
 
     // Validace
     if (password !== confirmPassword) {
-      setError('Hesla se neshodují')
+      setError(t('errors.passwordsNoMatch'))
       return
     }
 
     if (password.length < 6) {
-      setError('Heslo musí mít alespoň 6 znaků')
+      setError(t('errors.passwordTooShort'))
       return
     }
 
@@ -59,10 +69,10 @@ const Register = () => {
       setError(error.message)
       setIsLoading(false)
     } else if (data?.user?.identities?.length === 0) {
-      setError('Uživatel s tímto emailem již existuje')
+      setError(t('register.userExists'))
       setIsLoading(false)
     } else {
-      setSuccess('Registrace úspěšná! Zkontrolujte svůj email pro potvrzení účtu.')
+      setSuccess(t('register.success'))
       setIsLoading(false)
     }
   }
@@ -80,11 +90,35 @@ const Register = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8} lg={6} xl={5}>
+            {/* Language switcher */}
+            <div className="d-flex justify-content-end mb-3">
+              <CDropdown>
+                <CDropdownToggle color="light" size="sm">
+                  <CIcon icon={cilGlobeAlt} className="me-1" />
+                  {i18n.language === 'cs' ? 'CZ' : 'EN'}
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem
+                    onClick={() => handleLanguageChange('cs')}
+                    active={i18n.language === 'cs'}
+                  >
+                    Čeština
+                  </CDropdownItem>
+                  <CDropdownItem
+                    onClick={() => handleLanguageChange('en')}
+                    active={i18n.language === 'en'}
+                  >
+                    English
+                  </CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            </div>
+
             <CCard className="auth-page__card">
               <CCardBody className="p-4">
                 <div className="auth-page__logo">
-                  <h1>Bazina Tasker</h1>
-                  <p className="text-secondary">Vytvořte si nový účet</p>
+                  <h1>{t('register.title')}</h1>
+                  <p className="text-secondary">{t('register.subtitle')}</p>
                 </div>
 
                 {error && (
@@ -106,7 +140,7 @@ const Register = () => {
                     </CInputGroupText>
                     <CFormInput
                       type="text"
-                      placeholder="Celé jméno"
+                      placeholder={t('register.fullName')}
                       autoComplete="name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -118,7 +152,7 @@ const Register = () => {
                     <CInputGroupText>@</CInputGroupText>
                     <CFormInput
                       type="email"
-                      placeholder="Email"
+                      placeholder={t('register.email')}
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -132,7 +166,7 @@ const Register = () => {
                     </CInputGroupText>
                     <CFormInput
                       type="password"
-                      placeholder="Heslo"
+                      placeholder={t('register.password')}
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -146,7 +180,7 @@ const Register = () => {
                     </CInputGroupText>
                     <CFormInput
                       type="password"
-                      placeholder="Potvrdit heslo"
+                      placeholder={t('register.confirmPassword')}
                       autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -160,12 +194,12 @@ const Register = () => {
                     className="w-100 mb-3"
                     disabled={isLoading}
                   >
-                    {isLoading ? <CSpinner size="sm" /> : 'Zaregistrovat se'}
+                    {isLoading ? <CSpinner size="sm" /> : t('register.submit')}
                   </CButton>
                 </CForm>
 
                 <div className="auth-page__divider">
-                  <span>nebo</span>
+                  <span>{t('login.or')}</span>
                 </div>
 
                 <CButton
@@ -191,12 +225,12 @@ const Register = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Pokračovat přes Google
+                  {t('register.withGoogle')}
                 </CButton>
 
                 <div className="text-center">
-                  <span className="text-secondary">Již máte účet? </span>
-                  <Link to="/login">Přihlaste se</Link>
+                  <span className="text-secondary">{t('register.hasAccount')} </span>
+                  <Link to="/login">{t('register.login')}</Link>
                 </div>
               </CCardBody>
             </CCard>

@@ -1,0 +1,67 @@
+{
+  "title": "Change history",
+  "noHistory": "No change history",
+  "loadMore": "Load more ({{remaining}} remaining)",
+  "loading": "Loading...",
+  "fields": "{{count}} fields",
+  "actions": {
+    "INSERT": "Created",
+    "UPDATE": "Updated",
+    "DELETE": "Deleted",
+    "attachment_added": "Attachment added",
+    "attachment_removed": "Attachment removed",
+    "task_added": "Task added",
+    "task_removed": "Task removed",
+    "time_entry_added": "Time added",
+    "time_entry_removed": "Time removed"
+  },
+  "table": {
+    "field": "Field",
+    "oldValue": "Old value",
+    "newValue": "New value"
+  },
+  "messages": {
+    "recordCreated": "Record created",
+    "recordDeleted": "Record deleted",
+    "attachmentUploaded": "Attachment uploaded",
+    "attachmentDeleted": "Attachment deleted",
+    "taskAdded": "Task added",
+    "taskRemoved": "Task removed",
+    "timeEntryAdded": "Time entry added",
+    "timeEntryRemoved": "Time entry removed",
+    "unknownAction": "Unknown action"
+  },
+  "labels": {
+    "title": "Title",
+    "name": "Name",
+    "file": "File",
+    "task": "Task",
+    "duration": "Duration",
+    "description": "Description"
+  },
+  "tables": {
+    "notes": "Note",
+    "customers": "Customer",
+    "tags": "Tag",
+    "note_tasks": "Task"
+  },
+  "fieldLabels": {
+    "title": "Title",
+    "content": "Content",
+    "status": "Status",
+    "priority": "Priority",
+    "meeting_type": "Meeting type",
+    "meeting_date": "Meeting date",
+    "follow_up_date": "Follow-up",
+    "name": "Name",
+    "company": "Company",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "notes": "Notes",
+    "text": "Text",
+    "is_completed": "Completed",
+    "order": "Order",
+    "color": "Color"
+  }
+}

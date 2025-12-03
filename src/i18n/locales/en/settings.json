@@ -1,0 +1,42 @@
+{
+  "title": "Settings",
+  "profile": {
+    "title": "Profile",
+    "email": "Email",
+    "emailHint": "Email cannot be changed.",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Enter your name",
+    "saveChanges": "Save changes",
+    "saving": "Saving...",
+    "saved": "Profile saved successfully.",
+    "error": "Error saving:"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "colorMode": "Color mode",
+    "light": "Light",
+    "dark": "Dark",
+    "hint": "Choose your preferred color mode. Settings are saved automatically."
+  },
+  "language": {
+    "title": "Language",
+    "label": "Application language",
+    "hint": "Select your preferred interface language.",
+    "cs": "Čeština",
+    "en": "English"
+  },
+  "password": {
+    "title": "Change password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm new password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "minLength": "Minimum 6 characters.",
+    "change": "Change password",
+    "changing": "Changing password...",
+    "success": "Password changed successfully.",
+    "error": "Error:",
+    "tooShort": "New password must be at least 6 characters.",
+    "noMatch": "Passwords do not match."
+  }
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -41,25 +42,12 @@ import CustomerForm from '../../components/customers/CustomerForm'
 import NoteForm from '../../components/notes/NoteForm'
 import AttachmentList from '../../components/notes/AttachmentList'
 import AuditHistory from '../../components/common/AuditHistory'
-import { formatDate, formatRelativeTime } from '../../lib/utils'
+import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const priorityColors = {
   low: 'success',
   medium: 'warning',
   high: 'danger',
-}
-
-const priorityLabels = {
-  low: 'Nízká',
-  medium: 'Střední',
-  high: 'Vysoká',
-}
-
-const statusLabels = {
-  draft: 'Koncept',
-  requires_action: 'Vyžaduje akci',
-  completed: 'Dokončeno',
-  archived: 'Archivováno',
 }
 
 const statusColors = {
@@ -70,9 +58,12 @@ const statusColors = {
 }
 
 const CustomerDetail = () => {
+  const { t } = useTranslation('customers')
+  const { t: tCommon } = useTranslation('common')
   const { id } = useParams()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+  const { formatDate, formatRelativeTime } = useLocaleFormat()
 
   const { customers, updateCustomer, deleteCustomer } = useCustomers()
   const { notes, loading: notesLoading, createNote, updateNote } = useNotes(id)
@@ -146,13 +137,13 @@ const CustomerDetail = () => {
   }, [id, uploadFile])
 
   const handlePasteUpload = async (file) => {
-    setPasteMessage('Nahrávání obrázku...')
+    setPasteMessage(t('attachments.uploadingImage'))
     const { data, error } = await uploadFile(id, file)
     if (!error && data) {
       setAttachments((prev) => [data, ...prev])
-      setPasteMessage('Obrázek nahrán!')
+      setPasteMessage(t('attachments.imageUploaded'))
     } else {
-      setPasteMessage('Chyba při nahrávání: ' + (error || 'Neznámá chyba'))
+      setPasteMessage(t('attachments.uploadError') + ' ' + (error || 'Unknown error'))
     }
     setTimeout(() => setPasteMessage(''), 3000)
   }
@@ -234,9 +225,9 @@ const CustomerDetail = () => {
   if (!customer) {
     return (
       <CAlert color="danger">
-        Zákazník nebyl nalezen.
+        {t('detail.customerNotFound')}
         <CButton color="link" onClick={() => navigate('/customers')}>
-          Zpět na seznam
+          {tCommon('actions.backToList')}
         </CButton>
       </CAlert>
     )
@@ -259,11 +250,11 @@ const CustomerDetail = () => {
         <div className="d-flex gap-2">
           <CButton color="primary" onClick={() => setShowCustomerForm(true)}>
             <CIcon icon={cilPencil} className="me-2" />
-            Upravit
+            {tCommon('actions.edit')}
           </CButton>
           <CButton color="danger" variant="outline" onClick={() => setDeleteModal(true)}>
             <CIcon icon={cilTrash} className="me-2" />
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </div>
       </div>
@@ -273,12 +264,12 @@ const CustomerDetail = () => {
           {/* Kontaktní informace */}
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Kontaktní informace</strong>
+              <strong>{t('detail.contactInfo')}</strong>
             </CCardHeader>
             <CCardBody>
               {customer.email && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Email</small>
+                  <small className="text-secondary d-block">{t('detail.email')}</small>
                   <div className="d-flex align-items-center gap-2">
                     <CIcon icon={cilEnvelopeClosed} />
                     <a href={`mailto:${customer.email}`}>{customer.email}</a>
@@ -288,7 +279,7 @@ const CustomerDetail = () => {
 
               {customer.phone && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Telefon</small>
+                  <small className="text-secondary d-block">{t('detail.phone')}</small>
                   <div className="d-flex align-items-center gap-2">
                     <CIcon icon={cilPhone} />
                     <a href={`tel:${customer.phone}`}>{customer.phone}</a>
@@ -298,7 +289,7 @@ const CustomerDetail = () => {
 
               {customer.address && (
                 <div className="mb-3">
-                  <small className="text-secondary d-block">Adresa</small>
+                  <small className="text-secondary d-block">{t('detail.address')}</small>
                   <div className="d-flex align-items-center gap-2">
                     <CIcon icon={cilLocationPin} />
                     <span>{customer.address}</span>
@@ -307,7 +298,7 @@ const CustomerDetail = () => {
               )}
 
               {!customer.email && !customer.phone && !customer.address && (
-                <p className="text-secondary mb-0">Žádné kontaktní údaje</p>
+                <p className="text-secondary mb-0">{t('detail.noContactInfo')}</p>
               )}
             </CCardBody>
           </CCard>
@@ -316,7 +307,7 @@ const CustomerDetail = () => {
           {customer.notes && (
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>Poznámky</strong>
+                <strong>{t('detail.notes')}</strong>
               </CCardHeader>
               <CCardBody>
                 <p className="mb-0">{customer.notes}</p>
@@ -329,7 +320,7 @@ const CustomerDetail = () => {
             <CCardHeader className="d-flex justify-content-between align-items-center">
               <strong>
                 <CIcon icon={cilFile} className="me-2" />
-                Dokumenty ({attachments.length})
+                {t('detail.documents')} ({attachments.length})
               </strong>
               <CButton
                 color="primary"
@@ -342,7 +333,7 @@ const CustomerDetail = () => {
                 ) : (
                   <>
                     <CIcon icon={cilCloudUpload} className="me-1" />
-                    Nahrát
+                    {tCommon('actions.upload')}
                   </>
                 )}
               </CButton>
@@ -358,7 +349,7 @@ const CustomerDetail = () => {
             <CCardBody>
               {pasteMessage && (
                 <CAlert
-                  color={pasteMessage.includes('Chyba') ? 'danger' : 'info'}
+                  color={pasteMessage.includes(t('attachments.uploadError')) ? 'danger' : 'info'}
                   className="mb-3"
                 >
                   {pasteMessage}
@@ -374,10 +365,10 @@ const CustomerDetail = () => {
                     <CIcon icon={cilCloudUpload} size="xl" />
                   </div>
                   <div className="attachment-dropzone__text">
-                    Klikněte pro nahrání nebo vložte obrázek (Ctrl+V)
+                    {t('attachments.uploadHint')}
                   </div>
                   <small className="text-secondary d-block mt-2">
-                    Smlouvy, dokumenty, obrázky...
+                    {t('attachments.documentsHint')}
                   </small>
                 </div>
               ) : (
@@ -396,10 +387,10 @@ const CustomerDetail = () => {
           {/* Poznámky ze schůzek */}
           <CCard className="mb-4">
             <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Poznámky ze schůzek ({notes.length})</strong>
+              <strong>{t('detail.meetingNotes')} ({notes.length})</strong>
               <CButton color="primary" size="sm" onClick={() => setShowNoteForm(true)}>
                 <CIcon icon={cilPlus} className="me-1" />
-                Nová poznámka
+                {t('detail.newNote')}
               </CButton>
             </CCardHeader>
             <CCardBody>
@@ -412,13 +403,13 @@ const CustomerDetail = () => {
                   <div className="empty-state__icon">
                     <CIcon icon={cilNotes} size="3xl" />
                   </div>
-                  <div className="empty-state__title">Žádné poznámky</div>
+                  <div className="empty-state__title">{t('detail.noNotes')}</div>
                   <div className="empty-state__description">
-                    Zatím nemáte žádné poznámky pro tohoto zákazníka.
+                    {t('detail.noNotesDescription')}
                   </div>
                   <CButton color="primary" onClick={() => setShowNoteForm(true)}>
                     <CIcon icon={cilPlus} className="me-2" />
-                    Vytvořit poznámku
+                    {t('detail.createNote')}
                   </CButton>
                 </div>
               ) : (
@@ -434,10 +425,10 @@ const CustomerDetail = () => {
                           <div className="d-flex align-items-center gap-2 mb-1">
                             <strong>{note.title}</strong>
                             <CBadge color={statusColors[note.status]} size="sm">
-                              {statusLabels[note.status]}
+                              {tCommon(`noteStatus.${note.status}`)}
                             </CBadge>
                             <CBadge color={priorityColors[note.priority]} size="sm">
-                              {priorityLabels[note.priority]}
+                              {tCommon(`priority.${note.priority}`)}
                             </CBadge>
                           </div>
                           <div className="text-secondary small mb-1">
@@ -464,7 +455,7 @@ const CustomerDetail = () => {
                           {note.tasks?.length > 0 && (
                             <div className="small text-secondary">
                               <CIcon icon={cilCheckCircle} size="sm" className="me-1" />
-                              {note.tasks.filter((t) => t.is_completed).length}/{note.tasks.length} úkolů
+                              {note.tasks.filter((t) => t.is_completed).length}/{note.tasks.length}
                             </div>
                           )}
                         </div>
@@ -475,7 +466,7 @@ const CustomerDetail = () => {
                             e.stopPropagation()
                             handleNoteEdit(note)
                           }}
-                          title="Upravit"
+                          title={tCommon('actions.edit')}
                         >
                           <CIcon icon={cilPencil} />
                         </CButton>
@@ -518,21 +509,21 @@ const CustomerDetail = () => {
       {/* Potvrzení smazání */}
       <CModal visible={deleteModal} onClose={() => setDeleteModal(false)}>
         <CModalHeader>
-          <CModalTitle>Smazat zákazníka</CModalTitle>
+          <CModalTitle>{t('delete.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Opravdu chcete smazat zákazníka <strong>{customer.name}</strong>?
+          {t('delete.confirm', { name: customer.name })}
           <br />
           <small className="text-danger">
-            Tato akce smaže i všechny poznámky a přílohy tohoto zákazníka.
+            {t('delete.warning')}
           </small>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setDeleteModal(false)}>
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton color="danger" onClick={handleCustomerDelete}>
-            Smazat
+            {tCommon('actions.delete')}
           </CButton>
         </CModalFooter>
       </CModal>

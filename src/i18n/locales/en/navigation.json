@@ -1,0 +1,41 @@
+{
+  "brand": "Bazina Tasker",
+  "brandShort": "BT",
+  "menu": {
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "customers": "Customers",
+    "notes": "Notes",
+    "tags": "Tags",
+    "calendar": "Calendar",
+    "other": "Other",
+    "settings": "Settings"
+  },
+  "header": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode"
+  },
+  "routes": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "customerDetail": "Customer detail",
+    "notes": "Notes",
+    "newNote": "New note",
+    "noteDetail": "Note detail",
+    "tags": "Tags",
+    "calendar": "Calendar",
+    "settings": "Settings"
+  },
+  "search": {
+    "placeholder": "Search... (Ctrl+K)",
+    "searching": "Searching...",
+    "customers": "Customers",
+    "notes": "Notes",
+    "tags": "Tags",
+    "noResults": "No results for \"{{query}}\""
+  }
+}

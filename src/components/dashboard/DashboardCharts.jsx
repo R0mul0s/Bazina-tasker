@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -41,13 +42,14 @@ const chartColors = {
 
 // Graf: Poznámky za týden
 export const NotesPerWeekChart = ({ data }) => {
+  const { t } = useTranslation('dashboard')
   const { isDark } = useTheme()
 
   const chartData = {
     labels: data.map((d) => d.label),
     datasets: [
       {
-        label: 'Poznámky',
+        label: t('charts.notes'),
         data: data.map((d) => d.count),
         borderColor: chartColors.primary,
         backgroundColor: `${chartColors.primary}20`,
@@ -94,8 +96,8 @@ export const NotesPerWeekChart = ({ data }) => {
   return (
     <CCard className="mb-4">
       <CCardHeader>
-        <strong>Poznámky za týden</strong>
-        <small className="text-secondary ms-2">(posledních 8 týdnů)</small>
+        <strong>{t('charts.notesPerWeek')}</strong>
+        <small className="text-secondary ms-2">{t('charts.notesPerWeekSubtitle')}</small>
       </CCardHeader>
       <CCardBody>
         <div style={{ height: '250px' }}>
@@ -108,16 +110,17 @@ export const NotesPerWeekChart = ({ data }) => {
 
 // Graf: Čas strávený s zákazníky
 export const TimePerCustomerChart = ({ data }) => {
+  const { t } = useTranslation('dashboard')
   const { isDark } = useTheme()
 
   if (data.length === 0) {
     return (
       <CCard className="mb-4">
         <CCardHeader>
-          <strong>Čas strávený s zákazníky</strong>
+          <strong>{t('charts.timePerCustomer')}</strong>
         </CCardHeader>
         <CCardBody className="text-center text-secondary py-4">
-          Zatím žádné záznamy o stráveném čase
+          {t('charts.noTimeRecords')}
         </CCardBody>
       </CCard>
     )
@@ -127,7 +130,7 @@ export const TimePerCustomerChart = ({ data }) => {
     labels: data.map((d) => d.name),
     datasets: [
       {
-        label: 'Hodiny',
+        label: t('charts.hours'),
         data: data.map((d) => d.hours),
         backgroundColor: [
           chartColors.primary,
@@ -175,8 +178,8 @@ export const TimePerCustomerChart = ({ data }) => {
   return (
     <CCard className="mb-4">
       <CCardHeader>
-        <strong>Čas strávený s zákazníky</strong>
-        <small className="text-secondary ms-2">(top 5, v hodinách)</small>
+        <strong>{t('charts.timePerCustomer')}</strong>
+        <small className="text-secondary ms-2">{t('charts.timePerCustomerSubtitle')}</small>
       </CCardHeader>
       <CCardBody>
         <div style={{ height: '250px' }}>
@@ -189,16 +192,17 @@ export const TimePerCustomerChart = ({ data }) => {
 
 // Graf: Poznámky podle typu
 export const NotesByTypeChart = ({ data }) => {
+  const { t } = useTranslation('dashboard')
   const { isDark } = useTheme()
 
   if (data.length === 0) {
     return (
       <CCard className="mb-4">
         <CCardHeader>
-          <strong>Poznámky podle typu</strong>
+          <strong>{t('charts.notesByType')}</strong>
         </CCardHeader>
         <CCardBody className="text-center text-secondary py-4">
-          Zatím žádné poznámky
+          {t('charts.noNotes')}
         </CCardBody>
       </CCard>
     )
@@ -237,7 +241,7 @@ export const NotesByTypeChart = ({ data }) => {
   return (
     <CCard className="mb-4">
       <CCardHeader>
-        <strong>Poznámky podle typu</strong>
+        <strong>{t('charts.notesByType')}</strong>
       </CCardHeader>
       <CCardBody>
         <div style={{ height: '250px' }}>
@@ -250,13 +254,14 @@ export const NotesByTypeChart = ({ data }) => {
 
 // Graf: Aktivita podle dne
 export const ActivityByDayChart = ({ data }) => {
+  const { t } = useTranslation('dashboard')
   const { isDark } = useTheme()
 
   const chartData = {
     labels: data.map((d) => d.day),
     datasets: [
       {
-        label: 'Poznámky',
+        label: t('charts.notes'),
         data: data.map((d) => d.count),
         backgroundColor: chartColors.info,
         borderWidth: 0,
@@ -298,7 +303,7 @@ export const ActivityByDayChart = ({ data }) => {
   return (
     <CCard className="mb-4">
       <CCardHeader>
-        <strong>Aktivita podle dne</strong>
+        <strong>{t('charts.activityByDay')}</strong>
       </CCardHeader>
       <CCardBody>
         <div style={{ height: '200px' }}>

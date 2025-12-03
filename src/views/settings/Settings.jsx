@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -8,6 +9,7 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
+  CFormSelect,
   CButton,
   CAlert,
   CSpinner,
@@ -18,7 +20,8 @@ import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 
 const Settings = () => {
-  const { user, profile, updateProfile, updatePassword } = useAuth()
+  const { t, i18n } = useTranslation('settings')
+  const { user, profile, updateProfile, updatePassword, updateLanguage } = useAuth()
   const { theme, setTheme } = useTheme()
   const [fullName, setFullName] = useState(profile?.full_name || '')
   const [isSaving, setIsSaving] = useState(false)
@@ -41,9 +44,9 @@ const Settings = () => {
 
     setIsSaving(false)
     if (error) {
-      setMessage({ type: 'danger', text: `Chyba při ukládání: ${error}` })
+      setMessage({ type: 'danger', text: `${t('profile.error')} ${error}` })
     } else {
-      setMessage({ type: 'success', text: 'Profil byl úspěšně uložen.' })
+      setMessage({ type: 'success', text: t('profile.saved') })
     }
   }
 
@@ -53,11 +56,11 @@ const Settings = () => {
 
     // Validace
     if (passwords.new.length < 6) {
-      setPasswordMessage({ type: 'danger', text: 'Nové heslo musí mít alespoň 6 znaků.' })
+      setPasswordMessage({ type: 'danger', text: t('password.tooShort') })
       return
     }
     if (passwords.new !== passwords.confirm) {
-      setPasswordMessage({ type: 'danger', text: 'Hesla se neshodují.' })
+      setPasswordMessage({ type: 'danger', text: t('password.noMatch') })
       return
     }
 
@@ -67,22 +70,27 @@ const Settings = () => {
 
     setIsChangingPassword(false)
     if (error) {
-      setPasswordMessage({ type: 'danger', text: `Chyba: ${error.message}` })
+      setPasswordMessage({ type: 'danger', text: `${t('password.error')} ${error.message}` })
     } else {
-      setPasswordMessage({ type: 'success', text: 'Heslo bylo úspěšně změněno.' })
+      setPasswordMessage({ type: 'success', text: t('password.success') })
       setPasswords({ new: '', confirm: '' })
     }
   }
 
+  const handleLanguageChange = async (e) => {
+    const newLang = e.target.value
+    await updateLanguage(newLang)
+  }
+
   return (
     <>
-      <h2 className="mb-4">Nastavení</h2>
+      <h2 className="mb-4">{t('title')}</h2>
 
       <CRow>
         <CCol lg={6}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Profil</strong>
+              <strong>{t('profile.title')}</strong>
             </CCardHeader>
             <CCardBody>
               {message.text && (
@@ -93,24 +101,24 @@ const Settings = () => {
 
               <CForm onSubmit={handleSaveProfile}>
                 <div className="mb-3">
-                  <CFormLabel htmlFor="email">Email</CFormLabel>
+                  <CFormLabel htmlFor="email">{t('profile.email')}</CFormLabel>
                   <CFormInput
                     type="email"
                     id="email"
                     value={user?.email || ''}
                     disabled
                   />
-                  <div className="form-text">Email nelze změnit.</div>
+                  <div className="form-text">{t('profile.emailHint')}</div>
                 </div>
 
                 <div className="mb-3">
-                  <CFormLabel htmlFor="fullName">Celé jméno</CFormLabel>
+                  <CFormLabel htmlFor="fullName">{t('profile.fullName')}</CFormLabel>
                   <CFormInput
                     type="text"
                     id="fullName"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Zadejte své jméno"
+                    placeholder={t('profile.fullNamePlaceholder')}
                   />
                 </div>
 
@@ -118,10 +126,10 @@ const Settings = () => {
                   {isSaving ? (
                     <>
                       <CSpinner size="sm" className="me-2" />
-                      Ukládám...
+                      {t('profile.saving')}
                     </>
                   ) : (
-                    'Uložit změny'
+                    t('profile.saveChanges')
                   )}
                 </CButton>
               </CForm>
@@ -132,11 +140,11 @@ const Settings = () => {
         <CCol lg={6}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Vzhled aplikace</strong>
+              <strong>{t('appearance.title')}</strong>
             </CCardHeader>
             <CCardBody>
               <div className="mb-3">
-                <CFormLabel>Barevný režim</CFormLabel>
+                <CFormLabel>{t('appearance.colorMode')}</CFormLabel>
                 <div className="d-flex gap-2">
                   <CButton
                     color={theme === 'light' ? 'primary' : 'secondary'}
@@ -145,7 +153,7 @@ const Settings = () => {
                     className="d-flex align-items-center gap-2"
                   >
                     <CIcon icon={cilSun} />
-                    Světlý
+                    {t('appearance.light')}
                   </CButton>
                   <CButton
                     color={theme === 'dark' ? 'primary' : 'secondary'}
@@ -154,11 +162,11 @@ const Settings = () => {
                     className="d-flex align-items-center gap-2"
                   >
                     <CIcon icon={cilMoon} />
-                    Tmavý
+                    {t('appearance.dark')}
                   </CButton>
                 </div>
                 <div className="form-text mt-2">
-                  Zvolte preferovaný barevný režim aplikace. Nastavení se automaticky ukládá.
+                  {t('appearance.hint')}
                 </div>
               </div>
             </CCardBody>
@@ -166,7 +174,29 @@ const Settings = () => {
 
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Změna hesla</strong>
+              <strong>{t('language.title')}</strong>
+            </CCardHeader>
+            <CCardBody>
+              <div className="mb-3">
+                <CFormLabel htmlFor="language">{t('language.label')}</CFormLabel>
+                <CFormSelect
+                  id="language"
+                  value={i18n.language}
+                  onChange={handleLanguageChange}
+                >
+                  <option value="cs">{t('language.cs')}</option>
+                  <option value="en">{t('language.en')}</option>
+                </CFormSelect>
+                <div className="form-text mt-2">
+                  {t('language.hint')}
+                </div>
+              </div>
+            </CCardBody>
+          </CCard>
+
+          <CCard className="mb-4">
+            <CCardHeader>
+              <strong>{t('password.title')}</strong>
             </CCardHeader>
             <CCardBody>
               {passwordMessage.text && (
@@ -181,25 +211,25 @@ const Settings = () => {
 
               <CForm onSubmit={handleChangePassword}>
                 <div className="mb-3">
-                  <CFormLabel htmlFor="newPassword">Nové heslo</CFormLabel>
+                  <CFormLabel htmlFor="newPassword">{t('password.newPassword')}</CFormLabel>
                   <CFormInput
                     type="password"
                     id="newPassword"
-                    placeholder="Zadejte nové heslo"
+                    placeholder={t('password.newPasswordPlaceholder')}
                     value={passwords.new}
                     onChange={(e) => setPasswords((p) => ({ ...p, new: e.target.value }))}
                     minLength={6}
                     required
                   />
-                  <div className="form-text">Minimálně 6 znaků.</div>
+                  <div className="form-text">{t('password.minLength')}</div>
                 </div>
 
                 <div className="mb-3">
-                  <CFormLabel htmlFor="confirmPassword">Potvrdit nové heslo</CFormLabel>
+                  <CFormLabel htmlFor="confirmPassword">{t('password.confirmPassword')}</CFormLabel>
                   <CFormInput
                     type="password"
                     id="confirmPassword"
-                    placeholder="Potvrďte nové heslo"
+                    placeholder={t('password.confirmPasswordPlaceholder')}
                     value={passwords.confirm}
                     onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
                     required
@@ -210,10 +240,10 @@ const Settings = () => {
                   {isChangingPassword ? (
                     <>
                       <CSpinner size="sm" className="me-2" />
-                      Měním heslo...
+                      {t('password.changing')}
                     </>
                   ) : (
-                    'Změnit heslo'
+                    t('password.change')
                   )}
                 </CButton>
               </CForm>

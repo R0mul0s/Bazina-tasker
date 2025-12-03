@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CModal,
   CModalHeader,
@@ -17,6 +18,8 @@ import {
 } from '@coreui/react'
 
 const CustomerForm = ({ visible, onClose, onSave, customer = null }) => {
+  const { t } = useTranslation('customers')
+  const { t: tCommon } = useTranslation('common')
   const isEditing = !!customer
 
   const [formData, setFormData] = useState({
@@ -64,7 +67,7 @@ const CustomerForm = ({ visible, onClose, onSave, customer = null }) => {
     setError('')
 
     if (!formData.name.trim()) {
-      setError('Jméno je povinné')
+      setError(t('form.nameRequired'))
       return
     }
 
@@ -85,7 +88,7 @@ const CustomerForm = ({ visible, onClose, onSave, customer = null }) => {
     <CModal visible={visible} onClose={onClose} size="lg">
       <CModalHeader>
         <CModalTitle>
-          {isEditing ? 'Upravit zákazníka' : 'Nový zákazník'}
+          {isEditing ? t('form.titleEdit') : t('form.titleNew')}
         </CModalTitle>
       </CModalHeader>
       <CForm onSubmit={handleSubmit}>
@@ -98,85 +101,85 @@ const CustomerForm = ({ visible, onClose, onSave, customer = null }) => {
 
           <CRow className="mb-3">
             <CCol md={6}>
-              <CFormLabel htmlFor="name">Jméno kontaktní osoby *</CFormLabel>
+              <CFormLabel htmlFor="name">{t('form.name')} *</CFormLabel>
               <CFormInput
                 type="text"
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Jan Novák"
+                placeholder={t('form.namePlaceholder')}
                 required
               />
             </CCol>
             <CCol md={6}>
-              <CFormLabel htmlFor="company">Firma</CFormLabel>
+              <CFormLabel htmlFor="company">{t('form.company')}</CFormLabel>
               <CFormInput
                 type="text"
                 id="company"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                placeholder="Firma s.r.o."
+                placeholder={t('form.companyPlaceholder')}
               />
             </CCol>
           </CRow>
 
           <CRow className="mb-3">
             <CCol md={6}>
-              <CFormLabel htmlFor="email">Email</CFormLabel>
+              <CFormLabel htmlFor="email">{t('form.email')}</CFormLabel>
               <CFormInput
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="jan.novak@firma.cz"
+                placeholder={t('form.emailPlaceholder')}
               />
             </CCol>
             <CCol md={6}>
-              <CFormLabel htmlFor="phone">Telefon</CFormLabel>
+              <CFormLabel htmlFor="phone">{t('form.phone')}</CFormLabel>
               <CFormInput
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+420 123 456 789"
+                placeholder={t('form.phonePlaceholder')}
               />
             </CCol>
           </CRow>
 
           <div className="mb-3">
-            <CFormLabel htmlFor="address">Adresa</CFormLabel>
+            <CFormLabel htmlFor="address">{t('form.address')}</CFormLabel>
             <CFormInput
               type="text"
               id="address"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              placeholder="Ulice 123, Praha 1, 110 00"
+              placeholder={t('form.addressPlaceholder')}
             />
           </div>
 
           <div className="mb-3">
-            <CFormLabel htmlFor="notes">Poznámky</CFormLabel>
+            <CFormLabel htmlFor="notes">{t('form.notes')}</CFormLabel>
             <CFormTextarea
               id="notes"
               name="notes"
               value={formData.notes}
               onChange={handleChange}
               rows={3}
-              placeholder="Obecné poznámky k zákazníkovi..."
+              placeholder={t('form.notesPlaceholder')}
             />
           </div>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={onClose} disabled={loading}>
-            Zrušit
+            {tCommon('actions.cancel')}
           </CButton>
           <CButton type="submit" color="primary" disabled={loading}>
-            {loading ? <CSpinner size="sm" /> : isEditing ? 'Uložit změny' : 'Vytvořit'}
+            {loading ? <CSpinner size="sm" /> : isEditing ? t('form.saveChanges') : tCommon('actions.create')}
           </CButton>
         </CModalFooter>
       </CForm>

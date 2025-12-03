@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CContainer,
   CHeader,
@@ -23,6 +24,7 @@ import { getInitials } from '../../lib/utils'
 import GlobalSearch from './GlobalSearch'
 
 const AppHeader = ({ sidebarShow, setSidebarShow }) => {
+  const { t } = useTranslation('common')
   const { user, profile, signOut } = useAuth()
   const { theme, toggleTheme, isDark } = useTheme()
   const navigate = useNavigate()
@@ -51,7 +53,7 @@ const AppHeader = ({ sidebarShow, setSidebarShow }) => {
             color="link"
             className="text-secondary p-2 me-2"
             onClick={toggleTheme}
-            title={isDark ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+            title={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
           >
             <CIcon icon={isDark ? cilSun : cilMoon} size="lg" />
           </CButton>
@@ -76,19 +78,19 @@ const AppHeader = ({ sidebarShow, setSidebarShow }) => {
                 onClick={() => navigate('/settings')}
               >
                 <CIcon icon={cilUser} className="me-2" />
-                Profil
+                {t('userMenu.profile')}
               </CDropdownItem>
               <CDropdownItem
                 className="cursor-pointer"
                 onClick={() => navigate('/settings')}
               >
                 <CIcon icon={cilSettings} className="me-2" />
-                Nastavení
+                {t('userMenu.settings')}
               </CDropdownItem>
               <CDropdownDivider />
               <CDropdownItem className="cursor-pointer" onClick={handleLogout}>
                 <CIcon icon={cilAccountLogout} className="me-2" />
-                Odhlásit se
+                {t('userMenu.logout')}
               </CDropdownItem>
             </CDropdownMenu>
           </CDropdown>

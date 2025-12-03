@@ -9,51 +9,51 @@ import {
   cilSettings,
 } from '@coreui/icons'
 
-const _nav = [
+const getNavigation = (t) => [
   {
     component: CNavItem,
-    name: 'Dashboard',
+    name: t('menu.dashboard'),
     to: '/',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    name: 'Správa',
+    name: t('menu.management'),
   },
   {
     component: CNavItem,
-    name: 'Zákazníci',
+    name: t('menu.customers'),
     to: '/customers',
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Poznámky',
+    name: t('menu.notes'),
     to: '/notes',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Tagy',
+    name: t('menu.tags'),
     to: '/tags',
     icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Kalendář',
+    name: t('menu.calendar'),
     to: '/calendar',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    name: 'Ostatní',
+    name: t('menu.other'),
   },
   {
     component: CNavItem,
-    name: 'Nastavení',
+    name: t('menu.settings'),
     to: '/settings',
     icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   },
 ]
 
-export default _nav
+export default getNavigation
