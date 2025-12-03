@@ -10,34 +10,68 @@ import {
   CFormLabel,
   CButton,
   CAlert,
-  CFormCheck,
-  CButtonGroup,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilSun, cilMoon, cilContrast } from '@coreui/icons'
+import { cilSun, cilMoon } from '@coreui/icons'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 
 const Settings = () => {
-  const { user, profile } = useAuth()
-  const { theme, setTheme, isDark } = useTheme()
+  const { user, profile, updateProfile, updatePassword } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [fullName, setFullName] = useState(profile?.full_name || '')
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+
+  // Password change state
+  const [passwords, setPasswords] = useState({
+    new: '',
+    confirm: '',
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' })
 
   const handleSaveProfile = async (e) => {
     e.preventDefault()
     setIsSaving(true)
     setMessage({ type: '', text: '' })
 
-    // TODO: Implementovat ukládání profilu
-    setTimeout(() => {
-      setIsSaving(false)
-      setMessage({
-        type: 'info',
-        text: 'Ukládání profilu bude implementováno v další fázi.',
-      })
-    }, 500)
+    const { error } = await updateProfile({ full_name: fullName })
+
+    setIsSaving(false)
+    if (error) {
+      setMessage({ type: 'danger', text: `Chyba při ukládání: ${error}` })
+    } else {
+      setMessage({ type: 'success', text: 'Profil byl úspěšně uložen.' })
+    }
+  }
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    setPasswordMessage({ type: '', text: '' })
+
+    // Validace
+    if (passwords.new.length < 6) {
+      setPasswordMessage({ type: 'danger', text: 'Nové heslo musí mít alespoň 6 znaků.' })
+      return
+    }
+    if (passwords.new !== passwords.confirm) {
+      setPasswordMessage({ type: 'danger', text: 'Hesla se neshodují.' })
+      return
+    }
+
+    setIsChangingPassword(true)
+
+    const { error } = await updatePassword(passwords.new)
+
+    setIsChangingPassword(false)
+    if (error) {
+      setPasswordMessage({ type: 'danger', text: `Chyba: ${error.message}` })
+    } else {
+      setPasswordMessage({ type: 'success', text: 'Heslo bylo úspěšně změněno.' })
+      setPasswords({ new: '', confirm: '' })
+    }
   }
 
   return (
@@ -81,7 +115,14 @@ const Settings = () => {
                 </div>
 
                 <CButton type="submit" color="primary" disabled={isSaving}>
-                  {isSaving ? 'Ukládám...' : 'Uložit změny'}
+                  {isSaving ? (
+                    <>
+                      <CSpinner size="sm" className="me-2" />
+                      Ukládám...
+                    </>
+                  ) : (
+                    'Uložit změny'
+                  )}
                 </CButton>
               </CForm>
             </CCardBody>
@@ -128,23 +169,29 @@ const Settings = () => {
               <strong>Změna hesla</strong>
             </CCardHeader>
             <CCardBody>
-              <CForm>
-                <div className="mb-3">
-                  <CFormLabel htmlFor="currentPassword">Aktuální heslo</CFormLabel>
-                  <CFormInput
-                    type="password"
-                    id="currentPassword"
-                    placeholder="Zadejte aktuální heslo"
-                  />
-                </div>
+              {passwordMessage.text && (
+                <CAlert
+                  color={passwordMessage.type}
+                  dismissible
+                  onClose={() => setPasswordMessage({ type: '', text: '' })}
+                >
+                  {passwordMessage.text}
+                </CAlert>
+              )}
 
+              <CForm onSubmit={handleChangePassword}>
                 <div className="mb-3">
                   <CFormLabel htmlFor="newPassword">Nové heslo</CFormLabel>
                   <CFormInput
                     type="password"
                     id="newPassword"
                     placeholder="Zadejte nové heslo"
+                    value={passwords.new}
+                    onChange={(e) => setPasswords((p) => ({ ...p, new: e.target.value }))}
+                    minLength={6}
+                    required
                   />
+                  <div className="form-text">Minimálně 6 znaků.</div>
                 </div>
 
                 <div className="mb-3">
@@ -153,11 +200,21 @@ const Settings = () => {
                     type="password"
                     id="confirmPassword"
                     placeholder="Potvrďte nové heslo"
+                    value={passwords.confirm}
+                    onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
+                    required
                   />
                 </div>
 
-                <CButton type="submit" color="primary">
-                  Změnit heslo
+                <CButton type="submit" color="primary" disabled={isChangingPassword}>
+                  {isChangingPassword ? (
+                    <>
+                      <CSpinner size="sm" className="me-2" />
+                      Měním heslo...
+                    </>
+                  ) : (
+                    'Změnit heslo'
+                  )}
                 </CButton>
               </CForm>
             </CCardBody>

@@ -4,7 +4,6 @@ import {
   CCard,
   CCardBody,
   CButton,
-  CBadge,
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
@@ -24,19 +23,22 @@ import {
   cilTrash,
   cilEnvelopeClosed,
   cilPhone,
+  cilCloudUpload,
 } from '@coreui/icons'
 import { useCustomers } from '../../hooks/useCustomers'
 import CustomerForm from '../../components/customers/CustomerForm'
+import CsvImportModal from '../../components/customers/CsvImportModal'
 import SmartTable from '../../components/common/SmartTable'
 import { TableSkeleton } from '../../components/common/Skeleton'
 
 const Customers = () => {
   const navigate = useNavigate()
-  const { customers, loading, createCustomer, updateCustomer, deleteCustomer } = useCustomers()
+  const { customers, loading, createCustomer, updateCustomer, deleteCustomer, bulkCreateCustomers } = useCustomers()
 
   const [showForm, setShowForm] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [deleteModal, setDeleteModal] = useState({ show: false, customer: null })
+  const [showImport, setShowImport] = useState(false)
 
   // Definice sloupců pro SmartTable
   const columns = [
@@ -144,10 +146,16 @@ const Customers = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Zákazníci</h2>
-        <CButton color="primary" onClick={() => setShowForm(true)}>
-          <CIcon icon={cilPlus} className="me-2" />
-          Nový zákazník
-        </CButton>
+        <div className="d-flex gap-2">
+          <CButton color="secondary" variant="outline" onClick={() => setShowImport(true)}>
+            <CIcon icon={cilCloudUpload} className="me-2" />
+            Import CSV
+          </CButton>
+          <CButton color="primary" onClick={() => setShowForm(true)}>
+            <CIcon icon={cilPlus} className="me-2" />
+            Nový zákazník
+          </CButton>
+        </div>
       </div>
 
       <CCard>
@@ -222,6 +230,13 @@ const Customers = () => {
           </CButton>
         </CModalFooter>
       </CModal>
+
+      {/* CSV Import */}
+      <CsvImportModal
+        visible={showImport}
+        onClose={() => setShowImport(false)}
+        onImport={bulkCreateCustomers}
+      />
     </>
   )
 }

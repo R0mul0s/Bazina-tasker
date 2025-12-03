@@ -161,6 +161,58 @@ export const useCustomers = () => {
     return data || []
   }, [customers])
 
+  // Hromadné vytvoření zákazníků (pro CSV import)
+  const bulkCreateCustomers = useCallback(async (customersData) => {
+    if (!userId) {
+      return { data: null, error: 'Uživatel není přihlášen', imported: 0, failed: 0 }
+    }
+
+    const results = {
+      imported: 0,
+      failed: 0,
+      errors: [],
+    }
+
+    // Vložit zákazníky po dávkách (max 50 najednou)
+    const batchSize = 50
+    const batches = []
+    for (let i = 0; i < customersData.length; i += batchSize) {
+      batches.push(customersData.slice(i, i + batchSize))
+    }
+
+    for (const batch of batches) {
+      const preparedData = batch.map((customer) => ({
+        ...customer,
+        user_id: userId,
+      }))
+
+      const { data, error: queryError } = await safeQuery(() =>
+        supabase
+          .from('customers')
+          .insert(preparedData)
+          .select()
+      )
+
+      if (queryError) {
+        results.failed += batch.length
+        results.errors.push(queryError.message)
+      } else {
+        results.imported += data?.length || 0
+      }
+    }
+
+    // Invalidovat cache a refreshnout data
+    invalidateCache(CacheKeys.CUSTOMERS(userId))
+    await fetchCustomers(true)
+
+    return {
+      data: null,
+      error: results.errors.length > 0 ? results.errors.join(', ') : null,
+      imported: results.imported,
+      failed: results.failed,
+    }
+  }, [userId, fetchCustomers])
+
   // Lifecycle
   useEffect(() => {
     isMountedRef.current = true
@@ -184,5 +236,6 @@ export const useCustomers = () => {
     updateCustomer,
     deleteCustomer,
     searchCustomers,
+    bulkCreateCustomers,
   }
 }

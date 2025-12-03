@@ -272,6 +272,69 @@ export const useNotes = (customerId = null) => {
     })
   }, [notes])
 
+  // Duplikování poznámky
+  const duplicateNote = useCallback(async (noteId) => {
+    if (!userId) {
+      return { data: null, error: 'Uživatel není přihlášen' }
+    }
+
+    // Načíst původní poznámku se všemi daty
+    const { data: originalNote, error: fetchError } = await fetchNote(noteId)
+
+    if (fetchError || !originalNote) {
+      return { data: null, error: fetchError || 'Poznámka nenalezena' }
+    }
+
+    // Připravit data pro novou poznámku
+    const today = new Date().toISOString().split('T')[0]
+    const newNoteData = {
+      title: `${originalNote.title} (kopie)`,
+      content: originalNote.content,
+      customer_id: originalNote.customer_id,
+      meeting_date: today,
+      meeting_type: originalNote.meeting_type,
+      status: 'draft',
+      priority: originalNote.priority,
+      follow_up_date: null,
+    }
+
+    // Vytvořit novou poznámku
+    const { data: newNote, error: createError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .insert([{ ...newNoteData, user_id: userId }])
+        .select()
+        .single()
+    )
+
+    if (createError) {
+      return { data: null, error: createError.message }
+    }
+
+    // Zkopírovat tagy
+    if (originalNote.tags && originalNote.tags.length > 0) {
+      const tagInserts = originalNote.tags.map((tag) => ({
+        note_id: newNote.id,
+        tag_id: tag.id,
+      }))
+      await safeQuery(() => supabase.from('note_tags').insert(tagInserts))
+    }
+
+    // Zkopírovat úkoly (bez dokončení)
+    if (originalNote.tasks && originalNote.tasks.length > 0) {
+      const taskInserts = originalNote.tasks.map((task, index) => ({
+        note_id: newNote.id,
+        text: task.text,
+        is_completed: false,
+        order: index,
+      }))
+      await safeQuery(() => supabase.from('note_tasks').insert(taskInserts))
+    }
+
+    await fetchNotes()
+    return { data: newNote, error: null }
+  }, [userId, fetchNote, fetchNotes])
+
   // Lifecycle
   useEffect(() => {
     isMountedRef.current = true
@@ -295,6 +358,7 @@ export const useNotes = (customerId = null) => {
     updateNote,
     deleteNote,
     updateTask,
+    duplicateNote,
     getRequiresAction,
     getUpcomingFollowUps,
   }

@@ -147,6 +147,37 @@ export const AuthProvider = ({ children }) => {
     return { error }
   }
 
+  // Aktualizace profilu
+  const updateProfile = async (profileData) => {
+    if (!user) {
+      return { data: null, error: 'Uživatel není přihlášen' }
+    }
+
+    const { data, error } = await safeQuery(
+      () => supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id)
+        .select()
+        .single(),
+      5000
+    )
+
+    if (!error && data && isMountedRef.current) {
+      setProfile(data)
+    }
+
+    return { data, error }
+  }
+
+  // Změna hesla
+  const updatePassword = async (newPassword) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    })
+    return { data, error }
+  }
+
   const value = {
     user,
     profile,
@@ -156,6 +187,8 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     signOut,
     fetchProfile,
+    updateProfile,
+    updatePassword,
   }
 
   return (

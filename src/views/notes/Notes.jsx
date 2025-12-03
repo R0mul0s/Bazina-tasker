@@ -35,6 +35,7 @@ import {
   cilClock,
   cilFilter,
   cilFilterX,
+  cilCopy,
 } from '@coreui/icons'
 import { useNotes } from '../../hooks/useNotes'
 import { useCustomers } from '../../hooks/useCustomers'
@@ -73,7 +74,7 @@ const statusColors = {
 
 const Notes = () => {
   const navigate = useNavigate()
-  const { notes, loading, createNote, updateNote, deleteNote, fetchNotes } = useNotes()
+  const { notes, loading, createNote, updateNote, deleteNote, duplicateNote, fetchNotes } = useNotes()
   const { customers, loading: customersLoading } = useCustomers()
   const { tags, loading: tagsLoading } = useTags()
   const { loading: bulkLoading, bulkUpdateStatus, bulkUpdatePriority, bulkDelete, bulkAddTag } = useBulkActions()
@@ -86,6 +87,7 @@ const Notes = () => {
   // Bulk selection state
   const [selectedNotes, setSelectedNotes] = useState(new Set())
   const [bulkMessage, setBulkMessage] = useState(null)
+  const [duplicating, setDuplicating] = useState(null) // note id being duplicated
 
   // Advanced filters state
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
@@ -201,7 +203,7 @@ const Notes = () => {
     {
       key: 'actions',
       label: 'Akce',
-      _style: { width: '80px' },
+      _style: { width: '120px' },
       filter: false,
       sorter: false,
     },
@@ -261,6 +263,19 @@ const Notes = () => {
     ),
     actions: (item) => (
       <div className="d-flex gap-1" onClick={(e) => e.stopPropagation()}>
+        <CButton
+          color="light"
+          size="sm"
+          onClick={(e) => handleDuplicate(item, e)}
+          title="Duplikovat"
+          disabled={duplicating === item.id}
+        >
+          {duplicating === item.id ? (
+            <CSpinner size="sm" />
+          ) : (
+            <CIcon icon={cilCopy} />
+          )}
+        </CButton>
         <CButton
           color="light"
           size="sm"
@@ -363,6 +378,21 @@ const Notes = () => {
   const handleCloseForm = () => {
     setShowForm(false)
     setEditingNote(null)
+  }
+
+  const handleDuplicate = async (note, e) => {
+    e.stopPropagation()
+    setDuplicating(note.id)
+    const { data, error } = await duplicateNote(note.id)
+    setDuplicating(null)
+    if (!error && data) {
+      setBulkMessage({ type: 'success', text: `Poznámka "${note.title}" byla zduplikována` })
+      setTimeout(() => setBulkMessage(null), 3000)
+      navigate(`/notes/${data.id}`)
+    } else {
+      setBulkMessage({ type: 'danger', text: error || 'Chyba při duplikování' })
+      setTimeout(() => setBulkMessage(null), 3000)
+    }
   }
 
   if (isLoading) {

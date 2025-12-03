@@ -25,6 +25,7 @@ import {
   cilCalendar,
   cilCloudUpload,
   cilUser,
+  cilCopy,
 } from '@coreui/icons'
 import { useNotes } from '../../hooks/useNotes'
 import { useCustomers } from '../../hooks/useCustomers'
@@ -75,7 +76,7 @@ const NoteDetail = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
 
-  const { fetchNote, updateNote, deleteNote, updateTask } = useNotes()
+  const { fetchNote, updateNote, deleteNote, updateTask, duplicateNote } = useNotes()
   const { customers } = useCustomers()
   const { tags } = useTags()
   const { uploadFile, deleteFile, getFileUrl, fetchAttachments, uploading } = useAttachments()
@@ -87,6 +88,7 @@ const NoteDetail = () => {
   const [showForm, setShowForm] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [pasteMessage, setPasteMessage] = useState('')
+  const [duplicating, setDuplicating] = useState(false)
 
   // Funkce pro upload obrázku z clipboardu
   const handlePasteUpload = async (file) => {
@@ -175,6 +177,15 @@ const NoteDetail = () => {
     navigate('/notes')
   }
 
+  const handleDuplicate = async () => {
+    setDuplicating(true)
+    const { data, error } = await duplicateNote(id)
+    setDuplicating(false)
+    if (!error && data) {
+      navigate(`/notes/${data.id}`)
+    }
+  }
+
   const handleTaskToggle = async (taskId, isCompleted) => {
     // Optimistická aktualizace - nejprve změnit UI
     setNote((prev) => ({
@@ -257,6 +268,19 @@ const NoteDetail = () => {
           <h2 className="mb-0">{note.title}</h2>
         </div>
         <div className="d-flex gap-2">
+          <CButton
+            color="secondary"
+            variant="outline"
+            onClick={handleDuplicate}
+            disabled={duplicating}
+          >
+            {duplicating ? (
+              <CSpinner size="sm" className="me-2" />
+            ) : (
+              <CIcon icon={cilCopy} className="me-2" />
+            )}
+            Duplikovat
+          </CButton>
           <CButton color="primary" onClick={() => setShowForm(true)}>
             <CIcon icon={cilPencil} className="me-2" />
             Upravit
