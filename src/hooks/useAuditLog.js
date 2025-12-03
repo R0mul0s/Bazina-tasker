@@ -1,20 +1,36 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { safeQuery } from '../lib/supabaseQuery'
+
+const DEFAULT_PAGE_SIZE = 5
 
 export const useAuditLog = () => {
   const { user } = useAuth()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(null)
+  const [hasMore, setHasMore] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
+  const currentParamsRef = useRef({ tableName: null, recordId: null })
 
-  // Načtení audit logu pro konkrétní záznam
-  const fetchLogsForRecord = useCallback(async (tableName, recordId) => {
+  // Načtení audit logu pro konkrétní záznam s stránkováním
+  const fetchLogsForRecord = useCallback(async (tableName, recordId, pageSize = DEFAULT_PAGE_SIZE) => {
     if (!user) return { data: [], error: null }
 
     setLoading(true)
     setError(null)
+    currentParamsRef.current = { tableName, recordId }
+
+    // Nejprve získat celkový počet
+    const { count } = await supabase
+      .from('audit_log')
+      .select('*', { count: 'exact', head: true })
+      .eq('table_name', tableName)
+      .eq('record_id', recordId)
+
+    setTotalCount(count || 0)
 
     const { data, error: queryError } = await safeQuery(() =>
       supabase
@@ -23,6 +39,7 @@ export const useAuditLog = () => {
         .eq('table_name', tableName)
         .eq('record_id', recordId)
         .order('created_at', { ascending: false })
+        .range(0, pageSize - 1)
     )
 
     setLoading(false)
@@ -32,9 +49,40 @@ export const useAuditLog = () => {
       return { data: [], error: queryError.message }
     }
 
-    setLogs(data || [])
-    return { data: data || [], error: null }
+    const resultData = data || []
+    setLogs(resultData)
+    setHasMore(resultData.length < (count || 0))
+    return { data: resultData, error: null }
   }, [user])
+
+  // Načtení dalších záznamů
+  const loadMore = useCallback(async (pageSize = DEFAULT_PAGE_SIZE) => {
+    const { tableName, recordId } = currentParamsRef.current
+    if (!user || !tableName || !recordId || loadingMore) return
+
+    setLoadingMore(true)
+
+    const { data, error: queryError } = await safeQuery(() =>
+      supabase
+        .from('audit_log')
+        .select('*')
+        .eq('table_name', tableName)
+        .eq('record_id', recordId)
+        .order('created_at', { ascending: false })
+        .range(logs.length, logs.length + pageSize - 1)
+    )
+
+    setLoadingMore(false)
+
+    if (queryError) {
+      setError(queryError.message)
+      return
+    }
+
+    const newData = data || []
+    setLogs(prev => [...prev, ...newData])
+    setHasMore(logs.length + newData.length < totalCount)
+  }, [user, logs.length, totalCount, loadingMore])
 
   // Načtení posledních změn (pro dashboard)
   const fetchRecentChanges = useCallback(async (limit = 20) => {
@@ -81,9 +129,13 @@ export const useAuditLog = () => {
   return {
     logs,
     loading,
+    loadingMore,
     error,
+    hasMore,
+    totalCount,
     fetchLogsForRecord,
     fetchRecentChanges,
+    loadMore,
     formatChanges,
   }
 }

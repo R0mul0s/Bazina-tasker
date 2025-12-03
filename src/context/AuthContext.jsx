@@ -40,9 +40,9 @@ export const AuthProvider = ({ children }) => {
     // Inicializace auth stavu
     const initAuth = async () => {
       try {
-        // Timeout pro getSession
+        // Timeout pro getSession - 15 sekund pro pomalé připojení
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Session timeout')), 5000)
+          setTimeout(() => reject(new Error('Session timeout')), 15000)
         )
 
         const { data: { session }, error } = await Promise.race([
@@ -127,7 +127,12 @@ export const AuthProvider = ({ children }) => {
     return { data, error }
   }
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectPath = '/') => {
+    // Uložit cílovou cestu do sessionStorage pro použití po návratu z OAuth
+    if (redirectPath && redirectPath !== '/') {
+      sessionStorage.setItem('authRedirectPath', redirectPath)
+    }
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

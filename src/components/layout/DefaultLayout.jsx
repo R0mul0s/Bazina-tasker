@@ -51,9 +51,9 @@ const DefaultLayout = () => {
     )
   }
 
-  // Redirect na login pokud není přihlášen
+  // Redirect na login pokud není přihlášen - předat původní cestu
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
   // Sestavení tříd pro wrapper podle stavu sidebaru

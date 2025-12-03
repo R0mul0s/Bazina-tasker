@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -20,12 +20,28 @@ import { useAuth } from '../../context/AuthContext'
 
 const Login = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, signIn, signInWithGoogle, loading: authLoading } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Získat cílovou cestu z location.state nebo sessionStorage (pro Google OAuth)
+  const getRedirectPath = () => {
+    // Nejprve zkusit location.state (pro email/password login)
+    if (location.state?.from) {
+      return location.state.from
+    }
+    // Pak zkusit sessionStorage (pro návrat z Google OAuth)
+    const savedPath = sessionStorage.getItem('authRedirectPath')
+    if (savedPath) {
+      sessionStorage.removeItem('authRedirectPath')
+      return savedPath
+    }
+    return '/'
+  }
 
   // Zobrazit loading během kontroly auth stavu
   if (authLoading) {
@@ -36,9 +52,10 @@ const Login = () => {
     )
   }
 
-  // Pokud je uživatel přihlášen, redirect na dashboard
+  // Pokud je uživatel přihlášen, redirect na původní stránku nebo dashboard
   if (user) {
-    return <Navigate to="/" replace />
+    const redirectPath = getRedirectPath()
+    return <Navigate to={redirectPath} replace />
   }
 
   const handleSubmit = async (e) => {
@@ -54,13 +71,17 @@ const Login = () => {
         : error.message)
       setIsLoading(false)
     } else {
-      navigate('/')
+      // Redirect na původní stránku nebo dashboard
+      const redirectPath = location.state?.from || '/'
+      navigate(redirectPath)
     }
   }
 
   const handleGoogleLogin = async () => {
     setError('')
-    const { error } = await signInWithGoogle()
+    // Předat cílovou cestu pro redirect po návratu z OAuth
+    const redirectPath = location.state?.from || '/'
+    const { error } = await signInWithGoogle(redirectPath)
     if (error) {
       setError(error.message)
     }

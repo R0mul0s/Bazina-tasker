@@ -15,9 +15,10 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
+  CButton,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilHistory, cilPlus, cilPencil, cilTrash, cilCloudUpload, cilTask, cilClock } from '@coreui/icons'
+import { cilHistory, cilPlus, cilPencil, cilTrash, cilCloudUpload, cilTask, cilClock, cilReload } from '@coreui/icons'
 import { useAuditLog, tableNameLabels, actionLabels, fieldLabels } from '../../hooks/useAuditLog'
 import { formatDateTime, formatDuration } from '../../lib/utils'
 
@@ -46,7 +47,7 @@ const actionColors = {
 }
 
 const AuditHistory = ({ tableName, recordId }) => {
-  const { logs, loading, fetchLogsForRecord, formatChanges } = useAuditLog()
+  const { logs, loading, loadingMore, hasMore, totalCount, fetchLogsForRecord, loadMore, formatChanges } = useAuditLog()
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -54,6 +55,10 @@ const AuditHistory = ({ tableName, recordId }) => {
       fetchLogsForRecord(tableName, recordId).then(() => setIsLoaded(true))
     }
   }, [tableName, recordId, fetchLogsForRecord, isLoaded])
+
+  const handleLoadMore = () => {
+    loadMore()
+  }
 
   if (loading && !isLoaded) {
     return (
@@ -74,9 +79,9 @@ const AuditHistory = ({ tableName, recordId }) => {
       <CCardHeader>
         <CIcon icon={cilHistory} className="me-2" />
         <strong>Historie změn</strong>
-        {logs.length > 0 && (
+        {totalCount > 0 && (
           <CBadge color="secondary" className="ms-2">
-            {logs.length}
+            {logs.length} / {totalCount}
           </CBadge>
         )}
       </CCardHeader>
@@ -232,6 +237,29 @@ const AuditHistory = ({ tableName, recordId }) => {
               </CAccordionItem>
             ))}
           </CAccordion>
+          {hasMore && (
+            <div className="text-center mt-3">
+              <CButton
+                color="secondary"
+                variant="outline"
+                size="sm"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? (
+                  <>
+                    <CSpinner size="sm" className="me-2" />
+                    Načítám...
+                  </>
+                ) : (
+                  <>
+                    <CIcon icon={cilReload} className="me-2" />
+                    Načíst další ({totalCount - logs.length} zbývá)
+                  </>
+                )}
+              </CButton>
+            </div>
+          )}
         )}
       </CCardBody>
     </CCard>
