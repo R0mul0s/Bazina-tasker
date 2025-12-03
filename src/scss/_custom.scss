@@ -169,13 +169,38 @@ $sidebar-narrow-width: 64px;
 // Tabulky - oprava overflow pro dropdown menu
 // ============================================
 
+// Responzivní tabulky - horizontální scroll na mobilu
 .table-responsive {
-  overflow: visible;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  // Viditelný scrollbar
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--cui-tertiary-bg);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--cui-secondary-color);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--cui-primary);
+    }
+  }
+
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: var(--cui-secondary-color) var(--cui-tertiary-bg);
 }
 
-// Alternativně pro karty s tabulkami
+// Karty s tabulkami - povolit overflow pro dropdowny ale scrollovat tabulku
 .card-body > .table-responsive {
-  overflow: visible;
+  overflow-x: auto;
 }
 
 // ============================================

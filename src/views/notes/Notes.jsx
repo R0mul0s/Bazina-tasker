@@ -44,6 +44,7 @@ import { useTags } from '../../hooks/useTags'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import NoteForm from '../../components/notes/NoteForm'
 import SmartTable from '../../components/common/SmartTable'
+import ActionMenu from '../../components/common/ActionMenu'
 import { formatDuration } from '../../lib/utils'
 import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 import { ListCardSkeleton } from '../../components/common/Skeleton'
@@ -254,40 +255,30 @@ const Notes = () => {
       </span>
     ),
     actions: (item) => (
-      <div className="d-flex gap-1" onClick={(e) => e.stopPropagation()}>
-        <CButton
-          color="light"
-          size="sm"
-          onClick={(e) => handleDuplicate(item, e)}
-          title={tCommon('actions.duplicate')}
-          disabled={duplicating === item.id}
-        >
-          {duplicating === item.id ? (
-            <CSpinner size="sm" />
-          ) : (
-            <CIcon icon={cilCopy} />
-          )}
-        </CButton>
-        <CButton
-          color="light"
-          size="sm"
-          onClick={(e) => handleEdit(item, e)}
-          title={tCommon('actions.edit')}
-        >
-          <CIcon icon={cilPencil} />
-        </CButton>
-        <CButton
-          color="light"
-          size="sm"
-          className="text-danger"
-          onClick={(e) => {
-            e.stopPropagation()
-            setDeleteModal({ show: true, note: item })
-          }}
-          title={tCommon('actions.delete')}
-        >
-          <CIcon icon={cilTrash} />
-        </CButton>
+      <div onClick={(e) => e.stopPropagation()}>
+        <ActionMenu
+          actions={[
+            {
+              icon: cilCopy,
+              label: tCommon('actions.duplicate'),
+              onClick: (e) => handleDuplicate(item, e),
+              loading: duplicating === item.id,
+            },
+            {
+              icon: cilPencil,
+              label: tCommon('actions.edit'),
+              onClick: (e) => handleEdit(item, e),
+            },
+            {
+              icon: cilTrash,
+              label: tCommon('actions.delete'),
+              onClick: () => setDeleteModal({ show: true, note: item }),
+              danger: true,
+            },
+          ]}
+          iconsOnly
+          breakpoint="lg"
+        />
       </div>
     ),
   }

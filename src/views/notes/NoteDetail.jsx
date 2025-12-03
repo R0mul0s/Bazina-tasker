@@ -39,6 +39,7 @@ import TimeTracking from '../../components/notes/TimeTracking'
 import AttachmentList from '../../components/notes/AttachmentList'
 import SortableTaskList from '../../components/notes/SortableTaskList'
 import AuditHistory from '../../components/common/AuditHistory'
+import ActionMenu from '../../components/common/ActionMenu'
 import ShareNoteModal from '../../components/notes/ShareNoteModal'
 import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
@@ -250,44 +251,45 @@ const NoteDetail = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div className="d-flex align-items-center gap-3">
           <CButton color="light" onClick={() => navigate(fromKanban ? '/kanban' : '/notes')}>
             <CIcon icon={cilArrowLeft} />
           </CButton>
-          <h2 className="mb-0">{note.title}</h2>
+          <h2 className="mb-0 text-truncate" style={{ maxWidth: '300px' }}>{note.title}</h2>
         </div>
-        <div className="d-flex gap-2">
-          <CButton
-            color="info"
-            variant="outline"
-            onClick={() => setShareModal(true)}
-          >
-            <CIcon icon={cilShareAlt} className="me-2" />
-            {t('share.button')}
-          </CButton>
-          <CButton
-            color="secondary"
-            variant="outline"
-            onClick={handleDuplicate}
-            disabled={duplicating}
-          >
-            {duplicating ? (
-              <CSpinner size="sm" className="me-2" />
-            ) : (
-              <CIcon icon={cilCopy} className="me-2" />
-            )}
-            {tCommon('actions.duplicate')}
-          </CButton>
-          <CButton color="primary" onClick={() => setShowForm(true)}>
-            <CIcon icon={cilPencil} className="me-2" />
-            {tCommon('actions.edit')}
-          </CButton>
-          <CButton color="danger" variant="outline" onClick={() => setDeleteModal(true)}>
-            <CIcon icon={cilTrash} className="me-2" />
-            {tCommon('actions.delete')}
-          </CButton>
-        </div>
+        <ActionMenu
+          actions={[
+            {
+              icon: cilShareAlt,
+              label: t('share.button'),
+              onClick: () => setShareModal(true),
+              color: 'info',
+              variant: 'outline',
+            },
+            {
+              icon: cilCopy,
+              label: tCommon('actions.duplicate'),
+              onClick: handleDuplicate,
+              color: 'secondary',
+              variant: 'outline',
+              loading: duplicating,
+            },
+            {
+              icon: cilPencil,
+              label: tCommon('actions.edit'),
+              onClick: () => setShowForm(true),
+              color: 'primary',
+            },
+            {
+              icon: cilTrash,
+              label: tCommon('actions.delete'),
+              onClick: () => setDeleteModal(true),
+              danger: true,
+            },
+          ]}
+          breakpoint="lg"
+        />
       </div>
 
       <CRow>

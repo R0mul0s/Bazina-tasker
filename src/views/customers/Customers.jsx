@@ -5,10 +5,6 @@ import {
   CCard,
   CCardBody,
   CButton,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
   CModal,
   CModalHeader,
   CModalTitle,
@@ -19,7 +15,6 @@ import CIcon from '@coreui/icons-react'
 import {
   cilPlus,
   cilPeople,
-  cilOptions,
   cilPencil,
   cilTrash,
   cilEnvelopeClosed,
@@ -30,6 +25,7 @@ import { useCustomers } from '../../hooks/useCustomers'
 import CustomerForm from '../../components/customers/CustomerForm'
 import CsvImportModal from '../../components/customers/CsvImportModal'
 import SmartTable from '../../components/common/SmartTable'
+import ActionMenu from '../../components/common/ActionMenu'
 import { TableSkeleton } from '../../components/common/Skeleton'
 
 const Customers = () => {
@@ -94,24 +90,23 @@ const Customers = () => {
     ),
     actions: (item) => (
       <div onClick={(e) => e.stopPropagation()}>
-        <CDropdown alignment="end" popper={true}>
-          <CDropdownToggle color="light" size="sm" caret={false}>
-            <CIcon icon={cilOptions} />
-          </CDropdownToggle>
-          <CDropdownMenu>
-            <CDropdownItem onClick={() => handleEdit(item)}>
-              <CIcon icon={cilPencil} className="me-2" />
-              {tCommon('actions.edit')}
-            </CDropdownItem>
-            <CDropdownItem
-              className="text-danger"
-              onClick={() => setDeleteModal({ show: true, customer: item })}
-            >
-              <CIcon icon={cilTrash} className="me-2" />
-              {tCommon('actions.delete')}
-            </CDropdownItem>
-          </CDropdownMenu>
-        </CDropdown>
+        <ActionMenu
+          actions={[
+            {
+              icon: cilPencil,
+              label: tCommon('actions.edit'),
+              onClick: () => handleEdit(item),
+            },
+            {
+              icon: cilTrash,
+              label: tCommon('actions.delete'),
+              onClick: () => setDeleteModal({ show: true, customer: item }),
+              danger: true,
+            },
+          ]}
+          iconsOnly
+          breakpoint="lg"
+        />
       </div>
     ),
   }
