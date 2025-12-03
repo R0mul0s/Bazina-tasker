@@ -34,11 +34,8 @@ import {
   cilSearch,
   cilPencil,
   cilTrash,
-  cilFilter,
   cilCalendar,
   cilCheckCircle,
-  cilOptions,
-  cilCheckAlt,
   cilX,
   cilClock,
 } from '@coreui/icons'
@@ -100,7 +97,6 @@ const Notes = () => {
     priority: '',
     customer_id: '',
   })
-  const [showFilters, setShowFilters] = useState(false)
 
   // Bulk selection state
   const [selectedNotes, setSelectedNotes] = useState(new Set())
@@ -271,8 +267,78 @@ const Notes = () => {
         </CAlert>
       )}
 
+      {/* Toolbar s vyhledáváním a filtry - nad kartou */}
+      <CCard className="mb-3">
+        <CCardBody className="py-3">
+          <CRow className="g-3 align-items-center">
+            <CCol xs={12} md={4}>
+              <CInputGroup>
+                <CInputGroupText>
+                  <CIcon icon={cilSearch} />
+                </CInputGroupText>
+                <CFormInput
+                  placeholder="Hledat v poznámkách..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </CInputGroup>
+            </CCol>
+            <CCol xs={6} sm={4} md={2}>
+              <CFormSelect
+                size="sm"
+                value={filters.status}
+                onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+              >
+                <option value="">Všechny stavy</option>
+                {Object.entries(statusLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={6} sm={4} md={2}>
+              <CFormSelect
+                size="sm"
+                value={filters.priority}
+                onChange={(e) => setFilters((f) => ({ ...f, priority: e.target.value }))}
+              >
+                <option value="">Všechny priority</option>
+                {Object.entries(priorityLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={12} sm={4} md={2}>
+              <CFormSelect
+                size="sm"
+                value={filters.customer_id}
+                onChange={(e) => setFilters((f) => ({ ...f, customer_id: e.target.value }))}
+              >
+                <option value="">Všichni zákazníci</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={12} md={2} className="text-md-end">
+              {hasActiveFilters && (
+                <CButton color="link" size="sm" onClick={clearFilters} className="p-0">
+                  <CIcon icon={cilX} className="me-1" />
+                  Zrušit filtry
+                </CButton>
+              )}
+            </CCol>
+          </CRow>
+        </CCardBody>
+      </CCard>
+
       <CCard className="mb-4">
-        <CCardHeader className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <CCardHeader className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center gap-3">
             {filteredNotes.length > 0 && (
               <CFormCheck
@@ -284,30 +350,6 @@ const Notes = () => {
               />
             )}
             <strong>Seznam poznámek ({filteredNotes.length})</strong>
-          </div>
-          <div className="d-flex gap-2 flex-wrap">
-            <CInputGroup style={{ maxWidth: '250px' }}>
-              <CInputGroupText>
-                <CIcon icon={cilSearch} />
-              </CInputGroupText>
-              <CFormInput
-                placeholder="Hledat..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </CInputGroup>
-            <CButton
-              color={showFilters ? 'primary' : 'light'}
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <CIcon icon={cilFilter} className="me-1" />
-              Filtry
-              {hasActiveFilters && (
-                <CBadge color="danger" shape="rounded-pill" className="ms-1">
-                  !
-                </CBadge>
-              )}
-            </CButton>
           </div>
         </CCardHeader>
 
@@ -383,65 +425,6 @@ const Notes = () => {
                 Zrušit výběr
               </CButton>
             </div>
-          </div>
-        )}
-
-        {showFilters && (
-          <div className="border-bottom p-3 bg-light">
-            <CRow className="g-2 align-items-end">
-              <CCol xs={12} sm={6} md={3}>
-                <label className="form-label small">Stav</label>
-                <CFormSelect
-                  size="sm"
-                  value={filters.status}
-                  onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
-                >
-                  <option value="">Všechny stavy</option>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol xs={12} sm={6} md={3}>
-                <label className="form-label small">Priorita</label>
-                <CFormSelect
-                  size="sm"
-                  value={filters.priority}
-                  onChange={(e) => setFilters((f) => ({ ...f, priority: e.target.value }))}
-                >
-                  <option value="">Všechny priority</option>
-                  {Object.entries(priorityLabels).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol xs={12} sm={6} md={3}>
-                <label className="form-label small">Zákazník</label>
-                <CFormSelect
-                  size="sm"
-                  value={filters.customer_id}
-                  onChange={(e) => setFilters((f) => ({ ...f, customer_id: e.target.value }))}
-                >
-                  <option value="">Všichni zákazníci</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol xs={12} sm={6} md={3}>
-                {hasActiveFilters && (
-                  <CButton color="link" size="sm" onClick={clearFilters}>
-                    Zrušit filtry
-                  </CButton>
-                )}
-              </CCol>
-            </CRow>
           </div>
         )}
 

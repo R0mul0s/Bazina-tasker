@@ -98,19 +98,25 @@ const Customers = () => {
         </CButton>
       </div>
 
-      <CCard>
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <strong>Seznam zákazníků ({filteredCustomers.length})</strong>
-          <CInputGroup style={{ maxWidth: '300px' }}>
+      {/* Toolbar s vyhledáváním - nad kartou */}
+      <CCard className="mb-3">
+        <CCardBody className="py-3">
+          <CInputGroup style={{ maxWidth: '400px' }}>
             <CInputGroupText>
               <CIcon icon={cilSearch} />
             </CInputGroupText>
             <CFormInput
-              placeholder="Hledat..."
+              placeholder="Hledat zákazníky..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </CInputGroup>
+        </CCardBody>
+      </CCard>
+
+      <CCard>
+        <CCardHeader>
+          <strong>Seznam zákazníků ({filteredCustomers.length})</strong>
         </CCardHeader>
         <CCardBody>
           {filteredCustomers.length === 0 ? (
