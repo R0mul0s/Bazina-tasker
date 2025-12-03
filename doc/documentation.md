@@ -552,7 +552,7 @@ bazina-tasker/
 - [x] Loading states všude (CSpinner)
 - [x] Error handling a zobrazení chyb (CAlert)
 - [x] Toast notifikace (CToast, CToaster)
-- [ ] Skeleton loading (CPlaceholder)
+- [x] Skeleton loading (CPlaceholder)
 - [x] Empty states (žádná data)
 
 ---
@@ -599,35 +599,37 @@ bazina-tasker/
 
 ---
 
-### FÁZE 14: Testování a optimalizace
+### FÁZE 14: Testování a optimalizace ✅
 **Cíl:** Stabilní a rychlá aplikace
 
 #### 14.1 Testování
 - [x] Manuální testování všech funkcí
 - [x] Testování na různých prohlížečích
-- [ ] Testování na mobilních zařízeních
+- [x] Testování na mobilních zařízeních
 
 #### 14.2 Optimalizace
-- [ ] Lazy loading stránek
-- [ ] Optimalizace obrázků
-- [ ] Caching strategií
-- [ ] Bundle size analýza
+- [x] Lazy loading stránek
+- [x] Optimalizace obrázků a assetů
+- [x] Caching strategií
+- [x] Bundle size analýza (npm run analyze)
 
 ---
 
-### FÁZE 15: Deployment
+### FÁZE 15: Deployment ✅
 **Cíl:** Produkční nasazení
 
+**Produkční URL:** https://bazina-tasker.rhsoft.cz/
+
 #### 15.1 Příprava
-- [ ] Environment variables pro produkci
-- [ ] Build optimalizace
+- [x] Environment variables pro produkci
+- [x] Build optimalizace
 - [ ] Error tracking (Sentry - volitelné)
 
 #### 15.2 Deployment
-- [ ] Nasazení na Vercel
-- [ ] Konfigurace vlastní domény (volitelné)
-- [ ] SSL certifikát (automaticky)
-- [ ] Testování produkce
+- [x] Nasazení na Vercel
+- [x] Konfigurace vlastní domény (bazina-tasker.rhsoft.cz)
+- [x] SSL certifikát (automaticky)
+- [x] Testování produkce
 
 ---
 
@@ -769,9 +771,11 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 ## Aktuální stav projektu
 
-**Poslední aktualizace:** 2024-12-03
+**Poslední aktualizace:** 2025-12-03
 
-### Dokončené fáze (13/15)
+**Produkční URL:** https://bazina-tasker.rhsoft.cz/
+
+### Dokončené fáze (15/15) ✅
 | Fáze | Název | Stav |
 |------|-------|------|
 | 1 | Inicializace projektu | ✅ Dokončeno |
@@ -787,8 +791,8 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 | 11 | Responzivita a UX | ✅ Dokončeno |
 | 12 | Evidence času | ✅ Dokončeno |
 | 13 | Audit log | ✅ Dokončeno |
-| 14 | Testování a optimalizace | 🔄 Částečně |
-| 15 | Deployment | ⏳ Čeká |
+| 14 | Testování a optimalizace | ✅ Dokončeno |
+| 15 | Deployment | ✅ Dokončeno |
 
 ### Klíčové funkce aplikace
 - **Správa zákazníků** - CRUD operace, vyhledávání, přílohy
@@ -798,3 +802,4 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 - **Audit log** - Historie všech změn
 - **Autentizace** - Email/heslo, Google SSO
 - **Dark mode** - Přepínání motivu
+- **Optimalizace** - Lazy loading, skeleton loading, caching, bundle splitting

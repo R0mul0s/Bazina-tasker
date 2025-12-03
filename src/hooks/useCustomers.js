@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { safeQuery } from '../lib/supabaseQuery'
+import { getFromCache, setInCache, invalidateCache, CacheKeys, CacheTTL } from '../lib/cache'
 
 export const useCustomers = () => {
   const { user } = useAuth()
@@ -13,12 +14,24 @@ export const useCustomers = () => {
   // Použít user?.id místo user objektu pro stabilní referenci
   const userId = user?.id
 
-  // Načtení všech zákazníků
-  const fetchCustomers = useCallback(async () => {
+  // Načtení všech zákazníků s cachováním
+  const fetchCustomers = useCallback(async (forceRefresh = false) => {
     if (!userId) {
       setCustomers([])
       setLoading(false)
       return
+    }
+
+    const cacheKey = CacheKeys.CUSTOMERS(userId)
+
+    // Zkusit načíst z cache pokud není force refresh
+    if (!forceRefresh) {
+      const cachedData = getFromCache(cacheKey, CacheTTL.MEDIUM)
+      if (cachedData) {
+        setCustomers(cachedData)
+        setLoading(false)
+        return
+      }
     }
 
     setLoading(true)
@@ -35,6 +48,8 @@ export const useCustomers = () => {
       setCustomers([])
     } else {
       setCustomers(data || [])
+      // Uložit do cache
+      setInCache(cacheKey, data || [])
     }
 
     setLoading(false)
@@ -71,6 +86,9 @@ export const useCustomers = () => {
       return { data: null, error: queryError.message }
     }
 
+    // Invalidovat cache
+    invalidateCache(CacheKeys.CUSTOMERS(userId))
+
     if (isMountedRef.current) {
       setCustomers((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)))
     }
@@ -92,13 +110,16 @@ export const useCustomers = () => {
       return { data: null, error: queryError.message }
     }
 
+    // Invalidovat cache
+    if (userId) invalidateCache(CacheKeys.CUSTOMERS(userId))
+
     if (isMountedRef.current) {
       setCustomers((prev) =>
         prev.map((c) => (c.id === id ? data : c)).sort((a, b) => a.name.localeCompare(b.name))
       )
     }
     return { data, error: null }
-  }, [])
+  }, [userId])
 
   // Smazání zákazníka
   const deleteCustomer = useCallback(async (id) => {
@@ -110,11 +131,14 @@ export const useCustomers = () => {
       return { error: queryError.message }
     }
 
+    // Invalidovat cache
+    if (userId) invalidateCache(CacheKeys.CUSTOMERS(userId))
+
     if (isMountedRef.current) {
       setCustomers((prev) => prev.filter((c) => c.id !== id))
     }
     return { error: null }
-  }, [])
+  }, [userId])
 
   // Vyhledávání zákazníků
   const searchCustomers = useCallback(async (query) => {

@@ -5,7 +5,6 @@ import {
   CCardHeader,
   CCol,
   CRow,
-  CSpinner,
   CListGroup,
   CListGroupItem,
   CBadge,
@@ -24,6 +23,7 @@ import {
   NotesByTypeChart,
   ActivityByDayChart,
 } from '../../components/dashboard/DashboardCharts'
+import { DashboardSkeleton, ChartSkeleton } from '../../components/common/Skeleton'
 
 const StatCard = ({ title, value, icon, color, onClick }) => (
   <CCard className={`mb-4 ${onClick ? 'cursor-pointer' : ''}`} onClick={onClick}>
@@ -79,11 +79,7 @@ const Dashboard = () => {
   const recentNotes = notes.slice(0, 5)
 
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <CSpinner color="primary" />
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   return (
@@ -272,9 +268,20 @@ const Dashboard = () => {
       {/* Grafy statistik */}
       <h4 className="mb-3 mt-4">Statistiky</h4>
       {statsLoading ? (
-        <div className="d-flex justify-content-center py-4">
-          <CSpinner color="primary" size="sm" />
-        </div>
+        <CRow>
+          <CCol lg={8}>
+            <ChartSkeleton height={300} />
+          </CCol>
+          <CCol lg={4}>
+            <ChartSkeleton height={300} />
+          </CCol>
+          <CCol lg={6}>
+            <ChartSkeleton height={250} />
+          </CCol>
+          <CCol lg={6}>
+            <ChartSkeleton height={250} />
+          </CCol>
+        </CRow>
       ) : (
         <CRow>
           <CCol lg={8}>

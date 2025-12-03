@@ -30,3 +30,6 @@ coverage/
 # Misc
 *.local
 nul
+
+# Claude Code settings (may contain tokens)
+.claude/

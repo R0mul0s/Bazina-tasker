@@ -11,7 +11,6 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CSpinner,
   CInputGroup,
   CFormInput,
   CInputGroupText,
@@ -38,6 +37,7 @@ import {
 } from '@coreui/icons'
 import { useCustomers } from '../../hooks/useCustomers'
 import CustomerForm from '../../components/customers/CustomerForm'
+import { TableSkeleton } from '../../components/common/Skeleton'
 
 const Customers = () => {
   const navigate = useNavigate()
@@ -85,11 +85,7 @@ const Customers = () => {
   }
 
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <CSpinner color="primary" />
-      </div>
-    )
+    return <TableSkeleton rows={5} cols={4} />
   }
 
   return (

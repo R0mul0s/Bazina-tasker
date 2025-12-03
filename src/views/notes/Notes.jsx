@@ -25,7 +25,6 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
-  CDropdownDivider,
   CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -49,6 +48,7 @@ import { useTags } from '../../hooks/useTags'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import NoteForm from '../../components/notes/NoteForm'
 import { formatDate, formatRelativeTime, truncateText, formatDuration } from '../../lib/utils'
+import { ListCardSkeleton } from '../../components/common/Skeleton'
 
 const priorityColors = {
   low: 'success',
@@ -248,11 +248,7 @@ const Notes = () => {
   const hasActiveFilters = filters.status || filters.priority || filters.customer_id || searchQuery
 
   if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <CSpinner color="primary" />
-      </div>
-    )
+    return <ListCardSkeleton count={5} />
   }
 
   return (
