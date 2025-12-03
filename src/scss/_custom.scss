@@ -42,6 +42,34 @@
 // CoreUI někdy špatně kalkuluje kontrast
 // ============================================
 
+// Dark mode - btn-light musí být tmavší
+[data-coreui-theme='dark'] {
+  .btn-light {
+    --cui-btn-bg: var(--cui-tertiary-bg);
+    --cui-btn-border-color: var(--cui-border-color);
+    --cui-btn-color: var(--cui-body-color);
+    --cui-btn-hover-bg: var(--cui-secondary-bg);
+    --cui-btn-hover-border-color: var(--cui-border-color);
+    --cui-btn-hover-color: var(--cui-body-color);
+    --cui-btn-active-bg: var(--cui-secondary-bg);
+    --cui-btn-active-border-color: var(--cui-border-color);
+    --cui-btn-active-color: var(--cui-body-color);
+  }
+
+  // Dropdown toggle pro akce v tabulkách
+  .dropdown-toggle.btn-light {
+    background-color: transparent;
+    border-color: transparent;
+
+    &:hover,
+    &:focus,
+    &.show {
+      background-color: var(--cui-tertiary-bg);
+      border-color: var(--cui-border-color);
+    }
+  }
+}
+
 .btn-primary {
   --cui-btn-color: #fff;
   --cui-btn-hover-color: #fff;
@@ -833,5 +861,84 @@ $tag-colors: (
     box-shadow: $box-shadow-lg;
     background-color: var(--cui-body-bg);
     cursor: grabbing;
+  }
+}
+
+// ============================================
+// Card Header Toolbar - vylepšený vzhled
+// ============================================
+
+// Hlavička karty s toolbarem (vyhledávání, filtry)
+.card-header {
+  // Lepší zarovnání při flex layoutu
+  &.d-flex {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Sekce filtrů - oprava bg-light pro dark mode
+.border-bottom.bg-light {
+  background-color: var(--cui-tertiary-bg) !important;
+}
+
+// Dark mode specifika pro toolbar sekce
+[data-coreui-theme='dark'] {
+  // Bulk action toolbar s primary barvou
+  .bg-primary.bg-opacity-10 {
+    background-color: rgba(var(--cui-primary-rgb), 0.15) !important;
+  }
+
+  // Filter sekce
+  .border-bottom.bg-light {
+    background-color: var(--cui-tertiary-bg) !important;
+    border-color: var(--cui-border-color) !important;
+  }
+
+  // Form selecty a inputy v tmavém režimu
+  .form-select,
+  .form-control {
+    background-color: var(--cui-body-bg);
+    border-color: var(--cui-border-color);
+    color: var(--cui-body-color);
+
+    &:focus {
+      background-color: var(--cui-body-bg);
+      border-color: var(--cui-primary);
+      box-shadow: 0 0 0 0.25rem rgba(var(--cui-primary-rgb), 0.25);
+    }
+  }
+
+  // Input group text
+  .input-group-text {
+    background-color: var(--cui-tertiary-bg);
+    border-color: var(--cui-border-color);
+    color: var(--cui-body-color);
+  }
+
+  // Form labels v tmavém režimu
+  .form-label {
+    color: var(--cui-body-color);
+  }
+}
+
+// ============================================
+// Table Header - čistší vzhled
+// ============================================
+
+// Tabulka s menším odsazením v hlavičce
+.table {
+  th {
+    font-weight: 600;
+    text-transform: none;
+    font-size: 0.875rem;
+    color: var(--cui-body-color);
+    background-color: var(--cui-tertiary-bg);
+    border-bottom-width: 2px;
+  }
+
+  // Hover efekt na řádky
+  &.table-hover tbody tr:hover {
+    background-color: var(--cui-tertiary-bg);
   }
 }
