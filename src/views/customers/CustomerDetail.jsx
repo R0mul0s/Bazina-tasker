@@ -42,6 +42,7 @@ import CustomerForm from '../../components/customers/CustomerForm'
 import NoteForm from '../../components/notes/NoteForm'
 import AttachmentList from '../../components/notes/AttachmentList'
 import AuditHistory from '../../components/common/AuditHistory'
+import ActionMenu from '../../components/common/ActionMenu'
 import { useLocaleFormat } from '../../hooks/useLocaleFormat'
 
 const priorityColors = {
@@ -235,28 +236,35 @@ const CustomerDetail = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div className="d-flex align-items-center gap-3">
           <CButton color="light" onClick={() => navigate('/customers')}>
             <CIcon icon={cilArrowLeft} />
           </CButton>
           <div>
-            <h2 className="mb-0">{customer.name}</h2>
+            <h2 className="mb-0 text-truncate" style={{ maxWidth: '300px' }}>{customer.name}</h2>
             {customer.company && (
               <small className="text-secondary">{customer.company}</small>
             )}
           </div>
         </div>
-        <div className="d-flex gap-2">
-          <CButton color="primary" onClick={() => setShowCustomerForm(true)}>
-            <CIcon icon={cilPencil} className="me-2" />
-            {tCommon('actions.edit')}
-          </CButton>
-          <CButton color="danger" variant="outline" onClick={() => setDeleteModal(true)}>
-            <CIcon icon={cilTrash} className="me-2" />
-            {tCommon('actions.delete')}
-          </CButton>
-        </div>
+        <ActionMenu
+          actions={[
+            {
+              icon: cilPencil,
+              label: tCommon('actions.edit'),
+              onClick: () => setShowCustomerForm(true),
+              color: 'primary',
+            },
+            {
+              icon: cilTrash,
+              label: tCommon('actions.delete'),
+              onClick: () => setDeleteModal(true),
+              danger: true,
+            },
+          ]}
+          breakpoint="lg"
+        />
       </div>
 
       <CRow>
