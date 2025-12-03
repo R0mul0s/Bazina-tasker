@@ -942,3 +942,65 @@ $tag-colors: (
     background-color: var(--cui-tertiary-bg);
   }
 }
+
+// ============================================
+// Smart Table - CoreUI style
+// ============================================
+
+.smart-table {
+  // Filters row
+  &__filters {
+    th {
+      background-color: var(--cui-body-bg) !important;
+      border-bottom: 1px solid var(--cui-border-color);
+      padding: 0.5rem !important;
+    }
+
+    .form-control {
+      background-color: var(--cui-body-bg);
+      border-color: var(--cui-border-color);
+
+      &:focus {
+        border-color: var(--cui-primary);
+        box-shadow: none;
+      }
+    }
+  }
+
+  // Table styling
+  &__table {
+    margin-bottom: 0;
+
+    thead th {
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    // Selected row
+    .table-active {
+      --cui-table-bg: rgba(var(--cui-primary-rgb), 0.1);
+    }
+
+    // Footer
+    tfoot th {
+      font-weight: 600;
+      background-color: var(--cui-tertiary-bg);
+      border-top: 2px solid var(--cui-border-color);
+    }
+  }
+
+  // Pagination
+  .pagination {
+    margin-bottom: 0;
+
+    .page-link {
+      min-width: 32px;
+      text-align: center;
+    }
+  }
+}
+
+// User select none utility
+.user-select-none {
+  user-select: none;
+}

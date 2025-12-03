@@ -3,17 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import {
   CCard,
   CCardBody,
-  CCardHeader,
   CButton,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CInputGroup,
-  CFormInput,
-  CInputGroupText,
+  CBadge,
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
@@ -28,7 +19,6 @@ import CIcon from '@coreui/icons-react'
 import {
   cilPlus,
   cilPeople,
-  cilSearch,
   cilOptions,
   cilPencil,
   cilTrash,
@@ -37,6 +27,7 @@ import {
 } from '@coreui/icons'
 import { useCustomers } from '../../hooks/useCustomers'
 import CustomerForm from '../../components/customers/CustomerForm'
+import SmartTable from '../../components/common/SmartTable'
 import { TableSkeleton } from '../../components/common/Skeleton'
 
 const Customers = () => {
@@ -45,19 +36,80 @@ const Customers = () => {
 
   const [showForm, setShowForm] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [deleteModal, setDeleteModal] = useState({ show: false, customer: null })
 
-  // Filtrování zákazníků podle vyhledávání
-  const filteredCustomers = customers.filter((customer) => {
-    if (!searchQuery.trim()) return true
-    const query = searchQuery.toLowerCase()
-    return (
-      customer.name?.toLowerCase().includes(query) ||
-      customer.company?.toLowerCase().includes(query) ||
-      customer.email?.toLowerCase().includes(query)
-    )
-  })
+  // Definice sloupců pro SmartTable
+  const columns = [
+    {
+      key: 'name',
+      label: 'Jméno',
+      _style: { width: '25%' },
+    },
+    {
+      key: 'company',
+      label: 'Firma',
+      _style: { width: '25%' },
+    },
+    {
+      key: 'contact',
+      label: 'Kontakt',
+      _style: { width: '35%' },
+      filter: false,
+      sorter: false,
+    },
+    {
+      key: 'actions',
+      label: 'Akce',
+      _style: { width: '80px' },
+      filter: false,
+      sorter: false,
+    },
+  ]
+
+  // Custom renderování sloupců
+  const scopedSlots = {
+    name: (item) => <strong>{item.name}</strong>,
+    company: (item) => item.company || <span className="text-secondary">-</span>,
+    contact: (item) => (
+      <div className="d-flex flex-column gap-1">
+        {item.email && (
+          <small className="d-flex align-items-center gap-1">
+            <CIcon icon={cilEnvelopeClosed} size="sm" />
+            {item.email}
+          </small>
+        )}
+        {item.phone && (
+          <small className="d-flex align-items-center gap-1">
+            <CIcon icon={cilPhone} size="sm" />
+            {item.phone}
+          </small>
+        )}
+        {!item.email && !item.phone && <span className="text-secondary">-</span>}
+      </div>
+    ),
+    actions: (item) => (
+      <div onClick={(e) => e.stopPropagation()}>
+        <CDropdown alignment="end" popper={true}>
+          <CDropdownToggle color="light" size="sm" caret={false}>
+            <CIcon icon={cilOptions} />
+          </CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem onClick={() => handleEdit(item)}>
+              <CIcon icon={cilPencil} className="me-2" />
+              Upravit
+            </CDropdownItem>
+            <CDropdownItem
+              className="text-danger"
+              onClick={() => setDeleteModal({ show: true, customer: item })}
+            >
+              <CIcon icon={cilTrash} className="me-2" />
+              Smazat
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+      </div>
+    ),
+  }
 
   const handleSave = async (data, customerId) => {
     if (customerId) {
@@ -98,113 +150,39 @@ const Customers = () => {
         </CButton>
       </div>
 
-      {/* Toolbar s vyhledáváním - nad kartou */}
-      <CCard className="mb-3">
-        <CCardBody className="py-3">
-          <CInputGroup style={{ maxWidth: '400px' }}>
-            <CInputGroupText>
-              <CIcon icon={cilSearch} />
-            </CInputGroupText>
-            <CFormInput
-              placeholder="Hledat zákazníky..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </CInputGroup>
-        </CCardBody>
-      </CCard>
-
       <CCard>
-        <CCardHeader>
-          <strong>Seznam zákazníků ({filteredCustomers.length})</strong>
-        </CCardHeader>
         <CCardBody>
-          {filteredCustomers.length === 0 ? (
+          {customers.length === 0 ? (
             <div className="empty-state">
               <div className="empty-state__icon">
                 <CIcon icon={cilPeople} size="3xl" />
               </div>
-              <div className="empty-state__title">
-                {searchQuery ? 'Žádní zákazníci nenalezeni' : 'Žádní zákazníci'}
-              </div>
+              <div className="empty-state__title">Žádní zákazníci</div>
               <div className="empty-state__description">
-                {searchQuery
-                  ? 'Zkuste upravit vyhledávání.'
-                  : 'Přidejte prvního zákazníka kliknutím na tlačítko výše.'}
+                Přidejte prvního zákazníka kliknutím na tlačítko výše.
               </div>
-              {!searchQuery && (
-                <CButton color="primary" onClick={() => setShowForm(true)}>
-                  <CIcon icon={cilPlus} className="me-2" />
-                  Přidat zákazníka
-                </CButton>
-              )}
+              <CButton color="primary" onClick={() => setShowForm(true)}>
+                <CIcon icon={cilPlus} className="me-2" />
+                Přidat zákazníka
+              </CButton>
             </div>
           ) : (
-            <CTable hover responsive>
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>Jméno</CTableHeaderCell>
-                  <CTableHeaderCell>Firma</CTableHeaderCell>
-                  <CTableHeaderCell>Kontakt</CTableHeaderCell>
-                  <CTableHeaderCell style={{ width: '100px' }}>Akce</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {filteredCustomers.map((customer) => (
-                  <CTableRow
-                    key={customer.id}
-                    className="cursor-pointer"
-                    onClick={() => navigate(`/customers/${customer.id}`)}
-                  >
-                    <CTableDataCell>
-                      <strong>{customer.name}</strong>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      {customer.company || <span className="text-secondary">-</span>}
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <div className="d-flex flex-column gap-1">
-                        {customer.email && (
-                          <small className="d-flex align-items-center gap-1">
-                            <CIcon icon={cilEnvelopeClosed} size="sm" />
-                            {customer.email}
-                          </small>
-                        )}
-                        {customer.phone && (
-                          <small className="d-flex align-items-center gap-1">
-                            <CIcon icon={cilPhone} size="sm" />
-                            {customer.phone}
-                          </small>
-                        )}
-                        {!customer.email && !customer.phone && (
-                          <span className="text-secondary">-</span>
-                        )}
-                      </div>
-                    </CTableDataCell>
-                    <CTableDataCell onClick={(e) => e.stopPropagation()}>
-                      <CDropdown alignment="end" popper={true}>
-                        <CDropdownToggle color="light" size="sm" caret={false}>
-                          <CIcon icon={cilOptions} />
-                        </CDropdownToggle>
-                        <CDropdownMenu>
-                          <CDropdownItem onClick={() => handleEdit(customer)}>
-                            <CIcon icon={cilPencil} className="me-2" />
-                            Upravit
-                          </CDropdownItem>
-                          <CDropdownItem
-                            className="text-danger"
-                            onClick={() => setDeleteModal({ show: true, customer })}
-                          >
-                            <CIcon icon={cilTrash} className="me-2" />
-                            Smazat
-                          </CDropdownItem>
-                        </CDropdownMenu>
-                      </CDropdown>
-                    </CTableDataCell>
-                  </CTableRow>
-                ))}
-              </CTableBody>
-            </CTable>
+            <SmartTable
+              items={customers}
+              columns={columns}
+              columnFilter
+              tableFilter
+              sorter
+              pagination
+              itemsPerPage={10}
+              itemsPerPageOptions={[5, 10, 20, 50]}
+              scopedSlots={scopedSlots}
+              onRowClick={(item) => navigate(`/customers/${item.id}`)}
+              tableFilterLabel="Filtr:"
+              tableFilterPlaceholder="hledaný text..."
+              noItemsLabel="Žádní zákazníci nenalezeni"
+              itemsPerPageLabel="Položek na stránku:"
+            />
           )}
         </CCardBody>
       </CCard>

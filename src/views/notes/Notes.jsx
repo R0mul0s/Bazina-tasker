@@ -1,26 +1,16 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   CCard,
   CCardBody,
-  CCardHeader,
   CButton,
   CSpinner,
-  CRow,
-  CCol,
   CBadge,
-  CInputGroup,
-  CFormInput,
-  CFormSelect,
-  CInputGroupText,
   CModal,
   CModalHeader,
   CModalTitle,
   CModalBody,
   CModalFooter,
-  CListGroup,
-  CListGroupItem,
-  CFormCheck,
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
@@ -31,7 +21,6 @@ import CIcon from '@coreui/icons-react'
 import {
   cilPlus,
   cilNotes,
-  cilSearch,
   cilPencil,
   cilTrash,
   cilCalendar,
@@ -44,7 +33,8 @@ import { useCustomers } from '../../hooks/useCustomers'
 import { useTags } from '../../hooks/useTags'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import NoteForm from '../../components/notes/NoteForm'
-import { formatDate, formatRelativeTime, truncateText, formatDuration } from '../../lib/utils'
+import SmartTable from '../../components/common/SmartTable'
+import { formatDate, formatRelativeTime, formatDuration } from '../../lib/utils'
 import { ListCardSkeleton } from '../../components/common/Skeleton'
 
 const priorityColors = {
@@ -91,68 +81,136 @@ const Notes = () => {
   const [editingNote, setEditingNote] = useState(null)
   const [deleteModal, setDeleteModal] = useState({ show: false, note: null })
   const [bulkDeleteModal, setBulkDeleteModal] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filters, setFilters] = useState({
-    status: '',
-    priority: '',
-    customer_id: '',
-  })
 
   // Bulk selection state
   const [selectedNotes, setSelectedNotes] = useState(new Set())
   const [bulkMessage, setBulkMessage] = useState(null)
 
   const isLoading = loading || customersLoading || tagsLoading
-
-  // Filtrování poznámek
-  const filteredNotes = notes.filter((note) => {
-    // Textové vyhledávání
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      const matchesSearch =
-        note.title?.toLowerCase().includes(query) ||
-        note.content?.toLowerCase().includes(query) ||
-        note.customer?.name?.toLowerCase().includes(query) ||
-        note.customer?.company?.toLowerCase().includes(query)
-      if (!matchesSearch) return false
-    }
-
-    // Filtr podle stavu
-    if (filters.status && note.status !== filters.status) return false
-
-    // Filtr podle priority
-    if (filters.priority && note.priority !== filters.priority) return false
-
-    // Filtr podle zákazníka
-    if (filters.customer_id && note.customer_id !== filters.customer_id) return false
-
-    return true
-  })
-
-  // Selection helpers
-  const isAllSelected = filteredNotes.length > 0 && filteredNotes.every(n => selectedNotes.has(n.id))
   const isSomeSelected = selectedNotes.size > 0
 
-  const toggleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedNotes(new Set())
-    } else {
-      setSelectedNotes(new Set(filteredNotes.map(n => n.id)))
-    }
-  }
+  // Přidat customer_name pro vyhledávání
+  const notesWithCustomerName = useMemo(() => {
+    return notes.map(note => ({
+      ...note,
+      customer_name: note.customer?.name || note.customer?.company || '',
+      status_label: statusLabels[note.status] || note.status,
+      priority_label: priorityLabels[note.priority] || note.priority,
+    }))
+  }, [notes])
 
-  const toggleSelect = (noteId) => {
-    const newSelected = new Set(selectedNotes)
-    if (newSelected.has(noteId)) {
-      newSelected.delete(noteId)
-    } else {
-      newSelected.add(noteId)
-    }
-    setSelectedNotes(newSelected)
-  }
+  // Definice sloupců pro SmartTable
+  const columns = [
+    {
+      key: 'title',
+      label: 'Název',
+      _style: { minWidth: '200px' },
+    },
+    {
+      key: 'customer_name',
+      label: 'Zákazník',
+      _style: { width: '150px' },
+    },
+    {
+      key: 'status_label',
+      label: 'Stav',
+      _style: { width: '120px' },
+    },
+    {
+      key: 'priority_label',
+      label: 'Priorita',
+      _style: { width: '100px' },
+    },
+    {
+      key: 'meeting_date',
+      label: 'Datum',
+      _style: { width: '100px' },
+    },
+    {
+      key: 'actions',
+      label: 'Akce',
+      _style: { width: '80px' },
+      filter: false,
+      sorter: false,
+    },
+  ]
 
-  const clearSelection = () => {
-    setSelectedNotes(new Set())
+  // Custom renderování sloupců
+  const scopedSlots = {
+    title: (item) => (
+      <div>
+        <strong>{item.title}</strong>
+        {item.tags?.length > 0 && (
+          <div className="d-flex gap-1 mt-1 flex-wrap">
+            {item.tags.map((tag) => (
+              <span
+                key={tag.id}
+                className={`tag-badge tag-badge--${tag.color || 'gray'}`}
+                style={{ fontSize: '0.7rem', padding: '0.2em 0.4em' }}
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        )}
+        <div className="d-flex gap-2 mt-1">
+          {item.tasks?.length > 0 && (
+            <small className="text-secondary">
+              <CIcon icon={cilCheckCircle} size="sm" className="me-1" />
+              {item.tasks.filter((t) => t.is_completed).length}/{item.tasks.length}
+            </small>
+          )}
+          {item.total_time_minutes > 0 && (
+            <small className="text-secondary">
+              <CIcon icon={cilClock} size="sm" className="me-1" />
+              {formatDuration(item.total_time_minutes)}
+            </small>
+          )}
+        </div>
+      </div>
+    ),
+    customer_name: (item) => (
+      <span className="text-secondary small">{item.customer_name || '-'}</span>
+    ),
+    status_label: (item) => (
+      <CBadge color={statusColors[item.status]} size="sm">
+        {statusLabels[item.status]}
+      </CBadge>
+    ),
+    priority_label: (item) => (
+      <CBadge color={priorityColors[item.priority]} size="sm">
+        {priorityLabels[item.priority]}
+      </CBadge>
+    ),
+    meeting_date: (item) => (
+      <span className="text-secondary small">
+        {item.meeting_date ? formatDate(item.meeting_date) : '-'}
+      </span>
+    ),
+    actions: (item) => (
+      <div className="d-flex gap-1" onClick={(e) => e.stopPropagation()}>
+        <CButton
+          color="light"
+          size="sm"
+          onClick={(e) => handleEdit(item, e)}
+          title="Upravit"
+        >
+          <CIcon icon={cilPencil} />
+        </CButton>
+        <CButton
+          color="light"
+          size="sm"
+          className="text-danger"
+          onClick={(e) => {
+            e.stopPropagation()
+            setDeleteModal({ show: true, note: item })
+          }}
+          title="Smazat"
+        >
+          <CIcon icon={cilTrash} />
+        </CButton>
+      </div>
+    ),
   }
 
   // Bulk action handlers
@@ -161,7 +219,7 @@ const Notes = () => {
     if (!error) {
       setBulkMessage({ type: 'success', text: `${count} poznámek aktualizováno` })
       await fetchNotes()
-      clearSelection()
+      setSelectedNotes(new Set())
     } else {
       setBulkMessage({ type: 'danger', text: error })
     }
@@ -173,7 +231,7 @@ const Notes = () => {
     if (!error) {
       setBulkMessage({ type: 'success', text: `${count} poznámek aktualizováno` })
       await fetchNotes()
-      clearSelection()
+      setSelectedNotes(new Set())
     } else {
       setBulkMessage({ type: 'danger', text: error })
     }
@@ -185,7 +243,7 @@ const Notes = () => {
     if (!error) {
       setBulkMessage({ type: 'success', text: `${count} poznámek smazáno` })
       await fetchNotes()
-      clearSelection()
+      setSelectedNotes(new Set())
     } else {
       setBulkMessage({ type: 'danger', text: error })
     }
@@ -198,7 +256,7 @@ const Notes = () => {
     if (!error) {
       setBulkMessage({ type: 'success', text: `Tag přidán k ${count} poznámkám` })
       await fetchNotes()
-      clearSelection()
+      setSelectedNotes(new Set())
     } else {
       setBulkMessage({ type: 'danger', text: error })
     }
@@ -210,7 +268,6 @@ const Notes = () => {
       return await updateNote(noteId, noteData, tagIds)
     } else {
       const result = await createNote(noteData, tagIds)
-      // Po vytvoření nové poznámky přesměrovat na detail (pro nahrání příloh)
       if (!result.error && result.data?.id) {
         navigate(`/notes/${result.data.id}`)
       }
@@ -236,13 +293,6 @@ const Notes = () => {
     setEditingNote(null)
   }
 
-  const clearFilters = () => {
-    setFilters({ status: '', priority: '', customer_id: '' })
-    setSearchQuery('')
-  }
-
-  const hasActiveFilters = filters.status || filters.priority || filters.customer_id || searchQuery
-
   if (isLoading) {
     return <ListCardSkeleton count={5} />
   }
@@ -267,95 +317,10 @@ const Notes = () => {
         </CAlert>
       )}
 
-      {/* Toolbar s vyhledáváním a filtry - nad kartou */}
-      <CCard className="mb-3">
-        <CCardBody className="py-3">
-          <CRow className="g-3 align-items-center">
-            <CCol xs={12} md={4}>
-              <CInputGroup>
-                <CInputGroupText>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
-                  placeholder="Hledat v poznámkách..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </CInputGroup>
-            </CCol>
-            <CCol xs={6} sm={4} md={2}>
-              <CFormSelect
-                size="sm"
-                value={filters.status}
-                onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
-              >
-                <option value="">Všechny stavy</option>
-                {Object.entries(statusLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </CFormSelect>
-            </CCol>
-            <CCol xs={6} sm={4} md={2}>
-              <CFormSelect
-                size="sm"
-                value={filters.priority}
-                onChange={(e) => setFilters((f) => ({ ...f, priority: e.target.value }))}
-              >
-                <option value="">Všechny priority</option>
-                {Object.entries(priorityLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </CFormSelect>
-            </CCol>
-            <CCol xs={12} sm={4} md={2}>
-              <CFormSelect
-                size="sm"
-                value={filters.customer_id}
-                onChange={(e) => setFilters((f) => ({ ...f, customer_id: e.target.value }))}
-              >
-                <option value="">Všichni zákazníci</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </CFormSelect>
-            </CCol>
-            <CCol xs={12} md={2} className="text-md-end">
-              {hasActiveFilters && (
-                <CButton color="link" size="sm" onClick={clearFilters} className="p-0">
-                  <CIcon icon={cilX} className="me-1" />
-                  Zrušit filtry
-                </CButton>
-              )}
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
-
-      <CCard className="mb-4">
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center gap-3">
-            {filteredNotes.length > 0 && (
-              <CFormCheck
-                id="select-all"
-                checked={isAllSelected}
-                indeterminate={isSomeSelected && !isAllSelected}
-                onChange={toggleSelectAll}
-                title="Vybrat vše"
-              />
-            )}
-            <strong>Seznam poznámek ({filteredNotes.length})</strong>
-          </div>
-        </CCardHeader>
-
-        {/* Bulk action toolbar */}
-        {isSomeSelected && (
-          <div className="border-bottom p-3 bg-primary bg-opacity-10">
+      {/* Bulk action toolbar */}
+      {isSomeSelected && (
+        <CCard className="mb-3 border-primary">
+          <CCardBody className="py-2">
             <div className="d-flex align-items-center gap-3 flex-wrap">
               <span className="fw-semibold">
                 Vybráno: {selectedNotes.size}
@@ -418,16 +383,18 @@ const Notes = () => {
               <CButton
                 color="light"
                 size="sm"
-                onClick={clearSelection}
+                onClick={() => setSelectedNotes(new Set())}
                 className="ms-auto"
               >
                 <CIcon icon={cilX} className="me-1" />
                 Zrušit výběr
               </CButton>
             </div>
-          </div>
-        )}
+          </CCardBody>
+        </CCard>
+      )}
 
+      <CCard>
         <CCardBody>
           {customers.length === 0 ? (
             <div className="empty-state">
@@ -443,120 +410,36 @@ const Notes = () => {
                 Přidat zákazníka
               </CButton>
             </div>
-          ) : filteredNotes.length === 0 ? (
+          ) : notes.length === 0 ? (
             <div className="empty-state">
               <div className="empty-state__icon">
                 <CIcon icon={cilNotes} size="3xl" />
               </div>
-              <div className="empty-state__title">
-                {hasActiveFilters ? 'Žádné poznámky nenalezeny' : 'Žádné poznámky'}
-              </div>
+              <div className="empty-state__title">Žádné poznámky</div>
               <div className="empty-state__description">
-                {hasActiveFilters
-                  ? 'Zkuste upravit filtry nebo vyhledávání.'
-                  : 'Vytvořte první poznámku kliknutím na tlačítko výše.'}
+                Vytvořte první poznámku kliknutím na tlačítko výše.
               </div>
-              {hasActiveFilters && (
-                <CButton color="primary" onClick={clearFilters}>
-                  Zrušit filtry
-                </CButton>
-              )}
             </div>
           ) : (
-            <CListGroup flush>
-              {filteredNotes.map((note) => (
-                <CListGroupItem
-                  key={note.id}
-                  className={`cursor-pointer note-list-item ${selectedNotes.has(note.id) ? 'bg-primary bg-opacity-10' : ''}`}
-                  onClick={() => navigate(`/notes/${note.id}`)}
-                >
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div className="d-flex align-items-start gap-3 flex-grow-1">
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <CFormCheck
-                          checked={selectedNotes.has(note.id)}
-                          onChange={() => toggleSelect(note.id)}
-                        />
-                      </div>
-                      <div className="flex-grow-1">
-                        <div className="d-flex align-items-center gap-2 mb-1">
-                          <strong>{note.title}</strong>
-                          <CBadge color={statusColors[note.status]} size="sm">
-                            {statusLabels[note.status]}
-                          </CBadge>
-                          <CBadge color={priorityColors[note.priority]} size="sm">
-                            {priorityLabels[note.priority]}
-                          </CBadge>
-                        </div>
-                        <div className="text-secondary small mb-1">
-                          <span className="me-3">
-                            {note.customer?.name || note.customer?.company}
-                          </span>
-                          <span className="me-3">
-                            {meetingTypeLabels[note.meeting_type]}
-                          </span>
-                          {note.meeting_date && (
-                            <span className="me-3">
-                              <CIcon icon={cilCalendar} size="sm" className="me-1" />
-                              {formatDate(note.meeting_date)}
-                            </span>
-                          )}
-                          <span>{formatRelativeTime(note.created_at)}</span>
-                        </div>
-                        {note.tags?.length > 0 && (
-                          <div className="d-flex gap-1 mb-1">
-                            {note.tags.map((tag) => (
-                              <span
-                                key={tag.id}
-                                className={`tag-badge tag-badge--${tag.color || 'gray'}`}
-                              >
-                                {tag.name}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <div className="d-flex gap-3">
-                          {note.tasks?.length > 0 && (
-                            <div className="small text-secondary">
-                              <CIcon icon={cilCheckCircle} size="sm" className="me-1" />
-                              {note.tasks.filter((t) => t.is_completed).length}/{note.tasks.length} úkolů
-                            </div>
-                          )}
-                          {note.total_time_minutes > 0 && (
-                            <div className="small text-secondary">
-                              <CIcon icon={cilClock} size="sm" className="me-1" />
-                              {formatDuration(note.total_time_minutes)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex gap-1" onClick={(e) => e.stopPropagation()}>
-                      <CButton
-                        color="light"
-                        size="sm"
-                        onClick={(e) => handleEdit(note, e)}
-                        title="Upravit"
-                      >
-                        <CIcon icon={cilPencil} />
-                      </CButton>
-                      <CButton
-                        color="light"
-                        size="sm"
-                        className="text-danger"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setDeleteModal({ show: true, note })
-                        }}
-                        title="Smazat"
-                      >
-                        <CIcon icon={cilTrash} />
-                      </CButton>
-                    </div>
-                  </div>
-                </CListGroupItem>
-              ))}
-            </CListGroup>
+            <SmartTable
+              items={notesWithCustomerName}
+              columns={columns}
+              columnFilter
+              tableFilter
+              sorter
+              pagination
+              itemsPerPage={10}
+              itemsPerPageOptions={[5, 10, 20, 50]}
+              selectable
+              selected={selectedNotes}
+              onSelectedChange={setSelectedNotes}
+              scopedSlots={scopedSlots}
+              onRowClick={(item) => navigate(`/notes/${item.id}`)}
+              tableFilterLabel="Filtr:"
+              tableFilterPlaceholder="hledaný text..."
+              noItemsLabel="Žádné poznámky nenalezeny"
+              itemsPerPageLabel="Položek na stránku:"
+            />
           )}
         </CCardBody>
       </CCard>
