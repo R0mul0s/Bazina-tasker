@@ -2,6 +2,42 @@
 // BEM metodologie: block__element--modifier
 
 // ============================================
+// Skeleton Loading - Shimmer animace
+// ============================================
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Aplikovat shimmer na všechny placeholdery
+.placeholder {
+  background: linear-gradient(
+    90deg,
+    var(--cui-secondary-bg) 25%,
+    var(--cui-tertiary-bg) 50%,
+    var(--cui-secondary-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+// Pro tmavý režim
+[data-coreui-theme='dark'] .placeholder {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+}
+
+// ============================================
 // Oprava kontrastních barev pro tlačítka
 // CoreUI někdy špatně kalkuluje kontrast
 // ============================================
