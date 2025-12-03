@@ -1,0 +1,801 @@
+// Vlastní globální styly
+// BEM metodologie: block__element--modifier
+
+// ============================================
+// Oprava kontrastních barev pro tlačítka
+// CoreUI někdy špatně kalkuluje kontrast
+// ============================================
+
+.btn-primary {
+  --cui-btn-color: #fff;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-active-color: #fff;
+  --cui-btn-disabled-color: #fff;
+}
+
+.btn-success {
+  --cui-btn-color: #fff;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-active-color: #fff;
+  --cui-btn-disabled-color: #fff;
+}
+
+.btn-danger {
+  --cui-btn-color: #fff;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-active-color: #fff;
+  --cui-btn-disabled-color: #fff;
+}
+
+.btn-info {
+  --cui-btn-color: #fff;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-active-color: #fff;
+  --cui-btn-disabled-color: #fff;
+}
+
+.btn-warning {
+  --cui-btn-color: #000;
+  --cui-btn-hover-color: #000;
+  --cui-btn-active-color: #000;
+  --cui-btn-disabled-color: #000;
+}
+
+// ============================================
+// Layout
+// ============================================
+
+// Šířky sidebaru (dle CoreUI defaults)
+$sidebar-width: 256px;
+$sidebar-narrow-width: 64px;
+
+.app-wrapper {
+  min-height: 100vh;
+}
+
+// ============================================
+// Header - respektuje dark/light téma
+// ============================================
+
+.header {
+  background-color: var(--cui-body-bg) !important;
+  border-bottom: 1px solid var(--cui-border-color) !important;
+}
+
+// Dark mode specifické styly pro header
+[data-coreui-theme='dark'] {
+  .header {
+    background-color: var(--cui-body-bg) !important;
+  }
+}
+
+// ============================================
+// Wrapper - odsazení od sidebaru na desktopu
+// ============================================
+
+.wrapper {
+  transition: margin-left 0.15s;
+  margin-left: 0; // Výchozí bez marginu
+}
+
+// Na desktopu (lg+) přidat margin pouze když je sidebar viditelný
+@media (min-width: 992px) {
+  // Plný sidebar viditelný
+  .wrapper.sidebar-show {
+    margin-left: $sidebar-width;
+  }
+
+  // Narrow/unfoldable mód viditelný
+  .wrapper.sidebar-narrow-show {
+    margin-left: $sidebar-narrow-width;
+  }
+}
+
+// ============================================
+// Tabulky - oprava overflow pro dropdown menu
+// ============================================
+
+.table-responsive {
+  overflow: visible;
+}
+
+// Alternativně pro karty s tabulkami
+.card-body > .table-responsive {
+  overflow: visible;
+}
+
+// ============================================
+// Cards - obecné úpravy
+// ============================================
+
+.card {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+// ============================================
+// Auth pages
+// ============================================
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $primary 0%, darken($primary, 15%) 100%);
+
+  &__card {
+    width: 100%;
+    max-width: 420px;
+    box-shadow: $box-shadow-lg;
+  }
+
+  &__logo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: $primary;
+    }
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--cui-border-color);
+    }
+
+    span {
+      padding: 0 1rem;
+      color: $secondary;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ============================================
+// Empty states
+// ============================================
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+
+  &__icon {
+    font-size: 3rem;
+    color: $secondary;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $body-color;
+    margin-bottom: 0.5rem;
+  }
+
+  &__description {
+    color: $secondary;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// ============================================
+// Utility classes
+// ============================================
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================
+// TipTap Editor
+// ============================================
+
+.tiptap-toolbar {
+  background-color: var(--cui-body-bg);
+}
+
+.tiptap-editor {
+  min-height: 150px;
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  li {
+    margin-bottom: 0.25rem;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.ProseMirror {
+  min-height: 150px;
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  > * + * {
+    margin-top: 0.5rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.5rem;
+  }
+
+  p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: $secondary;
+    pointer-events: none;
+    height: 0;
+  }
+}
+
+// ============================================
+// Notes list
+// ============================================
+
+.note-list-item {
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: var(--cui-tertiary-bg);
+  }
+}
+
+// ============================================
+// Tag cards
+// ============================================
+
+.tag-card {
+  transition: box-shadow 0.15s ease-in-out;
+
+  &:hover {
+    box-shadow: $box-shadow-sm;
+  }
+}
+
+// ============================================
+// Tag badges - barevné varianty
+// ============================================
+
+$tag-colors: (
+  'blue': #3b82f6,
+  'cyan': #06b6d4,
+  'violet': #8b5cf6,
+  'green': #10b981,
+  'gray': #6b7280,
+  'amber': #f59e0b,
+  'red': #ef4444,
+  'teal': #14b8a6,
+  'orange': #f97316,
+  'yellow': #fbbf24,
+  'rose': #f43f5e,
+  'pink': #ec4899,
+  'indigo': #6366f1,
+  'lime': #22c55e,
+  'stone': #78716c,
+);
+
+.tag-badge {
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  font-size: 0.875em;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+  color: #fff;
+  background-color: #6c757d; // default
+  border: none;
+
+  @each $name, $color in $tag-colors {
+    &--#{$name} {
+      background-color: $color;
+    }
+  }
+
+  // Větší varianta pro seznam tagů
+  &--lg {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  // Varianta pro color picker (čtvercová tlačítka)
+  button#{&} {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.ring-selected {
+      box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--cui-primary);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// ============================================
+// Attachments
+// ============================================
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid var(--cui-border-color);
+  border-radius: $border-radius;
+  margin-bottom: 0.5rem;
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cui-tertiary-bg);
+    border-radius: $border-radius;
+    margin-right: 0.75rem;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__size {
+    font-size: 0.75rem;
+    color: $secondary;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+}
+
+.attachment-dropzone {
+  border: 2px dashed var(--cui-border-color);
+  border-radius: $border-radius;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+  &:hover,
+  &--active {
+    border-color: $primary;
+    background-color: rgba($primary, 0.05);
+  }
+
+  &__icon {
+    font-size: 2rem;
+    color: $secondary;
+    margin-bottom: 0.5rem;
+  }
+
+  &__text {
+    color: $secondary;
+  }
+}
+
+// Attachment grid s náhledy obrázků
+.attachment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.attachment-card {
+  border: 1px solid var(--cui-border-color);
+  border-radius: $border-radius;
+  overflow: hidden;
+  background: var(--cui-body-bg);
+  transition: box-shadow 0.15s ease-in-out;
+
+  &:hover {
+    box-shadow: $box-shadow-sm;
+  }
+
+  &__preview {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cui-tertiary-bg);
+    position: relative;
+    overflow: hidden;
+
+    &--image {
+      cursor: pointer;
+
+      &:hover .attachment-card__zoom {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__zoom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__info {
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--cui-border-color);
+  }
+
+  &__name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__size {
+    font-size: 0.75rem;
+    color: $secondary;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--cui-border-color);
+    background-color: var(--cui-tertiary-bg);
+  }
+}
+
+// ============================================
+// Global Search
+// ============================================
+
+.global-search {
+  width: 100%;
+  max-width: 400px;
+
+  &__input {
+    .form-control {
+      background-color: var(--cui-tertiary-bg);
+      border-color: var(--cui-border-color);
+
+      &:focus {
+        background-color: var(--cui-body-bg);
+        box-shadow: none;
+        border-color: var(--cui-primary);
+      }
+    }
+
+    .input-group-text {
+      background-color: var(--cui-tertiary-bg);
+      border-color: var(--cui-border-color);
+    }
+  }
+
+  &__results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    background-color: var(--cui-body-bg);
+    border: 1px solid var(--cui-border-color);
+    border-radius: $border-radius;
+    box-shadow: $box-shadow-lg;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1050;
+  }
+
+  &__header {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $secondary;
+    background-color: var(--cui-tertiary-bg);
+    border-bottom: 1px solid var(--cui-border-color);
+    display: flex;
+    align-items: center;
+  }
+
+  &__item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--cui-border-color);
+    transition: background-color 0.15s ease-in-out;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--cui-tertiary-bg);
+    }
+  }
+
+  &__item-title {
+    font-weight: 500;
+    margin-bottom: 0.125rem;
+  }
+
+  &__item-subtitle {
+    font-size: 0.8rem;
+    color: $secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ============================================
+// FullCalendar - kalendář
+// ============================================
+
+.calendar-wrapper {
+  // Základní styly
+  .fc {
+    font-family: inherit;
+  }
+
+  // Header tlačítka
+  .fc .fc-button-primary {
+    background-color: var(--cui-primary);
+    border-color: var(--cui-primary);
+
+    &:hover {
+      background-color: var(--cui-primary);
+      filter: brightness(0.9);
+    }
+
+    &:disabled {
+      background-color: var(--cui-primary);
+      opacity: 0.65;
+    }
+  }
+
+  .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: var(--cui-primary);
+    filter: brightness(0.85);
+  }
+
+  // Tabulka
+  .fc .fc-scrollgrid {
+    border-color: var(--cui-border-color);
+  }
+
+  .fc th {
+    background-color: var(--cui-tertiary-bg);
+    border-color: var(--cui-border-color);
+    padding: 0.5rem;
+  }
+
+  .fc td {
+    border-color: var(--cui-border-color);
+  }
+
+  // Buňky dnů
+  .fc .fc-daygrid-day {
+    background-color: var(--cui-body-bg);
+
+    &.fc-day-today {
+      background-color: rgba(var(--cui-primary-rgb), 0.1);
+    }
+
+    &:hover {
+      background-color: var(--cui-tertiary-bg);
+    }
+  }
+
+  // Čísla dnů
+  .fc .fc-daygrid-day-number {
+    color: var(--cui-body-color);
+    padding: 0.5rem;
+  }
+
+  // Události
+  .fc .fc-event {
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: none;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+
+  .fc .fc-event-title {
+    font-weight: 500;
+  }
+
+  // More link
+  .fc .fc-daygrid-more-link {
+    color: var(--cui-primary);
+    font-weight: 500;
+  }
+
+  // Toolbar
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--cui-body-color);
+  }
+
+  // Week view
+  .fc .fc-timegrid-slot {
+    border-color: var(--cui-border-color);
+  }
+
+  .fc .fc-timegrid-axis {
+    border-color: var(--cui-border-color);
+  }
+
+  // Popover pro více událostí
+  .fc .fc-popover {
+    background-color: var(--cui-body-bg);
+    border-color: var(--cui-border-color);
+    box-shadow: $box-shadow-lg;
+  }
+
+  .fc .fc-popover-header {
+    background-color: var(--cui-tertiary-bg);
+  }
+}
+
+// Dark mode specifika pro kalendář
+[data-coreui-theme='dark'] {
+  .calendar-wrapper {
+    .fc .fc-daygrid-day-number {
+      color: var(--cui-body-color);
+    }
+
+    .fc .fc-col-header-cell-cushion {
+      color: var(--cui-body-color);
+    }
+  }
+}
+
+// ============================================
+// Sortable Task List - Drag & Drop
+// ============================================
+
+.sortable-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sortable-task {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: var(--cui-body-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: $border-radius;
+  transition: box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: var(--cui-tertiary-bg);
+  }
+
+  &--dragging {
+    box-shadow: $box-shadow-lg;
+    background-color: var(--cui-body-bg);
+    z-index: 1000;
+    opacity: 0.9;
+  }
+
+  &__handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5rem;
+    color: $secondary;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:hover {
+      color: var(--cui-body-color);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .form-check {
+    margin-bottom: 0;
+    flex: 1;
+  }
+
+  &--overlay {
+    box-shadow: $box-shadow-lg;
+    background-color: var(--cui-body-bg);
+    cursor: grabbing;
+  }
+}

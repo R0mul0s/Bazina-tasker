@@ -1,0 +1,16 @@
+// Hlavní SCSS soubor
+// Import pořadí je důležité!
+
+// 1. Vlastní proměnné (před CoreUI pro přepsání)
+@import 'variables';
+
+// 2. CoreUI
+@import '@coreui/coreui/scss/coreui';
+
+// 3. Vlastní globální styly
+@import 'custom';
+
+// 4. Komponenty (přidávat podle potřeby)
+// @import 'components/customers';
+// @import 'components/notes';
+// @import 'components/editor';

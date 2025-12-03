@@ -1,0 +1,72 @@
+// Přepsání CoreUI proměnných
+// Dokumentace: https://coreui.io/docs/customize/sass/
+
+// Primární barvy
+$primary: #3b82f6;
+$secondary: #64748b;
+$success: #22c55e;
+$danger: #ef4444;
+$warning: #f59e0b;
+$info: #06b6d4;
+
+// Kontrastní barvy pro tlačítka (bílý text na barevném pozadí)
+$primary-text-emphasis: #fff;
+$success-text-emphasis: #fff;
+$danger-text-emphasis: #fff;
+$warning-text-emphasis: #000;
+$info-text-emphasis: #fff;
+
+// Minimum kontrastu pro automatickou kalkulaci (CoreUI)
+$min-contrast-ratio: 3;
+
+// Sidebar
+$sidebar-bg: #1e293b;
+$sidebar-nav-link-color: #94a3b8;
+$sidebar-nav-link-hover-color: #fff;
+$sidebar-nav-link-active-color: #fff;
+$sidebar-nav-link-active-bg: rgba($primary, 0.2);
+
+// Header
+$header-bg: #fff;
+$header-border-color: #e2e8f0;
+
+// Body
+$body-bg: #f1f5f9;
+$body-color: #1e293b;
+
+// Border radius
+$border-radius: 0.5rem;
+$border-radius-sm: 0.375rem;
+$border-radius-lg: 0.75rem;
+
+// Shadows
+$box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+$box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+// ============================================
+// Vlastní proměnné projektu
+// ============================================
+
+// Note cards
+$note-card-shadow: $box-shadow;
+$note-card-hover-shadow: $box-shadow-lg;
+
+// Customer cards
+$customer-card-border: 1px solid #e2e8f0;
+
+// Priority colors
+$priority-low: $success;
+$priority-medium: $warning;
+$priority-high: $danger;
+
+// Status colors
+$status-draft: $secondary;
+$status-completed: $success;
+$status-requires-action: $warning;
+
+// Meeting type colors
+$meeting-in-person: $primary;
+$meeting-phone: $info;
+$meeting-video: #8b5cf6;
+$meeting-email: $secondary;
