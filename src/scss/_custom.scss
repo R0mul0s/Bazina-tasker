@@ -1014,3 +1014,260 @@ $tag-colors: (
 .user-select-none {
   user-select: none;
 }
+
+// ============================================
+// Kanban Board
+// ============================================
+
+.kanban-page {
+  height: calc(100vh - 180px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  // Hide native scrollbar - we use custom one
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome/Safari/Opera
+  }
+}
+
+// Custom scrollbar track always visible
+.kanban-board-scrollbar {
+  height: 12px;
+  background: var(--cui-tertiary-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: 6px;
+  margin-top: 12px;
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &__thumb {
+    position: absolute;
+    top: 1px;
+    height: calc(100% - 2px);
+    background-color: var(--cui-primary);
+    border-radius: 5px;
+    min-width: 30px;
+    cursor: grab;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--cui-primary-emphasis, var(--cui-primary));
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.kanban-column-wrapper {
+  flex-shrink: 0;
+  width: 320px;
+}
+
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  background-color: var(--cui-body-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: $border-radius;
+  overflow: hidden;
+
+  &--over {
+    border-color: var(--cui-primary);
+    box-shadow: 0 0 0 2px rgba(var(--cui-primary-rgb), 0.25);
+  }
+
+  &--dragging {
+    opacity: 0.7;
+  }
+
+  &__header {
+    background-color: var(--cui-tertiary-bg);
+    border-bottom: 1px solid var(--cui-border-color);
+    flex-shrink: 0;
+  }
+
+  &__handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: $secondary;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:hover {
+      color: var(--cui-body-color);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__actions {
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+  }
+
+  &:hover &__actions {
+    opacity: 1;
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 100px;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--cui-secondary-bg);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--cui-secondary-color);
+      }
+    }
+  }
+
+  &__cards {
+    min-height: 50px;
+  }
+
+  &__empty {
+    font-size: 0.875rem;
+  }
+}
+
+.kanban-add-column {
+  flex-shrink: 0;
+  width: 280px;
+
+  &__btn {
+    width: 100%;
+    height: 48px;
+    border: 2px dashed var(--cui-border-color);
+    background-color: transparent;
+    color: $secondary;
+    transition: border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+    &:hover {
+      border-color: var(--cui-primary);
+      color: var(--cui-primary);
+      background-color: transparent;
+    }
+  }
+}
+
+.kanban-card {
+  cursor: pointer;
+  transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
+  border: 1px solid var(--cui-border-color);
+
+  &:hover {
+    box-shadow: $box-shadow-sm;
+    transform: translateY(-1px);
+  }
+
+  &--dragging {
+    box-shadow: $box-shadow-lg;
+    transform: rotate(3deg);
+    opacity: 0.9;
+  }
+
+  &--overlay {
+    box-shadow: $box-shadow-lg;
+    transform: rotate(3deg);
+    cursor: grabbing;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__customer {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__tags {
+    .tag-badge--sm {
+      font-size: 0.7rem;
+      padding: 0.2em 0.4em;
+    }
+  }
+
+  &__footer {
+    font-size: 0.8rem;
+  }
+}
+
+// Kanban info alert - more visible
+.kanban-page {
+  .alert-info {
+    background-color: rgba(var(--cui-info-rgb), 0.15);
+    border-color: var(--cui-info);
+    color: var(--cui-body-color);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: var(--cui-info);
+    }
+  }
+}
+
+// Dark mode specifics for Kanban
+[data-coreui-theme='dark'] {
+  .kanban-column {
+    background-color: var(--cui-body-bg);
+  }
+
+  .kanban-card {
+    background-color: var(--cui-tertiary-bg);
+
+    &:hover {
+      background-color: var(--cui-secondary-bg);
+    }
+  }
+
+  .kanban-page .alert-info {
+    background-color: rgba(var(--cui-info-rgb), 0.2);
+    border-color: var(--cui-info);
+  }
+}

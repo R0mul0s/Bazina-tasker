@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CCard,
@@ -60,6 +60,8 @@ const NoteDetail = () => {
   const { t: tCommon } = useTranslation('common')
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const fromKanban = searchParams.get('from') === 'kanban'
   const fileInputRef = useRef(null)
   const { formatDate, formatDateTime } = useLocaleFormat()
 
@@ -162,7 +164,7 @@ const NoteDetail = () => {
 
   const handleDelete = async () => {
     await deleteNote(id)
-    navigate('/notes')
+    navigate(fromKanban ? '/kanban' : '/notes')
   }
 
   const handleDuplicate = async () => {
@@ -239,7 +241,7 @@ const NoteDetail = () => {
     return (
       <CAlert color="danger">
         {error || t('detail.noteNotFound')}
-        <CButton color="link" onClick={() => navigate('/notes')}>
+        <CButton color="link" onClick={() => navigate(fromKanban ? '/kanban' : '/notes')}>
           {tCommon('actions.backToList')}
         </CButton>
       </CAlert>
@@ -250,7 +252,7 @@ const NoteDetail = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center gap-3">
-          <CButton color="light" onClick={() => navigate('/notes')}>
+          <CButton color="light" onClick={() => navigate(fromKanban ? '/kanban' : '/notes')}>
             <CIcon icon={cilArrowLeft} />
           </CButton>
           <h2 className="mb-0">{note.title}</h2>

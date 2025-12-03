@@ -60,7 +60,8 @@
     "addTask": "Add task...",
     "titleRequired": "Note title is required",
     "customerRequired": "Select a customer",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "showInKanban": "Show in Kanban"
   },
   "detail": {
     "noteContent": "Note content",

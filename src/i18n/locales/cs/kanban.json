@@ -1,0 +1,17 @@
+{
+  "title": "Kanban",
+  "noNotes": "V Kanbanu nejsou zatím žádné poznámky. Zapněte zobrazení v Kanbanu u poznámek, které chcete zobrazit.",
+  "newNote": "Nová poznámka",
+  "addColumn": "Přidat sloupec",
+  "newColumn": "Nový sloupec",
+  "editColumn": "Upravit sloupec",
+  "deleteColumn": "Smazat sloupec",
+  "columnName": "Název sloupce",
+  "columnNamePlaceholder": "Např. K zpracování, V řešení, Hotovo...",
+  "nameRequired": "Název sloupce je povinný",
+  "defaultColumn": "Výchozí",
+  "emptyColumn": "Žádné poznámky",
+  "deleteColumnTitle": "Smazat sloupec",
+  "deleteColumnConfirm": "Opravdu chcete smazat sloupec \"{{name}}\"?",
+  "deleteColumnWarning": "Poznámky z tohoto sloupce budou přesunuty do výchozího sloupce."
+}

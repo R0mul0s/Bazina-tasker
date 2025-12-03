@@ -6,6 +6,7 @@ Webová aplikace pro správu zákazníků a poznámek z jednání. Umožňuje ev
 
 - **Správa zákazníků** - CRUD operace, vyhledávání, přílohy k zákazníkům, CSV import
 - **Poznámky ze schůzek** - Rich text editor (TipTap), tagy, úkoly s checkboxy, přílohy, duplikování, sdílení
+- **Kanban board** - Vizuální správa poznámek ve sloupcích, drag & drop, vlastní sloupce
 - **Sdílení poznámek** - Veřejný odkaz na poznámku (read-only) pro sdílení s externími uživateli
 - **Evidence času** - Sledování stráveného času na poznámkách s grafy
 - **Pokročilé filtry** - Filtrování poznámek podle více kritérií, výchozí řazení
@@ -115,6 +116,7 @@ bazina-tasker/
 │   │   ├── layout/         # Layout (sidebar, header)
 │   │   ├── customers/      # Zákazníci
 │   │   ├── notes/          # Poznámky
+│   │   ├── kanban/         # Kanban board komponenty
 │   │   ├── tags/           # Tagy
 │   │   ├── attachments/    # Přílohy
 │   │   ├── dashboard/      # Dashboard grafy
@@ -158,6 +160,8 @@ Migrace jsou v adresáři `supabase/migrations/`:
 | 011_add_theme_preference.sql | Preference motivu |
 | 012_create_audit_log.sql | Audit log |
 | 013_audit_attachments_time.sql | Rozšíření audit logu |
+| 014_add_note_sharing.sql | Sdílení poznámek |
+| 015_create_kanban.sql | Kanban sloupce a rozšíření poznámek |
 
 ## Dokumentace
 

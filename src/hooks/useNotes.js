@@ -318,6 +318,121 @@ export const useNotes = (customerId = null) => {
     return { data, error: null }
   }, [])
 
+  // Kanban - načtení poznámek pro kanban board
+  const fetchKanbanNotes = useCallback(async () => {
+    if (!userId) return { data: [], error: null }
+
+    const { data, error: queryError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .select(`
+          id,
+          title,
+          status,
+          priority,
+          meeting_date,
+          kanban_column_id,
+          kanban_order,
+          customer:customers(id, name, company),
+          tags:note_tags(tag:tags(id, name, color)),
+          tasks:note_tasks(id, is_completed)
+        `)
+        .eq('show_in_kanban', true)
+        .order('kanban_order', { ascending: true })
+    )
+
+    if (queryError) {
+      return { data: [], error: queryError.message }
+    }
+
+    // Transformace
+    const transformedData = (data || []).map(note => ({
+      ...note,
+      tags: note.tags?.map((t) => t.tag) || [],
+      tasks: note.tasks || [],
+      tasks_completed: note.tasks?.filter(t => t.is_completed).length || 0,
+      tasks_total: note.tasks?.length || 0,
+    }))
+
+    return { data: transformedData, error: null }
+  }, [userId])
+
+  // Kanban - aktualizace pozice poznámky
+  const updateNoteKanbanPosition = useCallback(async (noteId, columnId, order) => {
+    const { error: queryError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .update({
+          kanban_column_id: columnId,
+          kanban_order: order,
+        })
+        .eq('id', noteId)
+    )
+
+    if (queryError) {
+      return { error: queryError.message }
+    }
+
+    return { error: null }
+  }, [])
+
+  // Kanban - hromadná aktualizace pořadí poznámek
+  const updateKanbanOrder = useCallback(async (updates) => {
+    // updates = [{ id, kanban_column_id, kanban_order }, ...]
+    const promises = updates.map(update =>
+      supabase
+        .from('notes')
+        .update({
+          kanban_column_id: update.kanban_column_id,
+          kanban_order: update.kanban_order,
+        })
+        .eq('id', update.id)
+    )
+
+    const results = await Promise.all(promises)
+    const errors = results.filter(r => r.error)
+
+    if (errors.length > 0) {
+      return { error: errors[0].error.message }
+    }
+
+    return { error: null }
+  }, [])
+
+  // Kanban - přidat/odebrat poznámku z kanbanu
+  const toggleNoteKanban = useCallback(async (noteId, showInKanban, defaultColumnId = null) => {
+    const updates = {
+      show_in_kanban: showInKanban,
+    }
+
+    // Pokud přidáváme do kanbanu, nastavit výchozí sloupec
+    if (showInKanban && defaultColumnId) {
+      updates.kanban_column_id = defaultColumnId
+      updates.kanban_order = 0
+    }
+
+    // Pokud odebíráme z kanbanu, vynulovat kanban pole
+    if (!showInKanban) {
+      updates.kanban_column_id = null
+      updates.kanban_order = 0
+    }
+
+    const { data, error: queryError } = await safeQuery(() =>
+      supabase
+        .from('notes')
+        .update(updates)
+        .eq('id', noteId)
+        .select()
+        .single()
+    )
+
+    if (queryError) {
+      return { data: null, error: queryError.message }
+    }
+
+    return { data, error: null }
+  }, [])
+
   // Duplikování poznámky
   const duplicateNote = useCallback(async (noteId) => {
     if (!userId) {
@@ -409,6 +524,11 @@ export const useNotes = (customerId = null) => {
     unshareNote,
     getRequiresAction,
     getUpcomingFollowUps,
+    // Kanban
+    fetchKanbanNotes,
+    updateNoteKanbanPosition,
+    updateKanbanOrder,
+    toggleNoteKanban,
   }
 }
 

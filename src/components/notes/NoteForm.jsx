@@ -97,6 +97,7 @@ const NoteForm = ({
   customers = [],
   tags = [],
   preselectedCustomerId = null,
+  forceShowInKanban = false,
 }) => {
   const { t } = useTranslation('notes')
   const { t: tCommon } = useTranslation('common')
@@ -110,6 +111,7 @@ const NoteForm = ({
     priority: 'medium',
     status: 'draft',
     follow_up_date: '',
+    show_in_kanban: false,
   })
   const [selectedTags, setSelectedTags] = useState([])
   const [tasks, setTasks] = useState([])
@@ -140,6 +142,7 @@ const NoteForm = ({
         priority: note.priority || 'medium',
         status: note.status || 'draft',
         follow_up_date: note.follow_up_date ? note.follow_up_date.split('T')[0] : '',
+        show_in_kanban: note.show_in_kanban || false,
       })
       setSelectedTags(note.tags?.map((t) => t.id) || [])
       setTasks(note.tasks || [])
@@ -155,6 +158,7 @@ const NoteForm = ({
         priority: 'medium',
         status: 'draft',
         follow_up_date: '',
+        show_in_kanban: forceShowInKanban,
       })
       setSelectedTags([])
       setTasks([])
@@ -164,7 +168,7 @@ const NoteForm = ({
     }
     setError('')
     setNewTaskText('')
-  }, [note, visible, preselectedCustomerId, editor])
+  }, [note, visible, preselectedCustomerId, editor, forceShowInKanban])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -353,7 +357,17 @@ const NoteForm = ({
                 onChange={handleChange}
               />
             </CCol>
-            <CCol md={8}>
+            <CCol md={2} className="d-flex align-items-end">
+              <CFormCheck
+                id="show_in_kanban"
+                name="show_in_kanban"
+                label={t('form.showInKanban')}
+                checked={formData.show_in_kanban || forceShowInKanban}
+                onChange={(e) => setFormData(prev => ({ ...prev, show_in_kanban: e.target.checked }))}
+                disabled={forceShowInKanban}
+              />
+            </CCol>
+            <CCol md={6}>
               <CFormLabel>{t('form.tags')}</CFormLabel>
               <div className="d-flex flex-wrap gap-2">
                 {tags.length === 0 ? (

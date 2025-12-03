@@ -7,6 +7,7 @@ import {
   cilTags,
   cilCalendar,
   cilSettings,
+  cilViewColumn,
 } from '@coreui/icons'
 
 const getNavigation = (t) => [
@@ -31,6 +32,12 @@ const getNavigation = (t) => [
     name: t('menu.notes'),
     to: '/notes',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: t('menu.kanban'),
+    to: '/kanban',
+    icon: <CIcon icon={cilViewColumn} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

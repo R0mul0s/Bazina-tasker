@@ -6,6 +6,7 @@
     "management": "Management",
     "customers": "Customers",
     "notes": "Notes",
+    "kanban": "Kanban",
     "tags": "Tags",
     "calendar": "Calendar",
     "other": "Other",
@@ -26,6 +27,7 @@
     "notes": "Notes",
     "newNote": "New note",
     "noteDetail": "Note detail",
+    "kanban": "Kanban",
     "tags": "Tags",
     "calendar": "Calendar",
     "settings": "Settings"

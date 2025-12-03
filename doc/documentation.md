@@ -55,6 +55,10 @@ CoreUI poskytuje hotové komponenty, které využijeme:
 | Logo | SVG logo aplikace s podporou světlého/tmavého motivu |
 | ShareNoteModal | Modal pro sdílení poznámky s veřejným odkazem |
 | SharedNote | Veřejná stránka pro zobrazení sdílené poznámky (read-only) |
+| KanbanBoard | Kanban board s drag & drop (@dnd-kit) |
+| KanbanColumn | Sloupec Kanban boardu (sortable) |
+| KanbanCard | Karta poznámky v Kanbanu |
+| ColumnFormModal | Modal pro vytvoření/úpravu sloupce |
 
 ---
 
@@ -115,6 +119,20 @@ CoreUI poskytuje hotové komponenty, které využijeme:
 - follow_up_date: DATE
 - share_token: UUID (unikátní token pro veřejné sdílení)
 - shared_at: TIMESTAMP (kdy byla poznámka sdílena)
+- show_in_kanban: BOOLEAN DEFAULT false
+- kanban_column_id: UUID (FK -> kanban_columns, ON DELETE SET NULL)
+- kanban_order: INTEGER DEFAULT 0
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+```
+
+### Tabulka: kanban_columns
+```sql
+- id: UUID (PK)
+- user_id: UUID (FK -> profiles)
+- name: VARCHAR(100)
+- position: INTEGER DEFAULT 0
+- is_default: BOOLEAN DEFAULT false
 - created_at: TIMESTAMP
 - updated_at: TIMESTAMP
 ```
@@ -222,6 +240,11 @@ bazina-tasker/
 │   │   │   ├── NoteFilters.jsx
 │   │   │   ├── NoteTasks.jsx
 │   │   │   └── ShareNoteModal.jsx # Modal pro sdílení poznámky
+│   │   ├── kanban/                # Kanban board
+│   │   │   ├── KanbanBoard.jsx    # Hlavní board komponenta s DndContext
+│   │   │   ├── KanbanColumn.jsx   # Sortable sloupec
+│   │   │   ├── KanbanCard.jsx     # Karta poznámky
+│   │   │   └── ColumnFormModal.jsx # Modal pro sloupce
 │   │   ├── tags/                  # Tagy
 │   │   │   ├── TagList.jsx
 │   │   │   ├── TagBadge.jsx
@@ -253,6 +276,8 @@ bazina-tasker/
 │   │   │   ├── Notes.jsx
 │   │   │   ├── NoteDetail.jsx
 │   │   │   └── SharedNote.jsx     # Veřejná stránka pro sdílenou poznámku
+│   │   ├── kanban/
+│   │   │   └── Kanban.jsx         # Kanban board stránka
 │   │   ├── tags/
 │   │   │   └── Tags.jsx
 │   │   └── settings/
@@ -267,7 +292,8 @@ bazina-tasker/
 │   │   ├── useAuditLog.js
 │   │   ├── useDashboardStats.js
 │   │   ├── useDebounce.js
-│   │   └── useLocaleFormat.js     # Formátování dat podle locale
+│   │   ├── useLocaleFormat.js     # Formátování dat podle locale
+│   │   └── useKanbanColumns.js    # Správa Kanban sloupců
 │   ├── i18n/                      # Internacionalizace
 │   │   ├── index.js               # Konfigurace i18next
 │   │   └── locales/               # Překlady
@@ -281,7 +307,8 @@ bazina-tasker/
 │   │       │   ├── calendar.json
 │   │       │   ├── settings.json
 │   │       │   ├── dashboard.json
-│   │       │   └── audit.json
+│   │       │   ├── audit.json
+│   │       │   └── kanban.json
 │   │       └── en/                # Angličtina
 │   │           └── ... (stejná struktura)
 │   ├── lib/
@@ -317,7 +344,8 @@ bazina-tasker/
 │   │   ├── 011_add_theme_preference.sql
 │   │   ├── 012_create_audit_log.sql
 │   │   ├── 013_audit_attachments_time.sql
-│   │   └── 014_add_note_sharing.sql   # Sdílení poznámek
+│   │   ├── 014_add_note_sharing.sql   # Sdílení poznámek
+│   │   └── 015_create_kanban.sql      # Kanban sloupce
 │   └── seed.sql                  # Testovací data
 ├── public/
 │   └── favicon.ico
@@ -721,6 +749,46 @@ bazina-tasker/
 
 ---
 
+### FÁZE 17: Kanban Board ✅
+**Cíl:** Vizuální správa poznámek pomocí Kanban boardu
+
+#### 17.1 Databáze
+- [x] SQL migrace pro kanban_columns tabulku
+- [x] Rozšíření notes o show_in_kanban, kanban_column_id, kanban_order
+- [x] RLS policies pro kanban_columns
+- [x] Automatické vytvoření výchozího sloupce pro uživatele
+
+#### 17.2 Backend integrace
+- [x] useKanbanColumns hook
+  - [x] fetchColumns
+  - [x] createColumn
+  - [x] updateColumn
+  - [x] deleteColumn
+  - [x] reorderColumns
+  - [x] getDefaultColumn
+- [x] Rozšíření useNotes hook
+  - [x] fetchKanbanNotes
+  - [x] updateKanbanOrder
+
+#### 17.3 Frontend komponenty
+- [x] KanbanBoard (@dnd-kit/core, @dnd-kit/sortable)
+- [x] KanbanColumn (sortable sloupec)
+- [x] KanbanCard (karta poznámky s navigací)
+- [x] ColumnFormModal (vytvoření/úprava sloupce)
+- [x] Kanban stránka (views/kanban/Kanban.jsx)
+- [x] Custom scrollbar pro horizontální scrollování
+- [x] Navigační kontext (z Kanbanu do detailu a zpět)
+- [x] Breadcrumbs pro Kanban kontext
+
+#### 17.4 UI/UX
+- [x] Drag & drop karet mezi sloupci
+- [x] Drag & drop pro přeřazení sloupců
+- [x] Checkbox "Zobrazit v Kanbanu" ve formuláři poznámky
+- [x] Tlačítko pro vytvoření poznámky přímo z Kanbanu
+- [x] Překlady CS/EN pro Kanban
+
+---
+
 ## Environment Variables
 
 ```env
@@ -867,7 +935,7 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 **Produkční URL:** https://bazina-tasker.rhsoft.cz/
 
-### Dokončené fáze (16/16) ✅
+### Dokončené fáze (17/17) ✅
 | Fáze | Název | Stav |
 |------|-------|------|
 | 1 | Inicializace projektu | ✅ Dokončeno |
@@ -886,10 +954,12 @@ $note-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 | 14 | Pokročilé funkce | ✅ Dokončeno |
 | 15 | Testování a optimalizace | ✅ Dokončeno |
 | 16 | Deployment | ✅ Dokončeno |
+| 17 | Kanban Board | ✅ Dokončeno |
 
 ### Klíčové funkce aplikace
 - **Správa zákazníků** - CRUD operace, vyhledávání, přílohy, CSV import
 - **Poznámky ze schůzek** - Rich text editor, tagy, úkoly, přílohy, duplikování, sdílení
+- **Kanban board** - Vizuální správa poznámek ve sloupcích, drag & drop, vlastní sloupce
 - **Sdílení poznámek** - Veřejný odkaz na poznámku (read-only) pro sdílení s externími uživateli
 - **Evidence času** - Sledování stráveného času na poznámkách
 - **Pokročilé filtry** - Filtrování podle více kritérií, výchozí řazení

@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 import routes from '../../routes'
@@ -6,6 +6,8 @@ import routes from '../../routes'
 const AppBreadcrumb = () => {
   const { t } = useTranslation('navigation')
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const fromKanban = searchParams.get('from') === 'kanban'
 
   const getRouteNameKey = (pathname, routes) => {
     const currentRoute = routes.find((route) => {
@@ -45,7 +47,25 @@ const AppBreadcrumb = () => {
     return breadcrumbs
   }
 
-  const breadcrumbs = getBreadcrumbs(location.pathname)
+  // Zjistíme, zda jsme na detailu poznámky z kanbanu
+  const isNoteDetailFromKanban = fromKanban && location.pathname.match(/^\/notes\/[^/]+$/)
+
+  let breadcrumbs = getBreadcrumbs(location.pathname)
+
+  // Pokud jsme přišli z kanbanu, nahradíme "Poznámky" za "Kanban"
+  if (isNoteDetailFromKanban && breadcrumbs.length > 0) {
+    breadcrumbs = breadcrumbs.map((crumb, index) => {
+      // Nahradit první položku (poznámky) za kanban
+      if (crumb.pathname === '/notes') {
+        return {
+          pathname: '/kanban',
+          nameKey: 'routes.kanban',
+          active: false,
+        }
+      }
+      return crumb
+    })
+  }
 
   return (
     <CBreadcrumb className="my-0">

@@ -6,6 +6,7 @@
     "management": "Správa",
     "customers": "Zákazníci",
     "notes": "Poznámky",
+    "kanban": "Kanban",
     "tags": "Tagy",
     "calendar": "Kalendář",
     "other": "Ostatní",
@@ -26,6 +27,7 @@
     "notes": "Poznámky",
     "newNote": "Nová poznámka",
     "noteDetail": "Detail poznámky",
+    "kanban": "Kanban",
     "tags": "Tagy",
     "calendar": "Kalendář",
     "settings": "Nastavení"

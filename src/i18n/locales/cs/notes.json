@@ -60,7 +60,8 @@
     "addTask": "Přidat úkol...",
     "titleRequired": "Název poznámky je povinný",
     "customerRequired": "Vyberte zákazníka",
-    "saveChanges": "Uložit změny"
+    "saveChanges": "Uložit změny",
+    "showInKanban": "Zobrazit v Kanbanu"
   },
   "detail": {
     "noteContent": "Obsah poznámky",

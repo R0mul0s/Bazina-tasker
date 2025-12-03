@@ -13,6 +13,7 @@ import calendarCS from './locales/cs/calendar.json'
 import settingsCS from './locales/cs/settings.json'
 import dashboardCS from './locales/cs/dashboard.json'
 import auditCS from './locales/cs/audit.json'
+import kanbanCS from './locales/cs/kanban.json'
 
 // Import EN locales
 import commonEN from './locales/en/common.json'
@@ -25,6 +26,7 @@ import calendarEN from './locales/en/calendar.json'
 import settingsEN from './locales/en/settings.json'
 import dashboardEN from './locales/en/dashboard.json'
 import auditEN from './locales/en/audit.json'
+import kanbanEN from './locales/en/kanban.json'
 
 const resources = {
   cs: {
@@ -38,6 +40,7 @@ const resources = {
     settings: settingsCS,
     dashboard: dashboardCS,
     audit: auditCS,
+    kanban: kanbanCS,
   },
   en: {
     common: commonEN,
@@ -50,6 +53,7 @@ const resources = {
     settings: settingsEN,
     dashboard: dashboardEN,
     audit: auditEN,
+    kanban: kanbanEN,
   },
 }
 
@@ -71,6 +75,7 @@ i18n
       'settings',
       'dashboard',
       'audit',
+      'kanban',
     ],
     interpolation: {
       escapeValue: false,

@@ -14,6 +14,9 @@ const NoteDetail = lazy(() => import('./views/notes/NoteDetail'))
 // Tags
 const Tags = lazy(() => import('./views/tags/Tags'))
 
+// Kanban
+const Kanban = lazy(() => import('./views/kanban/Kanban'))
+
 // Calendar
 const Calendar = lazy(() => import('./views/calendar/Calendar'))
 
@@ -34,6 +37,9 @@ const routes = [
 
   // Tags
   { path: '/tags', nameKey: 'routes.tags', element: Tags },
+
+  // Kanban
+  { path: '/kanban', nameKey: 'routes.kanban', element: Kanban },
 
   // Calendar
   { path: '/calendar', nameKey: 'routes.calendar', element: Calendar },

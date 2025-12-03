@@ -1,0 +1,17 @@
+{
+  "title": "Kanban",
+  "noNotes": "No notes in Kanban yet. Enable Kanban display on notes you want to show here.",
+  "newNote": "New note",
+  "addColumn": "Add column",
+  "newColumn": "New column",
+  "editColumn": "Edit column",
+  "deleteColumn": "Delete column",
+  "columnName": "Column name",
+  "columnNamePlaceholder": "E.g. To Do, In Progress, Done...",
+  "nameRequired": "Column name is required",
+  "defaultColumn": "Default",
+  "emptyColumn": "No notes",
+  "deleteColumnTitle": "Delete column",
+  "deleteColumnConfirm": "Are you sure you want to delete column \"{{name}}\"?",
+  "deleteColumnWarning": "Notes from this column will be moved to the default column."
+}
