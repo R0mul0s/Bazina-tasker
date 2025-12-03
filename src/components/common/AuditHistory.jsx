@@ -91,6 +91,7 @@ const AuditHistory = ({ tableName, recordId }) => {
             Žádná historie změn
           </div>
         ) : (
+          <>
           <CAccordion flush>
             {logs.map((log, index) => (
               <CAccordionItem key={log.id} itemKey={index}>
@@ -260,6 +261,7 @@ const AuditHistory = ({ tableName, recordId }) => {
               </CButton>
             </div>
           )}
+          </>
         )}
       </CCardBody>
     </CCard>
