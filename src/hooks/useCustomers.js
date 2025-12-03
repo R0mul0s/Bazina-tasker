@@ -163,6 +163,9 @@ export const useCustomers = () => {
 
   // Hromadné vytvoření zákazníků (pro CSV import)
   const bulkCreateCustomers = useCallback(async (customersData) => {
+    console.log('bulkCreateCustomers called with:', customersData)
+    console.log('userId:', userId)
+
     if (!userId) {
       return { data: null, error: 'Uživatel není přihlášen', imported: 0, failed: 0 }
     }
@@ -180,11 +183,15 @@ export const useCustomers = () => {
       batches.push(customersData.slice(i, i + batchSize))
     }
 
+    console.log('Batches to insert:', batches)
+
     for (const batch of batches) {
       const preparedData = batch.map((customer) => ({
         ...customer,
         user_id: userId,
       }))
+
+      console.log('Inserting batch:', preparedData)
 
       const { data, error: queryError } = await safeQuery(() =>
         supabase
@@ -192,6 +199,8 @@ export const useCustomers = () => {
           .insert(preparedData)
           .select()
       )
+
+      console.log('Insert result - data:', data, 'error:', queryError)
 
       if (queryError) {
         results.failed += batch.length

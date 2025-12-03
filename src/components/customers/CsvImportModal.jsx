@@ -152,6 +152,9 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
 
     // Zkontrolovat, že máme alespoň name
     const hasName = Object.values(columnMap).includes('name')
+    console.log('Column mapping:', columnMap)
+    console.log('Has name mapping:', hasName)
+
     if (!hasName) {
       setError('Je nutné namapovat alespoň sloupec "Jméno".')
       return
@@ -165,14 +168,18 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
       .map((row) => {
         const customer = {}
         Object.entries(columnMap).forEach(([csvIndex, dbField]) => {
-          const value = row[parseInt(csvIndex)]
-          if (value) {
-            customer[dbField] = value
+          if (dbField) {
+            const value = row[parseInt(csvIndex)]
+            if (value) {
+              customer[dbField] = value
+            }
           }
         })
         return customer
       })
       .filter((c) => c.name) // Filtrovat pouze záznamy s jménem
+
+    console.log('Prepared customers data:', customersData)
 
     if (customersData.length === 0) {
       setError('Žádné platné záznamy k importu.')
@@ -181,6 +188,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
     }
 
     const importResult = await onImport(customersData)
+    console.log('Import result:', importResult)
     setImporting(false)
     setResult(importResult)
   }
@@ -285,12 +293,18 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
                       <select
                         className="form-select form-select-sm"
                         value={columnMap[index] || ''}
-                        onChange={(e) =>
-                          setColumnMap((prev) => ({
-                            ...prev,
-                            [index]: e.target.value || undefined,
-                          }))
-                        }
+                        onChange={(e) => {
+                          const value = e.target.value
+                          setColumnMap((prev) => {
+                            const newMap = { ...prev }
+                            if (value) {
+                              newMap[index] = value
+                            } else {
+                              delete newMap[index]
+                            }
+                            return newMap
+                          })
+                        }}
                       >
                         <option value="">-- Přeskočit --</option>
                         {dbFields.map((field) => (
