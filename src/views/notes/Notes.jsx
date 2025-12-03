@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   CCard,
   CCardBody,
+  CCardHeader,
   CButton,
   CSpinner,
   CBadge,
@@ -16,6 +17,12 @@ import {
   CDropdownMenu,
   CDropdownItem,
   CAlert,
+  CRow,
+  CCol,
+  CFormSelect,
+  CFormInput,
+  CFormCheck,
+  CCollapse,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -23,10 +30,11 @@ import {
   cilNotes,
   cilPencil,
   cilTrash,
-  cilCalendar,
   cilCheckCircle,
   cilX,
   cilClock,
+  cilFilter,
+  cilFilterX,
 } from '@coreui/icons'
 import { useNotes } from '../../hooks/useNotes'
 import { useCustomers } from '../../hooks/useCustomers'
@@ -34,7 +42,7 @@ import { useTags } from '../../hooks/useTags'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import NoteForm from '../../components/notes/NoteForm'
 import SmartTable from '../../components/common/SmartTable'
-import { formatDate, formatRelativeTime, formatDuration } from '../../lib/utils'
+import { formatDate, formatDuration } from '../../lib/utils'
 import { ListCardSkeleton } from '../../components/common/Skeleton'
 
 const priorityColors = {
@@ -63,13 +71,6 @@ const statusColors = {
   archived: 'dark',
 }
 
-const meetingTypeLabels = {
-  phone: 'Telefonát',
-  video: 'Video hovor',
-  in_person: 'Osobní schůzka',
-  email: 'Email',
-}
-
 const Notes = () => {
   const navigate = useNavigate()
   const { notes, loading, createNote, updateNote, deleteNote, fetchNotes } = useNotes()
@@ -86,18 +87,89 @@ const Notes = () => {
   const [selectedNotes, setSelectedNotes] = useState(new Set())
   const [bulkMessage, setBulkMessage] = useState(null)
 
+  // Advanced filters state
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [advancedFilters, setAdvancedFilters] = useState({
+    status: '',
+    tagId: '',
+    dateFrom: '',
+    dateTo: '',
+    hasIncompleteTasks: false,
+  })
+
   const isLoading = loading || customersLoading || tagsLoading
   const isSomeSelected = selectedNotes.size > 0
 
-  // Přidat customer_name pro vyhledávání
+  // Check if any advanced filter is active
+  const hasActiveAdvancedFilters = advancedFilters.status || advancedFilters.tagId ||
+    advancedFilters.dateFrom || advancedFilters.dateTo || advancedFilters.hasIncompleteTasks
+
+  // Filter notes with advanced filters
+  const filteredNotes = useMemo(() => {
+    let result = notes
+
+    // Status filter
+    if (advancedFilters.status) {
+      result = result.filter(note => note.status === advancedFilters.status)
+    }
+
+    // Tag filter
+    if (advancedFilters.tagId) {
+      result = result.filter(note =>
+        note.tags?.some(tag => tag.id === advancedFilters.tagId)
+      )
+    }
+
+    // Date from filter
+    if (advancedFilters.dateFrom) {
+      const fromDate = new Date(advancedFilters.dateFrom)
+      fromDate.setHours(0, 0, 0, 0)
+      result = result.filter(note => {
+        const noteDate = new Date(note.created_at)
+        return noteDate >= fromDate
+      })
+    }
+
+    // Date to filter
+    if (advancedFilters.dateTo) {
+      const toDate = new Date(advancedFilters.dateTo)
+      toDate.setHours(23, 59, 59, 999)
+      result = result.filter(note => {
+        const noteDate = new Date(note.created_at)
+        return noteDate <= toDate
+      })
+    }
+
+    // Incomplete tasks filter
+    if (advancedFilters.hasIncompleteTasks) {
+      result = result.filter(note =>
+        note.tasks?.some(task => !task.is_completed)
+      )
+    }
+
+    return result
+  }, [notes, advancedFilters])
+
+  // Prepare notes for SmartTable
   const notesWithCustomerName = useMemo(() => {
-    return notes.map(note => ({
+    return filteredNotes.map(note => ({
       ...note,
       customer_name: note.customer?.name || note.customer?.company || '',
       status_label: statusLabels[note.status] || note.status,
       priority_label: priorityLabels[note.priority] || note.priority,
     }))
-  }, [notes])
+  }, [filteredNotes])
+
+  // Clear advanced filters
+  const clearAdvancedFilters = () => {
+    setAdvancedFilters({
+      status: '',
+      tagId: '',
+      dateFrom: '',
+      dateTo: '',
+      hasIncompleteTasks: false,
+    })
+  }
 
   // Definice sloupců pro SmartTable
   const columns = [
@@ -122,9 +194,9 @@ const Notes = () => {
       _style: { width: '100px' },
     },
     {
-      key: 'meeting_date',
-      label: 'Datum',
-      _style: { width: '100px' },
+      key: 'created_at',
+      label: 'Vytvořeno',
+      _style: { width: '110px' },
     },
     {
       key: 'actions',
@@ -182,9 +254,9 @@ const Notes = () => {
         {priorityLabels[item.priority]}
       </CBadge>
     ),
-    meeting_date: (item) => (
+    created_at: (item) => (
       <span className="text-secondary small">
-        {item.meeting_date ? formatDate(item.meeting_date) : '-'}
+        {formatDate(item.created_at)}
       </span>
     ),
     actions: (item) => (
@@ -317,6 +389,107 @@ const Notes = () => {
         </CAlert>
       )}
 
+      {/* Advanced Filters Card */}
+      <CCard className="mb-3">
+        <CCardHeader
+          className="cursor-pointer d-flex justify-content-between align-items-center"
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <CIcon icon={cilFilter} />
+            <strong>Pokročilé filtry</strong>
+            {hasActiveAdvancedFilters && (
+              <CBadge color="primary" shape="rounded-pill">
+                {[
+                  advancedFilters.status,
+                  advancedFilters.tagId,
+                  advancedFilters.dateFrom,
+                  advancedFilters.dateTo,
+                  advancedFilters.hasIncompleteTasks
+                ].filter(Boolean).length}
+              </CBadge>
+            )}
+          </div>
+          <small className="text-secondary">
+            {showAdvancedFilters ? 'Skrýt' : 'Zobrazit'}
+          </small>
+        </CCardHeader>
+        <CCollapse visible={showAdvancedFilters}>
+          <CCardBody>
+            <CRow className="g-3">
+              <CCol xs={12} sm={6} md={3}>
+                <label className="form-label small fw-semibold">Stav</label>
+                <CFormSelect
+                  size="sm"
+                  value={advancedFilters.status}
+                  onChange={(e) => setAdvancedFilters(f => ({ ...f, status: e.target.value }))}
+                >
+                  <option value="">Všechny stavy</option>
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+              <CCol xs={12} sm={6} md={3}>
+                <label className="form-label small fw-semibold">Tag</label>
+                <CFormSelect
+                  size="sm"
+                  value={advancedFilters.tagId}
+                  onChange={(e) => setAdvancedFilters(f => ({ ...f, tagId: e.target.value }))}
+                >
+                  <option value="">Všechny tagy</option>
+                  {tags.map((tag) => (
+                    <option key={tag.id} value={tag.id}>{tag.name}</option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+              <CCol xs={6} sm={6} md={2}>
+                <label className="form-label small fw-semibold">Datum od</label>
+                <CFormInput
+                  type="date"
+                  size="sm"
+                  value={advancedFilters.dateFrom}
+                  onChange={(e) => setAdvancedFilters(f => ({ ...f, dateFrom: e.target.value }))}
+                />
+              </CCol>
+              <CCol xs={6} sm={6} md={2}>
+                <label className="form-label small fw-semibold">Datum do</label>
+                <CFormInput
+                  type="date"
+                  size="sm"
+                  value={advancedFilters.dateTo}
+                  onChange={(e) => setAdvancedFilters(f => ({ ...f, dateTo: e.target.value }))}
+                />
+              </CCol>
+              <CCol xs={12} sm={6} md={2} className="d-flex flex-column justify-content-end">
+                <CFormCheck
+                  id="incompleteTasks"
+                  label="Nedokončené úkoly"
+                  checked={advancedFilters.hasIncompleteTasks}
+                  onChange={(e) => setAdvancedFilters(f => ({ ...f, hasIncompleteTasks: e.target.checked }))}
+                />
+              </CCol>
+            </CRow>
+            {hasActiveAdvancedFilters && (
+              <div className="mt-3 pt-3 border-top">
+                <CButton
+                  color="link"
+                  size="sm"
+                  className="p-0 text-danger"
+                  onClick={clearAdvancedFilters}
+                >
+                  <CIcon icon={cilFilterX} className="me-1" />
+                  Zrušit všechny filtry
+                </CButton>
+                <span className="ms-3 text-secondary small">
+                  Zobrazeno {notesWithCustomerName.length} z {notes.length} poznámek
+                </span>
+              </div>
+            )}
+          </CCardBody>
+        </CCollapse>
+      </CCard>
+
       {/* Bulk action toolbar */}
       {isSomeSelected && (
         <CCard className="mb-3 border-primary">
@@ -439,6 +612,7 @@ const Notes = () => {
               tableFilterPlaceholder="hledaný text..."
               noItemsLabel="Žádné poznámky nenalezeny"
               itemsPerPageLabel="Položek na stránku:"
+              defaultSort={{ key: 'created_at', direction: 'desc' }}
             />
           )}
         </CCardBody>

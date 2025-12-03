@@ -55,11 +55,12 @@ const SmartTable = ({
   tableFilterPlaceholder = 'type string...',
   noItemsLabel = 'Žádné položky',
   itemsPerPageLabel = 'Items per page:',
+  defaultSort = null, // { key: 'created_at', direction: 'desc' }
 }) => {
   // State
   const [globalFilter, setGlobalFilter] = useState('')
   const [columnFilters, setColumnFilters] = useState({})
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null })
+  const [sortConfig, setSortConfig] = useState(defaultSort || { key: null, direction: null })
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(itemsPerPage)
 
