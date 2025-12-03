@@ -122,6 +122,9 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
     setResult(null)
 
     const reader = new FileReader()
+    reader.onerror = () => {
+      setError('Chyba při čtení souboru')
+    }
     reader.onload = (event) => {
       const text = event.target.result
       const { headers, rows, error: parseError } = parseCSV(text)
@@ -152,8 +155,6 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
 
     // Zkontrolovat, že máme alespoň name
     const hasName = Object.values(columnMap).includes('name')
-    console.log('Column mapping:', columnMap)
-    console.log('Has name mapping:', hasName)
 
     if (!hasName) {
       setError('Je nutné namapovat alespoň sloupec "Jméno".')
@@ -179,8 +180,6 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
       })
       .filter((c) => c.name) // Filtrovat pouze záznamy s jménem
 
-    console.log('Prepared customers data:', customersData)
-
     if (customersData.length === 0) {
       setError('Žádné platné záznamy k importu.')
       setImporting(false)
@@ -188,7 +187,6 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
     }
 
     const importResult = await onImport(customersData)
-    console.log('Import result:', importResult)
     setImporting(false)
     setResult(importResult)
   }
@@ -212,7 +210,7 @@ const CsvImportModal = ({ visible, onClose, onImport }) => {
   ]
 
   return (
-    <CModal visible={visible} onClose={handleClose} size="lg">
+    <CModal visible={visible} onClose={handleClose} size="lg" backdrop="static">
       <CModalHeader>
         <CModalTitle>Import zákazníků z CSV</CModalTitle>
       </CModalHeader>
