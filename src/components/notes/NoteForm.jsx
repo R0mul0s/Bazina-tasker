@@ -680,17 +680,14 @@ const NoteForm = ({
     </CModal>
 
     {/* Unsaved changes warning modal */}
-    <CModal visible={showUnsavedWarning} onClose={() => setShowUnsavedWarning(false)} size="sm">
+    <CModal visible={showUnsavedWarning} onClose={handleDiscardAndClose} size="sm">
       <CModalHeader>
         <CModalTitle>{t('form.unsavedChanges.title')}</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <p>{t('form.unsavedChanges.message')}</p>
       </CModalBody>
-      <CModalFooter className="flex-wrap gap-2">
-        <CButton color="secondary" variant="outline" onClick={() => setShowUnsavedWarning(false)}>
-          {t('form.unsavedChanges.cancel')}
-        </CButton>
+      <CModalFooter className="d-flex justify-content-end gap-2">
         <CButton color="danger" variant="outline" onClick={handleDiscardAndClose}>
           {t('form.unsavedChanges.discard')}
         </CButton>
