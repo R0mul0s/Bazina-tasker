@@ -130,6 +130,10 @@ const NoteForm = ({
   const isInitialLoadRef = useRef(true)
   const lastSavedDataRef = useRef(null)
 
+  // Unsaved changes warning modal
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false)
+  const [savingBeforeClose, setSavingBeforeClose] = useState(false)
+
   // TipTap editor
   const editor = useEditor({
     extensions: [StarterKit],
@@ -288,6 +292,67 @@ const NoteForm = ({
     }
   }, [])
 
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = useCallback(() => {
+    if (!lastSavedDataRef.current) {
+      // For new notes, check if any data was entered
+      if (!isEditing) {
+        return formData.title.trim() !== '' ||
+               (editor?.getHTML() || '') !== '<p></p>' && (editor?.getHTML() || '') !== '' ||
+               tasks.length > 0 ||
+               selectedTags.length > 0
+      }
+      return false
+    }
+
+    const currentContent = editor?.getHTML() || ''
+    return (
+      JSON.stringify(formData) !== JSON.stringify(lastSavedDataRef.current.formData) ||
+      JSON.stringify(selectedTags) !== JSON.stringify(lastSavedDataRef.current.selectedTags) ||
+      JSON.stringify(tasks.map(t => ({ text: t.text, is_completed: t.is_completed }))) !==
+        JSON.stringify(lastSavedDataRef.current.tasks.map(t => ({ text: t.text, is_completed: t.is_completed }))) ||
+      currentContent !== lastSavedDataRef.current.content
+    )
+  }, [formData, selectedTags, tasks, editor, isEditing])
+
+  // Handle close with unsaved changes check
+  const handleClose = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedWarning(true)
+    } else {
+      onClose()
+    }
+  }, [hasUnsavedChanges, onClose])
+
+  // Save and close
+  const handleSaveAndClose = async () => {
+    if (!formData.title.trim() || !formData.customer_id) {
+      setShowUnsavedWarning(false)
+      setError(t('form.titleRequired'))
+      return
+    }
+
+    setSavingBeforeClose(true)
+    const noteData = buildNoteData()
+    const result = await onSave(noteData, selectedTags, note?.id)
+
+    if (result.error) {
+      setError(result.error)
+      setSavingBeforeClose(false)
+      setShowUnsavedWarning(false)
+    } else {
+      setSavingBeforeClose(false)
+      setShowUnsavedWarning(false)
+      onClose()
+    }
+  }
+
+  // Discard changes and close
+  const handleDiscardAndClose = () => {
+    setShowUnsavedWarning(false)
+    onClose()
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -398,7 +463,8 @@ const NoteForm = ({
   }
 
   return (
-    <CModal visible={visible} onClose={onClose} size="xl">
+    <>
+    <CModal visible={visible} onClose={handleClose} size="xl">
       <CModalHeader>
         <CModalTitle className="d-flex align-items-center">
           {isEditing ? t('form.titleEdit') : t('form.titleNew')}
@@ -601,7 +667,7 @@ const NoteForm = ({
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={onClose} disabled={loading}>
+          <CButton color="secondary" onClick={handleClose} disabled={loading}>
             {tCommon('actions.cancel')}
           </CButton>
           <CButton type="submit" color="primary" disabled={loading}>
@@ -610,6 +676,28 @@ const NoteForm = ({
         </CModalFooter>
       </CForm>
     </CModal>
+
+    {/* Unsaved changes warning modal */}
+    <CModal visible={showUnsavedWarning} onClose={() => setShowUnsavedWarning(false)} size="sm">
+      <CModalHeader>
+        <CModalTitle>{t('form.unsavedChanges.title')}</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <p>{t('form.unsavedChanges.message')}</p>
+      </CModalBody>
+      <CModalFooter className="flex-wrap gap-2">
+        <CButton color="secondary" variant="outline" onClick={() => setShowUnsavedWarning(false)}>
+          {t('form.unsavedChanges.cancel')}
+        </CButton>
+        <CButton color="danger" variant="outline" onClick={handleDiscardAndClose}>
+          {t('form.unsavedChanges.discard')}
+        </CButton>
+        <CButton color="primary" onClick={handleSaveAndClose} disabled={savingBeforeClose}>
+          {savingBeforeClose ? <CSpinner size="sm" /> : t('form.unsavedChanges.save')}
+        </CButton>
+      </CModalFooter>
+    </CModal>
+    </>
   )
 }
 

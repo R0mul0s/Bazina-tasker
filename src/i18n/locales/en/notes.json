@@ -67,6 +67,13 @@
       "saving": "Saving...",
       "saved": "Saved",
       "error": "Error saving"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "message": "You have unsaved changes. What do you want to do?",
+      "save": "Save and close",
+      "discard": "Discard changes",
+      "cancel": "Go back"
     }
   },
   "detail": {

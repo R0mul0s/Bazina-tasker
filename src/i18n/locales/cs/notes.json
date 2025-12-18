@@ -67,6 +67,13 @@
       "saving": "Ukládám...",
       "saved": "Uloženo",
       "error": "Chyba při ukládání"
+    },
+    "unsavedChanges": {
+      "title": "Neuložené změny",
+      "message": "Máte neuložené změny. Co chcete udělat?",
+      "save": "Uložit a zavřít",
+      "discard": "Zahodit změny",
+      "cancel": "Zpět"
     }
   },
   "detail": {
