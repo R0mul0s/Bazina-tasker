@@ -148,9 +148,11 @@ const NoteForm = ({
 
   // Načtení dat při editaci
   useEffect(() => {
-    // Reset autosave state when modal opens
+    // Reset states when modal opens/closes
     isInitialLoadRef.current = true
     setAutosaveStatus('idle')
+    setShowUnsavedWarning(false)
+    setSavingBeforeClose(false)
 
     if (note) {
       const initialFormData = {
