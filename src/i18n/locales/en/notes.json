@@ -63,6 +63,7 @@
     "saveChanges": "Save changes",
     "showInKanban": "Show in Kanban",
     "autosave": {
+      "enabled": "Autosave",
       "saving": "Saving...",
       "saved": "Saved",
       "error": "Error saving"

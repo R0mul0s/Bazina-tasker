@@ -63,6 +63,7 @@
     "saveChanges": "Uložit změny",
     "showInKanban": "Zobrazit v Kanbanu",
     "autosave": {
+      "enabled": "Autosave",
       "saving": "Ukládám...",
       "saved": "Uloženo",
       "error": "Chyba při ukládání"

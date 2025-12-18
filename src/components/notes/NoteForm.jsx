@@ -367,27 +367,33 @@ const NoteForm = ({
     switch (autosaveStatus) {
       case 'saving':
         return (
-          <span className="d-flex align-items-center gap-1 text-secondary small ms-3">
-            <CSpinner size="sm" />
+          <CBadge color="secondary" className="ms-3 d-flex align-items-center gap-1">
+            <CSpinner size="sm" style={{ width: '12px', height: '12px' }} />
             {t('form.autosave.saving')}
-          </span>
+          </CBadge>
         )
       case 'saved':
         return (
-          <span className="d-flex align-items-center gap-1 text-success small ms-3">
+          <CBadge color="success" className="ms-3 d-flex align-items-center gap-1">
             <CIcon icon={cilCheckCircle} size="sm" />
             {t('form.autosave.saved')}
-          </span>
+          </CBadge>
         )
       case 'error':
         return (
-          <span className="d-flex align-items-center gap-1 text-danger small ms-3">
+          <CBadge color="danger" className="ms-3 d-flex align-items-center gap-1">
             <CIcon icon={cilWarning} size="sm" />
             {t('form.autosave.error')}
-          </span>
+          </CBadge>
         )
       default:
-        return null
+        // Show idle state indicator
+        return (
+          <CBadge color="light" textColor="secondary" className="ms-3 d-flex align-items-center gap-1">
+            <CIcon icon={cilCheckCircle} size="sm" />
+            {t('form.autosave.enabled')}
+          </CBadge>
+        )
     }
   }
 
