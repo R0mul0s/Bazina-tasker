@@ -61,7 +61,12 @@
     "titleRequired": "Note title is required",
     "customerRequired": "Select a customer",
     "saveChanges": "Save changes",
-    "showInKanban": "Show in Kanban"
+    "showInKanban": "Show in Kanban",
+    "autosave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Error saving"
+    }
   },
   "detail": {
     "noteContent": "Note content",

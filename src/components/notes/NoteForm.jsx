@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -30,6 +30,8 @@ import {
   cilList,
   cilPlus,
   cilTrash,
+  cilCheckCircle,
+  cilWarning,
 } from '@coreui/icons'
 
 // Typy schůzek (musí odpovídat DB enum: in_person, phone, video, email)
@@ -89,6 +91,9 @@ const MenuBar = ({ editor, t }) => {
   )
 }
 
+// Debounce delay for autosave (in ms)
+const AUTOSAVE_DELAY = 2000
+
 const NoteForm = ({
   visible,
   onClose,
@@ -119,6 +124,12 @@ const NoteForm = ({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Autosave state: 'idle' | 'saving' | 'saved' | 'error'
+  const [autosaveStatus, setAutosaveStatus] = useState('idle')
+  const autosaveTimerRef = useRef(null)
+  const isInitialLoadRef = useRef(true)
+  const lastSavedDataRef = useRef(null)
+
   // TipTap editor
   const editor = useEditor({
     extensions: [StarterKit],
@@ -133,8 +144,12 @@ const NoteForm = ({
 
   // Načtení dat při editaci
   useEffect(() => {
+    // Reset autosave state when modal opens
+    isInitialLoadRef.current = true
+    setAutosaveStatus('idle')
+
     if (note) {
-      setFormData({
+      const initialFormData = {
         title: note.title || '',
         customer_id: note.customer_id || '',
         meeting_type: note.meeting_type || 'phone',
@@ -143,11 +158,24 @@ const NoteForm = ({
         status: note.status || 'draft',
         follow_up_date: note.follow_up_date ? note.follow_up_date.split('T')[0] : '',
         show_in_kanban: note.show_in_kanban || false,
-      })
-      setSelectedTags(note.tags?.map((t) => t.id) || [])
-      setTasks(note.tasks || [])
+      }
+      const initialTags = note.tags?.map((t) => t.id) || []
+      const initialTasks = note.tasks || []
+      const initialContent = note.content || ''
+
+      setFormData(initialFormData)
+      setSelectedTags(initialTags)
+      setTasks(initialTasks)
       if (editor) {
-        editor.commands.setContent(note.content || '')
+        editor.commands.setContent(initialContent)
+      }
+
+      // Store initial data for comparison
+      lastSavedDataRef.current = {
+        formData: initialFormData,
+        selectedTags: initialTags,
+        tasks: initialTasks,
+        content: initialContent,
       }
     } else {
       setFormData({
@@ -165,10 +193,100 @@ const NoteForm = ({
       if (editor) {
         editor.commands.setContent('')
       }
+      lastSavedDataRef.current = null
     }
     setError('')
     setNewTaskText('')
+
+    // Mark initial load as complete after a short delay
+    setTimeout(() => {
+      isInitialLoadRef.current = false
+    }, 100)
   }, [note, visible, preselectedCustomerId, editor, forceShowInKanban])
+
+  // Build current note data for autosave
+  const buildNoteData = useCallback(() => {
+    return {
+      ...formData,
+      follow_up_date: formData.follow_up_date || null,
+      meeting_date: formData.meeting_date || null,
+      content: editor?.getHTML() || '',
+      tasks: tasks.map((t, i) => ({
+        text: t.text,
+        is_completed: t.is_completed,
+        order: i,
+      })),
+    }
+  }, [formData, tasks, editor])
+
+  // Autosave function
+  const performAutosave = useCallback(async () => {
+    if (!isEditing || !note?.id || isInitialLoadRef.current) return
+    if (!formData.title.trim() || !formData.customer_id) return
+
+    const currentData = {
+      formData,
+      selectedTags,
+      tasks,
+      content: editor?.getHTML() || '',
+    }
+
+    // Check if data has changed since last save
+    if (lastSavedDataRef.current) {
+      const hasChanges =
+        JSON.stringify(currentData.formData) !== JSON.stringify(lastSavedDataRef.current.formData) ||
+        JSON.stringify(currentData.selectedTags) !== JSON.stringify(lastSavedDataRef.current.selectedTags) ||
+        JSON.stringify(currentData.tasks.map(t => ({ text: t.text, is_completed: t.is_completed }))) !==
+          JSON.stringify(lastSavedDataRef.current.tasks.map(t => ({ text: t.text, is_completed: t.is_completed }))) ||
+        currentData.content !== lastSavedDataRef.current.content
+
+      if (!hasChanges) return
+    }
+
+    setAutosaveStatus('saving')
+
+    const noteData = buildNoteData()
+    const result = await onSave(noteData, selectedTags, note.id)
+
+    if (result.error) {
+      setAutosaveStatus('error')
+    } else {
+      setAutosaveStatus('saved')
+      lastSavedDataRef.current = currentData
+      // Reset to idle after showing "saved" for 2 seconds
+      setTimeout(() => setAutosaveStatus('idle'), 2000)
+    }
+  }, [isEditing, note?.id, formData, selectedTags, tasks, editor, buildNoteData, onSave])
+
+  // Autosave effect - debounced
+  useEffect(() => {
+    if (!isEditing || !visible || isInitialLoadRef.current) return
+
+    // Clear previous timer
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current)
+    }
+
+    // Set new timer for autosave
+    autosaveTimerRef.current = setTimeout(() => {
+      performAutosave()
+    }, AUTOSAVE_DELAY)
+
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current)
+      }
+    }
+  }, [formData, selectedTags, tasks, editor?.getHTML(), isEditing, visible, performAutosave])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current)
+      }
+    }
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -242,10 +360,44 @@ const NoteForm = ({
     }
   }
 
+  // Render autosave status indicator
+  const renderAutosaveStatus = () => {
+    if (!isEditing) return null
+
+    switch (autosaveStatus) {
+      case 'saving':
+        return (
+          <span className="d-flex align-items-center gap-1 text-secondary small ms-3">
+            <CSpinner size="sm" />
+            {t('form.autosave.saving')}
+          </span>
+        )
+      case 'saved':
+        return (
+          <span className="d-flex align-items-center gap-1 text-success small ms-3">
+            <CIcon icon={cilCheckCircle} size="sm" />
+            {t('form.autosave.saved')}
+          </span>
+        )
+      case 'error':
+        return (
+          <span className="d-flex align-items-center gap-1 text-danger small ms-3">
+            <CIcon icon={cilWarning} size="sm" />
+            {t('form.autosave.error')}
+          </span>
+        )
+      default:
+        return null
+    }
+  }
+
   return (
     <CModal visible={visible} onClose={onClose} size="xl">
       <CModalHeader>
-        <CModalTitle>{isEditing ? t('form.titleEdit') : t('form.titleNew')}</CModalTitle>
+        <CModalTitle className="d-flex align-items-center">
+          {isEditing ? t('form.titleEdit') : t('form.titleNew')}
+          {renderAutosaveStatus()}
+        </CModalTitle>
       </CModalHeader>
       <CForm onSubmit={handleSubmit}>
         <CModalBody>

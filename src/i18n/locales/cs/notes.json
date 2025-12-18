@@ -61,7 +61,12 @@
     "titleRequired": "Název poznámky je povinný",
     "customerRequired": "Vyberte zákazníka",
     "saveChanges": "Uložit změny",
-    "showInKanban": "Zobrazit v Kanbanu"
+    "showInKanban": "Zobrazit v Kanbanu",
+    "autosave": {
+      "saving": "Ukládám...",
+      "saved": "Uloženo",
+      "error": "Chyba při ukládání"
+    }
   },
   "detail": {
     "noteContent": "Obsah poznámky",
